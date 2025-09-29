@@ -496,7 +496,7 @@ export function HeroSection() {
           All Projects Start Here
         </h1>
         <p className="text-muted-foreground text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-lg mx-auto">
-          AI Project Manager using Canvas planning to formulate early product plans, task durations, risk, and resourcing.
+          AI Project Manager using Canvas planning to formulate early project plans, task durations, risk, and resourcing.
         </p>
       </div>
 

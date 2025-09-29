@@ -5,7 +5,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Project Machine',
-  description: 'Project Machine is the first planning tool that focuses on stored history to help engineers estimate task durations.',
+  description: 'AI Project Manager using Canvas planning to formulate early project plans, task durations, risk, and resourcing.',
 }
 
 export default function RootLayout({

@@ -9,6 +9,7 @@ export function DashboardPreview() {
           alt="Dashboard preview"
           width={1160}
           height={700}
+          priority
           className="w-full h-full object-cover rounded-xl shadow-lg"
         />
       </div>

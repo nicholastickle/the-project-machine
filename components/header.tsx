@@ -1,19 +1,21 @@
 "use client"
 
 import type React from "react"
+import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
 import Link from "next/link" // Import Link for client-side navigation
 
 export function Header() {
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
   const navItems = [
     { name: "Features", href: "#features-section" },
     { name: "Pricing", href: "#pricing-section" },
-   
-    { name: "Starting a Project", href: "#starting-project-section" },
     { name: "About", href: "#about-section" },
+    { name: "Starting a Project", href: "#starting-project-section" },
+
   ]
 
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -23,6 +25,20 @@ export function Header() {
     if (targetElement) {
       targetElement.scrollIntoView({ behavior: "smooth" })
     }
+  }
+
+  const handleMobileNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault()
+    // Close the sheet first
+    setIsSheetOpen(false)
+    // Then navigate after a short delay to allow the sheet to close
+    setTimeout(() => {
+      const targetId = href.substring(1) // Remove '#' from href
+      const targetElement = document.getElementById(targetId)
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: "smooth" })
+      }
+    }, 300) // 300ms delay to allow sheet closing animation
   }
 
   return (
@@ -51,7 +67,7 @@ export function Header() {
               Feedback
             </Button>
           </Link>
-          <Sheet>
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" className="text-foreground">
                 <Menu className="h-7 w-7" />
@@ -60,14 +76,17 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="bottom" className="bg-background border-t border-border text-foreground">
               <SheetHeader>
-                <SheetTitle className="text-left text-xl font-semibold text-foreground">Navigation</SheetTitle>
+                <SheetTitle className="text-left text-xl font-semibold text-foreground">Project Machine</SheetTitle>
+                <SheetDescription className="text-left text-muted-foreground">
+                  Navigate through the Project Machine sections
+                </SheetDescription>
               </SheetHeader>
               <nav className="flex flex-col gap-4 mt-6">
                 {navItems.map((item) => (
                   <Link
                     key={item.name}
                     href={item.href}
-                    onClick={(e) => handleScroll(e, item.href)} // Add onClick handler
+                    onClick={(e) => handleMobileNavClick(e, item.href)} // Use mobile-specific handler
                     className="text-[#888888] hover:text-foreground justify-start text-lg py-2"
                   >
                     {item.name}
@@ -75,7 +94,7 @@ export function Header() {
                 ))}
                 <Link href="https://vercel.com/home" target="_blank" rel="noopener noreferrer" className="w-full mt-4">
                   <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-6 py-2 rounded-full font-medium shadow-sm">
-                    Try for Free
+                    Start 🚀
                   </Button>
                 </Link>
               </nav>

@@ -12,7 +12,7 @@ export function PricingSection() {
       name: "Free",
       monthlyPrice: "$0",
       annualPrice: "$0",
-      description: "Perfect for individuals starting their journey.",
+      description: "Perfect for individuals planning a small project.",
       features: [
         "Real-time code suggestions",
         "Basic integration logos",
@@ -27,7 +27,7 @@ export function PricingSection() {
     {
       name: "Pro",
       monthlyPrice: "$20",
-      annualPrice: "$16",
+      annualPrice: "$200",
       description: "Ideal for professionals.",
       features: [
         "Enhanced real-time previews",
@@ -44,10 +44,10 @@ export function PricingSection() {
       popular: true,
     },
     {
-      name: "Ultra",
+      name: "Enterprise",
       monthlyPrice: "$200",
       annualPrice: "$160",
-      description: "Tailored solutions for teams.",
+      description: "Work across your entire organization, with support, security and control, to scale.",
       features: [
         "Dedicated account support",
         "Unlimited MCP server clusters",
@@ -66,11 +66,10 @@ export function PricingSection() {
       <div className="self-stretch relative flex flex-col justify-center items-center gap-2 py-0">
         <div className="flex flex-col justify-start items-center gap-4">
           <h2 className="text-center text-foreground text-4xl md:text-5xl font-semibold leading-tight md:leading-[40px]">
-            Pricing built for every developer
+            Pricing built for every Project
           </h2>
           <p className="self-stretch text-center text-muted-foreground text-sm font-medium leading-tight">
-            Choose a plan that fits your coding workflow, from individuals starting out to <br /> growing professionals
-            and large organizations.
+            Choose a plan that fits your project planning, from individuals planning a <br /> small project, to professional project managers and large organizations.
           </p>
         </div>
         <div className="pt-4">
@@ -113,7 +112,7 @@ export function PricingSection() {
                   {plan.name}
                   {plan.popular && (
                     <div className="ml-2 px-2 overflow-hidden rounded-full justify-center items-center gap-2.5 inline-flex mt-0 py-0.5 bg-gradient-to-b from-primary-light/50 to-primary-light bg-white">
-                      <div className="text-center text-primary-foreground text-xs font-normal leading-tight break-words">
+                      <div className="text-center text-gray-900 text-xs font-medium leading-tight break-words">
                         Popular
                       </div>
                     </div>
@@ -151,7 +150,7 @@ export function PricingSection() {
                     <div
                       className={`text-center text-sm font-medium leading-tight ${plan.popular ? "text-primary-foreground/70" : "text-zinc-400"}`}
                     >
-                      /month
+                      /{isAnnual ? "year" : "month"}
                     </div>
                   </div>
                   <div
