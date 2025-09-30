@@ -10,6 +10,7 @@ import { CTASection } from "@/components/cta-section"
 import { FooterSection } from "@/components/footer-section"
 import { AnimatedSection } from "@/components/animated-section"
 import { Separator } from "@/components/ui/separator"
+import { AboutSection } from "@/components/about-section"
 
 export default function LandingPage() {
   return (
@@ -23,7 +24,7 @@ export default function LandingPage() {
         <div className="flex justify-center -mt-20 sm:-mt-40 md:-mt-40 lg:-mt-20 xl:-mt-72 z-30 relative">
           <AnimatedSection>
             <DashboardPreview />
-            
+
           </AnimatedSection>
         </div>
 
@@ -35,7 +36,7 @@ export default function LandingPage() {
           <BentoSection />
           <Separator />
         </AnimatedSection>
-        
+
         <AnimatedSection
           id="pricing-section"
           className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16"
@@ -51,6 +52,14 @@ export default function LandingPage() {
         >
           <TestimonialGridSection />
         </AnimatedSection> */}
+        <AnimatedSection
+          id="about-section"
+          className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16"
+          delay={0.2}
+        >
+          <AboutSection />
+          <Separator />
+        </AnimatedSection>
         <AnimatedSection id="faq-section" className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
           <FAQSection />
           <Separator />
