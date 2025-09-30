@@ -1,16 +1,16 @@
-import { HeroSection } from "@/components/hero-section"
-import { DashboardPreview } from "@/components/dashboard-preview"
-import { SocialProof } from "@/components/social-proof"
-import { BentoSection } from "@/components/bento-section"
+import { HeroSection } from "@/components/landing/hero-section"
+import { DashboardPreview } from "@/components/landing/dashboard-preview"
+import { SocialProof } from "@/components/landing/social-proof"
+import { BentoSection } from "@/components/landing/bento-section"
 
-import { PricingSection } from "@/components/pricing-section"
-import { TestimonialGridSection } from "@/components/testimonial-grid-section"
-import { FAQSection } from "@/components/faq-section"
-import { CTASection } from "@/components/cta-section"
-import { FooterSection } from "@/components/footer-section"
-import { AnimatedSection } from "@/components/animated-section"
+import { PricingSection } from "@/components/landing/pricing-section"
+import { TestimonialGridSection } from "@/components/landing/testimonial-grid-section"
+import { FAQSection } from "@/components/landing/faq-section"
+import { CTASection } from "@/components/landing/cta-section"
+import { FooterSection } from "@/components/landing/footer-section"
+import { AnimatedSection } from "@/components/landing/animated-section"
 import { Separator } from "@/components/ui/separator"
-import { AboutSection } from "@/components/about-section"
+import { AboutSection } from "@/components/landing/about-section"
 
 
 export default function LandingPage() {

@@ -1,6 +1,7 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
+import Link from "next/link"
 
 // Social Media Icons
 const LinkedInIcon = () => (
@@ -49,23 +50,23 @@ export function FooterSection() {
           <div className="flex flex-col justify-start items-start gap-3">
             <h3 className="text-muted-foreground text-sm font-medium leading-5">Product</h3>
             <div className="flex flex-col justify-end items-start gap-2">
-              <a href="#features-section" className="text-foreground text-sm font-normal leading-5 hover:underline">
+              <Link href="/#features-section" className="text-foreground text-sm font-normal leading-5 hover:underline">
                 Features
-              </a>
-              <a href="#pricing-section" className="text-foreground text-sm font-normal leading-5 hover:underline">
+              </Link>
+              <Link href="/#pricing-section" className="text-foreground text-sm font-normal leading-5 hover:underline">
                 Pricing
-              </a>
+              </Link>
             </div>
           </div>
           <div className="flex flex-col justify-start items-start gap-3">
             <h3 className="text-muted-foreground text-sm font-medium leading-5">Company</h3>
             <div className="flex flex-col justify-center items-start gap-2">
-              <a href="#about-section" className="text-foreground text-sm font-normal leading-5 hover:underline">
+              <Link href="/#about-section" className="text-foreground text-sm font-normal leading-5 hover:underline">
                 About
-              </a>
-              <a href="#faq-section" className="text-foreground text-sm font-normal leading-5 hover:underline">
+              </Link>
+              <Link href="/#faq-section" className="text-foreground text-sm font-normal leading-5 hover:underline">
                 FAQs
-              </a>
+              </Link>
               <a href="https://vercel.com/home" target="_blank" rel="noopener noreferrer" className="text-foreground text-sm font-normal leading-5 hover:underline">
                 Contact/Feedback
               </a>
@@ -74,18 +75,18 @@ export function FooterSection() {
           <div className="flex flex-col justify-start items-start gap-3">
             <h3 className="text-muted-foreground text-sm font-medium leading-5">Legal</h3>
             <div className="flex flex-col justify-center items-start gap-2">
-              <a href="/legal" className="text-foreground text-sm font-normal leading-5 hover:underline">
+              <Link href="/legal" className="text-foreground text-sm font-normal leading-5 hover:underline">
                 Privacy Policy
-              </a>
-              <a href="/legal" className="text-foreground text-sm font-normal leading-5 hover:underline">
+              </Link>
+              <Link href="/legal" className="text-foreground text-sm font-normal leading-5 hover:underline">
                 Terms & Conditions
-              </a>
-              <a href="/legal" className="text-foreground text-sm font-normal leading-5 hover:underline">
+              </Link>
+              <Link href="/legal" className="text-foreground text-sm font-normal leading-5 hover:underline">
                 Cookie Policy
-              </a>
-              <a href="/legal" className="text-foreground text-sm font-normal leading-5 hover:underline">
+              </Link>
+              <Link href="/legal" className="text-foreground text-sm font-normal leading-5 hover:underline">
                 Data Security
-              </a>
+              </Link>
             </div>
           </div>
         </div>
