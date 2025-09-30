@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export function PricingSection() {
   const [isAnnual, setIsAnnual] = useState(false)
@@ -178,17 +179,33 @@ export function PricingSection() {
                   </div>
                 </div>
               </div>
-              <Button
-                className={`self-stretch px-5 py-2 rounded-[40px] flex justify-center items-center ${plan.buttonClass}`}
-              >
-                <div className="px-1.5 flex justify-center items-center gap-2">
-                  <span
-                    className={`text-center text-sm font-medium leading-tight ${plan.name === "Free" ? "text-gray-800" : plan.name === "Pro" ? "text-zinc-950" : "text-zinc-950"}`}
+              {plan.name === "Free" ? (
+                <Link href="/canvas" className="self-stretch">
+                  <Button
+                    className={`w-full px-5 py-2 rounded-[40px] flex justify-center items-center ${plan.buttonClass}`}
                   >
-                    {plan.buttonText}
-                  </span>
-                </div>
-              </Button>
+                    <div className="px-1.5 flex justify-center items-center gap-2">
+                      <span
+                        className={`text-center text-sm font-medium leading-tight ${plan.name === "Free" ? "text-gray-800" : plan.name === "Pro" ? "text-zinc-950" : "text-zinc-950"}`}
+                      >
+                        {plan.buttonText}
+                      </span>
+                    </div>
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  className={`self-stretch px-5 py-2 rounded-[40px] flex justify-center items-center ${plan.buttonClass}`}
+                >
+                  <div className="px-1.5 flex justify-center items-center gap-2">
+                    <span
+                      className={`text-center text-sm font-medium leading-tight ${plan.name === "Free" ? "text-gray-800" : plan.name === "Pro" ? "text-zinc-950" : "text-zinc-950"}`}
+                    >
+                      {plan.buttonText}
+                    </span>
+                  </div>
+                </Button>
+              )}
             </div>
             <div className="self-stretch flex flex-col justify-start items-start gap-4">
               <div

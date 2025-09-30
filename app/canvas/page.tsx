@@ -1,12 +1,12 @@
 "use client"
 
-
+import Canvas from "@/components/canvas/canvas"
 
 export default function CanvasPage() {
 
     return (
         <div>
-            <h1>Hello Canvas</h1>
+            <Canvas />
         </div>
     )
 }
