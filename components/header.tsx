@@ -14,7 +14,7 @@ export function Header() {
     { name: "Features", href: "#features-section" },
     { name: "Pricing", href: "#pricing-section" },
     { name: "About", href: "#about-section" },
-    { name: "Starting a Project", href: "#starting-project-section" },
+    { name: "FAQ", href: "#faq-section" },
 
   ]
 
