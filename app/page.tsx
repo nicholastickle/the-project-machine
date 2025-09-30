@@ -12,6 +12,7 @@ import { AnimatedSection } from "@/components/animated-section"
 import { Separator } from "@/components/ui/separator"
 import { AboutSection } from "@/components/about-section"
 
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden pb-0">
@@ -22,7 +23,7 @@ export default function LandingPage() {
 
         {/* Dashboard Preview - positioned in document flow then offset upward */}
         <div className="flex justify-center -mt-20 sm:-mt-40 md:-mt-40 lg:-mt-20 xl:-mt-72 z-30 relative">
-          <AnimatedSection>
+          <AnimatedSection delay={0.8}>
             <DashboardPreview />
 
           </AnimatedSection>
@@ -68,7 +69,7 @@ export default function LandingPage() {
           <CTASection />
           <Separator />
         </AnimatedSection>
-        <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
+        <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto" delay={0.2}>
           <FooterSection />
         </AnimatedSection>
       </div>

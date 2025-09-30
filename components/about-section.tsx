@@ -55,7 +55,7 @@ export function AboutSection() {
                         style={{ outline: "1px solid hsl(var(--border))", outlineOffset: "-1px" }}
                     >
                         <div className="flex flex-col items-center gap-4">
-                            <div className="w-41 h-41 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                            <div className="w-40 h-40 rounded-full overflow-hidden bg-muted flex items-center justify-center">
                                 <Image
                                     src={founder.image}
                                     alt={`${founder.name} - ${founder.title}`}

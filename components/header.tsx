@@ -46,7 +46,9 @@ export function Header() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
-            <span className="text-foreground text-xl font-semibold">Project Machine</span>
+            <Link href="/" className="text-foreground text-xl font-semibold cursor-pointer">
+              Project Machine
+            </Link>
           </div>
           <nav className="hidden md:flex items-center gap-2">
             {navItems.map((item) => (

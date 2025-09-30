@@ -1,6 +1,7 @@
 import React from "react"
 import { Button } from "@/components/ui/button"
 import { Header } from "./header"
+import { AnimatedSection } from "./animated-section"
 import Link from "next/link"
 
 export function HeroSection() {
@@ -492,29 +493,35 @@ export function HeroSection() {
       </div>
 
       <div className="relative z-10 space-y-6 md:space-y-9 lg:space-y-12 mb-7 md:mb-8 lg:mb-16 max-w-md md:max-w-[500px] lg:max-w-[588px] mt-28 md:mt-[120px] lg:mt-[160px] px-4">
-        <h1 className="text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight">
-          All Projects Start Here
-        </h1>
-        <p className="text-muted-foreground text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-lg mx-auto">
-          AI Project Manager using Canvas planning to formulate early project plans, task durations, risk, and resourcing.
-        </p>
+        <AnimatedSection delay={0.3}>
+          <h1 className="text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight">
+            All Projects Start Here
+          </h1>
+        </AnimatedSection>
+        <AnimatedSection delay={0.5}>
+          <p className="text-muted-foreground text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-lg mx-auto">
+            AI Project Manager using Canvas planning to formulate early project plans, task durations, risk, and resourcing.
+          </p>
+        </AnimatedSection>
       </div>
 
-      <Link href="https://vercel.com/home" target="_blank" rel="noopener noreferrer">
-        <div className="relative group">
-          {/* Rotating orange light border */}
-          <div className="absolute -inset-0.5 rounded-full overflow-hidden">
-            <div className="w-full h-full rounded-full animate-spin"
+      <AnimatedSection delay={0.7}>
+        <Link href="https://vercel.com/home" target="_blank" rel="noopener noreferrer">
+          <div className="relative group">
+            {/* Rotating orange light border */}
+            <div className="absolute -inset-0.5 rounded-full overflow-hidden">
+              <div className="w-full h-full rounded-full animate-spin"
 
-            >
+              >
+              </div>
             </div>
+            <Button className="relative z-10 bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-3 rounded-full font-medium text-base shadow-lg ring-1 ring-orange-500/20 hover:ring-orange-400/40 transition-all duration-300 hover:scale-105 flex items-center gap-3 pulse-button">
+              Start
+              <span>🚀</span>
+            </Button>
           </div>
-          <Button className="relative z-10 bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-3 rounded-full font-medium text-base shadow-lg ring-1 ring-orange-500/20 hover:ring-orange-400/40 transition-all duration-300 hover:scale-105 flex items-center gap-3 pulse-button">
-            Start
-            <span>🚀</span>
-          </Button>
-        </div>
-      </Link>
+        </Link>
+      </AnimatedSection>
     </section>
   )
 }
