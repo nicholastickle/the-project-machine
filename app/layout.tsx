@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'en_US',
+    locale: 'en_GB',
     url: 'https://projectmachine.com',
     siteName: 'Project Machine',
     title: 'Project Machine - AI Project Manager & Canvas Planning Platform',
