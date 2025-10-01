@@ -19,6 +19,10 @@ import CanvasMinimap from '@/components/canvas/minimap';
 import { initialNodes } from './initial-nodes';
 import { initialEdges } from './initial-edges';
 
+import TaskCard from './task-card-node';
+
+const nodeTypes = { textUpdater: TaskCard };
+
 
 
 const panOnDrag = [1, 2];
@@ -41,10 +45,11 @@ export default function Canvas() {
     );
 
     return (
-        <div className="w-full h-screen ">
+        <div className="w-full h-screen z-0">
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
+                nodeTypes={nodeTypes}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}

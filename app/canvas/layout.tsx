@@ -1,4 +1,9 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
+
+
+export const viewport: Viewport = {
+  themeColor: '#ff8c00', // Orange theme color for the canvas
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://projectmachine.com'),
@@ -42,8 +47,6 @@ export const metadata: Metadata = {
     title: 'Project Canvas - AI Project Planning',
     description: 'Create, plan, and manage projects with AI assistance using our interactive canvas interface.',
   },
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
-  themeColor: '#ff8c00', // Orange theme color for the canvas
 }
 
 export default function CanvasLayout({
@@ -52,8 +55,15 @@ export default function CanvasLayout({
   children: React.ReactNode
 }>) {
   return (
-    <div className="canvas-layout">
-      {children}
-    </div>
+
+    <main>
+
+      <div className="canvas-layout">
+        {children}
+      </div>
+    </main>
+
   )
 }
+
+

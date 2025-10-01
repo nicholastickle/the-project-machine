@@ -3,7 +3,7 @@ import { MiniMap } from '@xyflow/react';
 export default function CanvasMinimap() {
     return (
         <MiniMap
-            
+
             position='bottom-right'
             // onClick={(event) => {
             //     event.stopPropagation();
@@ -27,6 +27,7 @@ export default function CanvasMinimap() {
             // style={{ width: 200, height: 150, border: '1px solid #334155', borderRadius: '8px', backgroundColor: '#1E293B' }}
             zoomStep={1}
             offsetScale={20}
+        // className='bg-[#0F172A] rounded-md p-1'
 
         />
     );

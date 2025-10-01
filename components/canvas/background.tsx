@@ -10,6 +10,8 @@ export default function CanvasBackground() {
             lineWidth={0.247}
             color="#2a2a2a"
             aria-label='Canvas Background'
+            // style={{ backgroundColor: '#0F172A' }}
+            // className='bg-[#0F172A]'
         />
     );
 }   

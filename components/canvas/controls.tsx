@@ -16,6 +16,10 @@ export default function CanvasControls() {
             position='top-right'
             aria-label='Canvas Controls'
             orientation='vertical'
+            // style={{ backgroundColor: 'rgba(30, 41, 59, 0.8)', borderRadius: '8px', padding: '4px' }}
+            // className='bg-[#0F172A] rounded-md p-1' 
+
+            
         />
     );
 }   
