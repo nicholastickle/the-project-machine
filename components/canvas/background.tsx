@@ -1,6 +1,6 @@
 import { Background, BackgroundVariant } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-
+import './background.css';
 
 export default function CanvasBackground() {
     return (
@@ -10,8 +10,7 @@ export default function CanvasBackground() {
             lineWidth={0.247}
             color="#2a2a2a"
             aria-label='Canvas Background'
-            // style={{ backgroundColor: '#0F172A' }}
-            // className='bg-[#0F172A]'
+            style={{ backgroundColor: 'oklch(14.5% 0 0)' }}
         />
     );
 }   

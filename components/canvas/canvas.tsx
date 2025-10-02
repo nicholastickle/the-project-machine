@@ -59,6 +59,7 @@ export default function Canvas() {
                 selectionMode={SelectionMode.Partial}
                 fitView
                 aria-label='Canvas Component'
+                proOptions={{ hideAttribution: true }}
 
             >
                 <CanvasBackground />
