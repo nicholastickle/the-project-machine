@@ -3,6 +3,7 @@
 import Canvas from "@/components/canvas/canvas"
 import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import { CanvasSidebar } from "@/components/sidebar/canvas-sidebar"
+import AIOrb from "@/components/ai-chat/ai-orb";
 
 export default function CanvasPage() {
     return (
@@ -18,6 +19,7 @@ function CanvasPageContent() {
     return (
         <div className="relative h-screen w-full">
             <Canvas />
+            <AIOrb />
             <CanvasSidebar />
             <SidebarTrigger
                 className={`absolute top-2.5 z-50 bg-background/80 backdrop-blur-sm border shadow-md hover:bg-background/90 transition-all duration-300 ${open ? 'left-[265px]' : 'left-[5px] md:left-[60px]'
