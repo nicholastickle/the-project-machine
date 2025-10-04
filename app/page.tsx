@@ -1,6 +1,5 @@
 import { HeroSection } from "@/components/landing/hero-section"
 import { DashboardPreview } from "@/components/landing/dashboard-preview"
-import { SocialProof } from "@/components/landing/social-proof"
 import { BentoSection } from "@/components/landing/bento-section"
 
 import { PricingSection } from "@/components/landing/pricing-section"
@@ -21,7 +20,7 @@ export default function LandingPage() {
           <HeroSection />
         </main>
 
-       
+
         <div className="flex justify-center -mt-20 sm:-mt-40 md:-mt-40 lg:-mt-20 xl:-mt-72 z-30 relative">
           <AnimatedSection delay={0.8}>
             <DashboardPreview />
@@ -29,13 +28,10 @@ export default function LandingPage() {
           </AnimatedSection>
         </div>
 
-        <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto px-6 mt-16" delay={0.1}>
-          <SocialProof />
-          <Separator />
-        </AnimatedSection>
+
         <AnimatedSection id="features-section" className="relative z-10 max-w-[1320px] mx-auto mt-1" delay={0.2}>
           <BentoSection />
-          <Separator />
+
         </AnimatedSection>
 
         <AnimatedSection
@@ -44,27 +40,28 @@ export default function LandingPage() {
           delay={0.2}
         >
           <PricingSection />
-          <Separator />
+
         </AnimatedSection>
-      
+
         <AnimatedSection
           id="about-section"
           className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16"
           delay={0.2}
         >
           <AboutSection />
-          <Separator />
+
         </AnimatedSection>
         <AnimatedSection id="faq-section" className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
           <FAQSection />
-          <Separator />
+
         </AnimatedSection>
         <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
           <CTASection />
-          <Separator />
+          <Separator className="bg-muted" />
         </AnimatedSection>
         <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto" delay={0.2}>
           <FooterSection />
+         
         </AnimatedSection>
       </div>
     </div>

@@ -11,23 +11,11 @@ interface BentoCardProps {
 }
 
 const BentoCard = ({ title, description, imageSrc, imageAlt, priority = false }: BentoCardProps) => (
-  <div className="overflow-hidden rounded-2xl border border-white/20 flex flex-col justify-start items-start relative">
-    {/* Background with dramatic black to orange sun gradient */}
-    <div
-      className="absolute inset-0 rounded-2xl"
-      style={{
-        background: "linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 25%, rgba(50, 50, 50, 0.4) 50%, rgba(255, 140, 0, 0.2) 75%, rgba(255, 165, 0, 0.3) 100%)",
-        backdropFilter: "blur(4px)",
-        WebkitBackdropFilter: "blur(4px)",
-      }}
-    />
-    {/* Sun-like orange glow in bottom right */}
-    <div
-      className="absolute bottom-0 right-0 w-32 h-32 rounded-full opacity-40"
-      style={{
-        background: "radial-gradient(circle, rgba(255, 140, 0, 0.8) 0%, rgba(255, 165, 0, 0.4) 40%, transparent 70%)"
-      }}
-    />
+  <div className="overflow-hidden rounded-2xl bg-white/10  backdrop-blur-md border border-border-dark flex flex-col justify-start items-start relative">
+
+  
+
+
 
     <div className="self-stretch p-6 flex flex-col justify-start items-start gap-2 relative z-10 min-h-32 sm:min-h-36 md:min-h-40 lg:min-h-44">
       <div className="self-stretch flex flex-col justify-start items-start gap-1.5">
@@ -47,10 +35,12 @@ const BentoCard = ({ title, description, imageSrc, imageAlt, priority = false }:
           className="object-center rounded-xl opacity-80 mix-blend-luminosity"
         />
       </AspectRatio>
-      {/* Gradient overlay for blending */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent rounded-xl pointer-events-none"></div>
+
+     
     </div>
   </div>
+
+
 )
 
 export function BentoSection() {
@@ -108,7 +98,7 @@ export function BentoSection() {
             <h2 className="w-full max-w-[655px] text-center text-foreground text-4xl md:text-6xl font-semibold leading-tight md:leading-[66px]">
               Your Personal AI Project Manager
             </h2>
-            <p className="w-full max-w-[600px] text-center text-muted-foreground text-md md:text-lg font-medium leading-relaxed">
+            <p className="w-full max-w-[600px] text-center text-muted text-md md:text-lg font-medium leading-relaxed">
               Ask your AI Project Manager to build your project plans, timelines, and resources. Get it to save project data for future reference.
             </p>
           </div>

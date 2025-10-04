@@ -94,7 +94,7 @@ export function FooterSection() {
 
       {/* Copyright Section - Always at bottom */}
       <div className="w-full mt-8">
-        <Separator className="mb-6" />
+        <Separator className="mb-6 bg-muted" />
         <div className="flex justify-center items-center gap-4 px-4 md:px-8">
           <p className="text-muted-foreground text-sm">
             © 2025 Project Machine | All rights reserved.

@@ -9,7 +9,7 @@
     --foreground: 210 11% 7%;
 
     --muted: 240 2% 40%;
-    --muted-foreground: 160 14% 93% / 0.7;
+     --muted-foreground: 240 5% 64.9%;
     --muted-foreground-light: 160 14% 93% / 0.5;
     --muted-foreground-dark: 160 14% 93% / 0.6;
 
@@ -23,7 +23,7 @@
     --primary-foreground: 0 0% 100%;
 
     --primary-dark: 25 95% 45%;
-    --primary-light: 25 95% 53%;
+    --primary-light: 25 95% 40%;
 
     --secondary: 160 14% 93%;
     --secondary-foreground: 165 14% 8%;
@@ -79,7 +79,7 @@
     --primary: 25 95% 49%;
     --primary-foreground: 0 0% 100%;
     --primary-dark: 25 95% 49%;
-    --primary-light: 25 95% 49%;
+    --primary-light: 25 95% 10%;
 
     --secondary: 53 100% 52%;
     --secondary-foreground: 0 0% 98%;
