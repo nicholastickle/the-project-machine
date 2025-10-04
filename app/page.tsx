@@ -4,7 +4,7 @@ import { SocialProof } from "@/components/landing/social-proof"
 import { BentoSection } from "@/components/landing/bento-section"
 
 import { PricingSection } from "@/components/landing/pricing-section"
-import { TestimonialGridSection } from "@/components/landing/testimonial-grid-section"
+
 import { FAQSection } from "@/components/landing/faq-section"
 import { CTASection } from "@/components/landing/cta-section"
 import { FooterSection } from "@/components/landing/footer-section"
@@ -21,7 +21,7 @@ export default function LandingPage() {
           <HeroSection />
         </main>
 
-        {/* Dashboard Preview - positioned in document flow then offset upward */}
+       
         <div className="flex justify-center -mt-20 sm:-mt-40 md:-mt-40 lg:-mt-20 xl:-mt-72 z-30 relative">
           <AnimatedSection delay={0.8}>
             <DashboardPreview />
@@ -46,13 +46,7 @@ export default function LandingPage() {
           <PricingSection />
           <Separator />
         </AnimatedSection>
-        {/* <AnimatedSection
-          id="testimonials-section"
-          className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16"
-          delay={0.2}
-        >
-          <TestimonialGridSection />
-        </AnimatedSection> */}
+      
         <AnimatedSection
           id="about-section"
           className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16"

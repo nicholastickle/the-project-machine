@@ -17,7 +17,7 @@ function CanvasPageContent() {
     const { open } = useSidebar()
 
     return (
-        <div className="relative h-screen w-full">
+        <div className="fixed inset-0 h-screen w-screen overflow-hidden">
             <Canvas />
             <AIOrb />
             <CanvasSidebar />

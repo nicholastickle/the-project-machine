@@ -8,9 +8,9 @@ export default function CanvasBackground() {
             variant={BackgroundVariant.Lines}
             gap={20}
             lineWidth={0.247}
-            color="#2a2a2a"
+            color="hsl(var(--border-dark))"
             aria-label='Canvas Background'
-            style={{ backgroundColor: 'oklch(14.5% 0 0)' }}
+            className="bg-background canvas-background"
         />
     );
 }   

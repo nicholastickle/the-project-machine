@@ -1,24 +1,17 @@
-/* Tailwind CSS directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Themeable Colors - Restored to Original Vibe */
-    --background: 210 11% 7%;
-    /* #0f1211 */
-    --foreground: 160 14% 93%;
-    /* #e7eceb */
 
-    --muted: 240 2% 16%;
-    /* #27272a */
+    --background: 0 0% 99%;
+    --foreground: 210 11% 7%;
+
+    --muted: 240 2% 40%;
     --muted-foreground: 160 14% 93% / 0.7;
-    /* rgba(231, 236, 235, 0.7) */
     --muted-foreground-light: 160 14% 93% / 0.5;
-    /* rgba(231, 236, 235, 0.5) */
     --muted-foreground-dark: 160 14% 93% / 0.6;
-    /* rgba(231, 236, 235, 0.6) */
 
     --card: 220 17% 98% / 0.01;
     --card-foreground: 160 14% 93%;
@@ -26,48 +19,38 @@
     --popover: 210 11% 7%;
     --popover-foreground: 160 14% 93%;
 
-    /* Primary Accent Colors */
     --primary: 25 95% 53%;
-    /* #ff8c1a - Orange matching hero section */
     --primary-foreground: 0 0% 100%;
-    /* #ffffff - White text on orange */
+
     --primary-dark: 25 95% 45%;
-    /* #e6751a - Darker orange */
-    --primary-light: 33 100% 70%;
-    /* #ffb366 - Lighter orange matching hero */
+    --primary-light: 25 95% 53%;
 
-    /* Secondary Accent Colors (for buttons, etc.) */
     --secondary: 160 14% 93%;
-    /* #e7eceb */
     --secondary-foreground: 165 14% 8%;
-    /* #141a18 */
 
-    --accent: 240 2% 25%;
-    /* #3f3f42 */
+    --accent: 240 2% 50%;
     --accent-foreground: 240 2% 96%;
-    /* #f4f4f5 */
 
     --border: 240 100% 100% / 0.08;
-    /* rgba(255, 255, 255, 0.08) */
     --border-light: 210 17% 6% / 0.1;
-    /* rgba(16,24,40,0.1) */
-    --border-dark: 210 17% 6% / 0.05;
-    /* rgba(16,24,40,0.05) */
+    --border-dark: 210 17% 6% / 0.15;
 
     --ring: 165 96% 71%;
 
-    /* Input Colors */
     --input: 240 2% 16%;
-    /* #27272a - Same as muted for consistency */
 
-    /* Destructive Colors */
     --destructive: 0 84% 60%;
-    /* #f87171 - Red for errors/destructive actions */
     --destructive-foreground: 0 0% 98%;
-    /* #fafafa - Light text on red background */
 
     --radius: 0.5rem;
 
+    --chart-1: 41 85% 64%;
+    --chart-2: 185 55% 60%;
+    --chart-3: 227 25% 40%;
+    --chart-4: 84 75% 83%;
+    --chart-5: 70 75% 77%;
+
+    --sidebar: 0 0% 98%;
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -79,6 +62,51 @@
   }
 
   .dark {
+    --background: 240 10% 5%;
+    --foreground: 0 0% 95%;
+
+    --muted: 240 3.7% 50%;
+    --muted-foreground: 240 5% 64.9%;
+    --muted-foreground-light: 240 5% 64.9% / 0.5;
+    --muted-foreground-dark: 240 5% 64.9% / 0.6;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 25 95% 49%;
+    --primary-foreground: 0 0% 100%;
+    --primary-dark: 25 95% 49%;
+    --primary-light: 25 95% 49%;
+
+    --secondary: 53 100% 52%;
+    --secondary-foreground: 0 0% 98%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --border: 0 0% 80%;
+    --border-light: 0 0% 70%;
+    --border-dark: 0 0% 15%;
+
+    --ring: 25 95% 49%;
+
+    --input: 240 3.7% 15.9%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --radius: 0.5rem;
+
+    --chart-1: 264 80% 49%;
+    --chart-2: 162 60% 70%;
+    --chart-3: 70 75% 77%;
+    --chart-4: 304 70% 63%;
+    --chart-5: 16 80% 65%;
+
+    --sidebar: 240 5.9% 10%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -95,7 +123,28 @@
     @apply border-border;
   }
 
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+
+  }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  html {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* Internet Explorer 10+ */
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
   }
 }

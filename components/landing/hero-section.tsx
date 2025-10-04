@@ -299,32 +299,30 @@ export function HeroSection() {
                 </React.Fragment>
               ))}
               {/* Animated Rectangles with fill */}
-              <rect x="699.711" y="81" width="36" height="36" fill="hsl(var(--foreground))" className="blink-1" />
-              <rect x="195.711" y="153" width="36" height="36" fill="hsl(var(--foreground))" className="blink-2" />
-              <rect x="1023.71" y="153" width="36" height="36" fill="hsl(var(--foreground))" className="blink-3" />
-              <rect x="123.711" y="225" width="36" height="36" fill="hsl(var(--foreground))" className="blink-4" />
-              <rect x="1095.71" y="225" width="36" height="36" fill="hsl(var(--foreground))" className="blink-5" />
-              <rect x="951.711" y="297" width="36" height="36" fill="hsl(var(--foreground))" className="blink-6" />
-              <rect x="231.711" y="333" width="36" height="36" fill="hsl(var(--foreground))" className="blink-1" />
-              <rect x="303.711" y="405" width="36" height="36" fill="hsl(var(--foreground))" className="blink-2" />
-              <rect x="87.7109" y="405" width="36" height="36" fill="hsl(var(--foreground))" className="blink-3" />
-              <rect x="519.711" y="405" width="36" height="36" fill="hsl(var(--foreground))" className="blink-4" />
-              <rect x="771.711" y="405" width="36" height="36" fill="hsl(var(--foreground))" className="blink-5" />
-              <rect x="591.711" y="477" width="36" height="36" fill="hsl(var(--foreground))" className="blink-6" />
-
-              {/* Additional animated squares */}
-              <rect x="447.711" y="117" width="36" height="36" fill="hsl(var(--foreground))" className="blink-2" />
-              <rect x="663.711" y="189" width="36" height="36" fill="hsl(var(--foreground))" className="blink-4" />
-              <rect x="375.711" y="261" width="36" height="36" fill="hsl(var(--foreground))" className="blink-1" />
-              <rect x="807.711" y="333" width="36" height="36" fill="hsl(var(--foreground))" className="blink-6" />
-              <rect x="159.711" y="369" width="36" height="36" fill="hsl(var(--foreground))" className="blink-3" />
-              <rect x="879.711" y="441" width="36" height="36" fill="hsl(var(--foreground))" className="blink-5" />
-              <rect x="411.711" y="513" width="36" height="36" fill="hsl(var(--foreground))" className="blink-2" />
-              <rect x="735.711" y="549" width="36" height="36" fill="hsl(var(--foreground))" className="blink-1" />
-              <rect x="267.711" y="585" width="36" height="36" fill="hsl(var(--foreground))" className="blink-4" />
-              <rect x="1007.71" y="621" width="36" height="36" fill="hsl(var(--foreground))" className="blink-6" />
-              <rect x="555.711" y="657" width="36" height="36" fill="hsl(var(--foreground))" className="blink-3" />
-              <rect x="843.711" y="693" width="36" height="36" fill="hsl(var(--foreground))" className="blink-5" />
+              <rect x="699.711" y="81" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-1" />
+              <rect x="195.711" y="153" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-2" />
+              <rect x="1023.71" y="153" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-3" />
+              <rect x="123.711" y="225" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-4" />
+              <rect x="1095.71" y="225" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-5" />
+              <rect x="951.711" y="297" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-6" />
+              <rect x="231.711" y="333" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-1" />
+              <rect x="303.711" y="405" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-2" />
+              <rect x="87.7109" y="405" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-3" />
+              <rect x="519.711" y="405" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-4" />
+              <rect x="771.711" y="405" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-5" />
+              <rect x="591.711" y="477" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-6" />
+              <rect x="447.711" y="117" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-2" />
+              <rect x="663.711" y="189" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-4" />
+              <rect x="375.711" y="261" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-1" />
+              <rect x="807.711" y="333" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-6" />
+              <rect x="159.711" y="369" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-3" />
+              <rect x="879.711" y="441" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-5" />
+              <rect x="411.711" y="513" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-2" />
+              <rect x="735.711" y="549" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-1" />
+              <rect x="267.711" y="585" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-4" />
+              <rect x="1007.71" y="621" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-6" />
+              <rect x="555.711" y="657" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-3" />
+              <rect x="843.711" y="693" width="36" height="36" fill="hsl(var(--primary-light))" className="blink-5" />
             </g>
 
             <g filter="url(#filter0_f_186_1134)">
@@ -487,7 +485,6 @@ export function HeroSection() {
         </svg>
       </div>
 
-      {/* Header positioned at top of hero container */}
       <div className="absolute top-0 left-0 right-0 z-20">
         <Header />
       </div>
@@ -499,7 +496,7 @@ export function HeroSection() {
           </h1>
         </AnimatedSection>
         <AnimatedSection delay={0.5}>
-          <p className="text-muted-foreground text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-lg mx-auto">
+          <p className="text-foreground text-sm md:text-base lg:text-lg font-normal leading-relaxed max-w-lg mx-auto">
             AI Project Manager using Canvas planning to formulate early project plans, task durations, risk, and resourcing.
           </p>
         </AnimatedSection>
@@ -515,9 +512,8 @@ export function HeroSection() {
               >
               </div>
             </div>
-            <Button className="relative z-10 bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-3 rounded-full font-medium text-base shadow-lg ring-1 ring-orange-500/20 hover:ring-orange-400/40 transition-all duration-300 hover:scale-105 flex items-center gap-3 pulse-button">
+            <Button className="relative z-10 bg-white/10 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/20 px-8 py-3 rounded-full font-medium text-base shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-3 pulse-button">
               Start
-              <span>🚀</span>
             </Button>
           </div>
         </Link>
