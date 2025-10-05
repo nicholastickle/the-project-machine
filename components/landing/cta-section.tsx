@@ -103,7 +103,7 @@ export function CTASection() {
       </div>
       <div className="relative z-10 flex flex-col justify-start items-center gap-9 max-w-4xl mx-auto">
         <div className="flex flex-col justify-start items-center gap-10 text-center mb-4">
-          <h2 className="w-full max-w-[655px] text-center text-foreground text-4xl md:text-6xl font-semibold leading-tight md:leading-[66px]">
+          <h2 className="w-full max-w-[655px] text-center text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight md:leading-[66px]">
             Project Management Made Effortless
           </h2>
           <p className="w-full max-w-[600px] text-center text-muted-foreground text-md md:text-lg font-medium leading-relaxed">
@@ -112,10 +112,10 @@ export function CTASection() {
         </div>
         <Link href="/canvas">
           <Button
-            className="px-[30px] py-2 bg-secondary text-secondary-foreground text-base font-medium leading-6 rounded-[99px] shadow-[0px_0px_0px_4px_rgba(255,255,255,0.13)] hover:bg-secondary/90 transition-all duration-200"
+            className="bg-white/10 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/20 px-8 py-3 rounded-full font-medium text-base shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-3"
             size="lg"
           >
-            Start <span>🚀</span>
+            Start
           </Button>
         </Link>
       </div>

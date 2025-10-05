@@ -99,7 +99,7 @@ export function Header() {
                     {item.name}
                   </Link>
                 ))}
-                <Link href="https://vercel.com/home" target="_blank" rel="noopener noreferrer" className="w-full mt-4">
+                <Link href="/canvas" className="w-full mt-4">
                   <Button className="bg-white/10 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/20 px-6 py-2 rounded-full font-medium shadow-lg">
                     Start
                   </Button>

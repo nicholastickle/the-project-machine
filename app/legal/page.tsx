@@ -30,15 +30,15 @@ export default function LegalPage() {
     return (
         <div
             className={`min-h-screen bg-background transition-all duration-700 ease-out ${isVisible
-                    ? 'opacity-100 translate-y-0'
-                    : 'opacity-0 translate-y-4'
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-4'
                 }`}
         >
             <div className="max-w-4xl mx-auto px-6 py-12">
                 {/* Back to Home Link */}
                 <div className={`mb-8 transition-all duration-700 ease-out delay-100 ${isVisible
-                        ? 'opacity-100 translate-y-0'
-                        : 'opacity-0 translate-y-2'
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-2'
                     }`}>
                     <Link
                         href="/"
@@ -51,8 +51,8 @@ export default function LegalPage() {
 
                 {/* Page Header */}
                 <div className={`mb-12 text-center transition-all duration-700 ease-out delay-200 ${isVisible
-                        ? 'opacity-100 translate-y-0'
-                        : 'opacity-0 translate-y-4'
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-4'
                     }`}>
                     <h1 className="text-4xl font-bold text-foreground mb-4">Legal Information</h1>
                     <p className="text-lg text-muted-foreground">
@@ -62,8 +62,8 @@ export default function LegalPage() {
 
                 {/* Table of Contents */}
                 <div className={`mb-8 transition-all duration-700 ease-out delay-300 ${isVisible
-                        ? 'opacity-100 translate-y-0'
-                        : 'opacity-0 translate-y-4'
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-4'
                     }`}>
                     <h2 className="text-3xl font-semibold text-foreground mb-6">Table of Contents</h2>
                     <nav className="space-y-3">
@@ -106,28 +106,28 @@ export default function LegalPage() {
                     </nav>
                 </div>
 
-                <Separator className="my-12" />
+                <Separator className="my-12 bg-muted/20" />
 
                 {/* Legal Sections with Separators */}
                 <div className={`space-y-8 transition-all duration-700 ease-out delay-500 ${isVisible
-                        ? 'opacity-100 translate-y-0'
-                        : 'opacity-0 translate-y-6'
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-6'
                     }`}>
                     <PrivacyPolicy />
 
-                    <Separator className="my-12" />
+                    <Separator className="my-12 bg-muted/20" />
 
                     <TermsConditions />
 
-                    <Separator className="my-12" />
+                    <Separator className="my-12 bg-muted/20" />
 
                     <CookiePolicy />
 
-                    <Separator className="my-12" />
+                    <Separator className="my-12 bg-muted/20" />
 
                     <DataSecurity />
 
-                    <Separator className="my-12" />
+                    <Separator className="my-12 bg-muted/20" />
 
                 </div>
             </div>

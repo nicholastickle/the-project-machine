@@ -513,6 +513,7 @@ export function HeroSection() {
               </div>
             </div>
             <Button className="relative z-10 bg-white/10 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/20 px-8 py-3 rounded-full font-medium text-base shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-3 pulse-button">
+
               Start
             </Button>
           </div>

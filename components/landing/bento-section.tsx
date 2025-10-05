@@ -92,13 +92,13 @@ export function BentoSection() {
   return (
     <section className="w-full px-5 flex flex-col justify-center items-center overflow-visible bg-transparent">
       <div className="w-full py-8 md:py-16 relative flex flex-col justify-start items-start gap-6">
-        <div className="w-[547px] h-[938px] absolute top-[614px] left-[80px] origin-top-left rotate-[-33.39deg] bg-primary/10 blur-[130px] z-0" />
+     
         <div className="self-stretch py-8 md:py-14 flex flex-col justify-center items-center gap-2 z-10">
           <div className="flex flex-col justify-start items-center gap-10">
-            <h2 className="w-full max-w-[655px] text-center text-foreground text-4xl md:text-6xl font-semibold leading-tight md:leading-[66px]">
+            <h2 className="w-full max-w-[655px] text-center text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight md:leading-[66px]">
               Your Personal AI Project Manager
             </h2>
-            <p className="w-full max-w-[600px] text-center text-muted text-md md:text-lg font-medium leading-relaxed">
+            <p className="w-full max-w-[600px] text-center text-muted-foreground text-md md:text-lg font-medium leading-relaxed">
               Ask your AI Project Manager to build your project plans, timelines, and resources. Get it to save project data for future reference.
             </p>
           </div>

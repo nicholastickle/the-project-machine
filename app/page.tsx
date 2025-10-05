@@ -57,7 +57,7 @@ export default function LandingPage() {
         </AnimatedSection>
         <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
           <CTASection />
-          <Separator className="bg-muted" />
+          <Separator className="bg-muted/20" />
         </AnimatedSection>
         <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto" delay={0.2}>
           <FooterSection />

@@ -38,7 +38,7 @@ export function AboutSection() {
         <section id="about-section" className="w-full px-5 overflow-hidden flex flex-col justify-start items-center my-0 py-8 md:py-14">
             <div className="self-stretch relative flex flex-col justify-center items-center gap-2 py-0">
                 <div className="flex flex-col justify-start items-center gap-10 mb-6">
-                    <h2 className="w-full max-w-[655px] text-center text-foreground text-4xl md:text-6xl font-semibold leading-tight md:leading-[66px]">
+                    <h2 className="w-full max-w-[655px] text-center text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight md:leading-[66px]">
                         Meet the Founders
                     </h2>
                     <p className="w-full max-w-[600px] text-center text-muted-foreground text-md md:text-lg font-medium leading-relaxed">
@@ -51,16 +51,15 @@ export function AboutSection() {
                 {founders.map((founder) => (
                     <div
                         key={founder.name}
-                        className="w-full md:flex-1 p-6 overflow-hidden rounded-xl flex flex-col justify-start items-center gap-6 bg-gradient-to-b from-gray-50/5 to-gray-50/0"
-                        style={{ outline: "1px solid hsl(var(--border))", outlineOffset: "-1px" }}
+                        className="w-full md:flex-1 p-6 overflow-hidden rounded-xl flex flex-col justify-start items-center gap-6"
                     >
                         <div className="flex flex-col items-center gap-4">
-                            <div className="w-40 h-40 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                            <div className="w-64 h-64 rounded-full overflow-hidden bg-muted flex items-center justify-center">
                                 <Image
                                     src={founder.image}
                                     alt={`${founder.name} - ${founder.title}`}
-                                    width={100}
-                                    height={100}
+                                    width={256}
+                                    height={256}
                                     className="w-full h-full object-cover"
                                 />
                             </div>
@@ -69,7 +68,7 @@ export function AboutSection() {
                                 <h3 className="text-foreground text-xl font-semibold leading-tight">
                                     {founder.name}
                                 </h3>
-                                <p className="text-orange-400 text-sm font-medium leading-tight">
+                                <p className="text-primary/100 text-sm font-medium leading-tight">
                                     {founder.title}
                                 </p>
                             </div>
