@@ -87,6 +87,14 @@ const config = {
 					DEFAULT: 'hsl(var(--selection))',
 					border: 'hsl(var(--selection-border))'
 				},
+				toolbar: {
+					DEFAULT: 'hsl(var(--toolbar))',
+					background: 'hsl(var(--toolbar-background))',
+					foreground: 'hsl(var(--toolbar-foreground))',
+					accent: 'hsl(var(--toolbar-accent))',
+					'accent-foreground': 'hsl(var(--toolbar-accent-foreground))',
+					border: 'hsl(var(--toolbar-border))'
+				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',
 					'2': 'hsl(var(--chart-2))',
