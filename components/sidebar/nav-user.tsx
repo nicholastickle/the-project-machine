@@ -4,9 +4,11 @@ import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
+  ChevronRight,
   CreditCard,
   LogOut,
   Sparkles,
+  Palette,
 } from "lucide-react"
 
 import {
@@ -29,6 +31,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { ThemeChanger } from "./theme-changer"
 
 export function NavUser({
   user,
@@ -99,6 +102,18 @@ export function NavUser({
                 <Bell />
                 Notifications
               </DropdownMenuItem>
+              <ThemeChanger>
+                <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <Palette />
+                      <span>Theme</span>
+                    </div>
+                    <ChevronRight className="h-3 w-3" />
+                  </div>
+                </DropdownMenuItem>
+              </ThemeChanger>
+
             </DropdownMenuGroup>
             <DropdownMenuSeparator className="bg-sidebar-border" />
             <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
