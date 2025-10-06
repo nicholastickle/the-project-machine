@@ -14,7 +14,7 @@ import { AboutSection } from "@/components/landing/about-section"
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden pb-0">
+    <div className="min-h-screen bg-background relative pb-0">
       <div className="relative z-10">
         <main className="max-w-[1320px] mx-auto relative">
           <HeroSection />
@@ -61,7 +61,7 @@ export default function LandingPage() {
         </AnimatedSection>
         <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto" delay={0.2}>
           <FooterSection />
-         
+
         </AnimatedSection>
       </div>
     </div>
