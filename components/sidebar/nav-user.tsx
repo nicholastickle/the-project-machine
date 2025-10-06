@@ -62,10 +62,9 @@ export function NavUser({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className={`w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg ${!isMobile ? 'translate-x-10 -translate-y-3' : ''} bg-sidebar-options-background shadow-md border border-sidebar-border text-foreground`}
             side={isMobile ? "bottom" : "right"}
             align="end"
-            sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
@@ -79,30 +78,30 @@ export function NavUser({
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="bg-sidebar-border" />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                 <Sparkles />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="bg-sidebar-border" />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                 <CreditCard />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                 <Bell />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-sidebar-border" />
+            <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
               <LogOut />
               Log out
             </DropdownMenuItem>

@@ -80,7 +80,8 @@ const config = {
 					accent: 'hsl(var(--sidebar-accent))',
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
+					ring: 'hsl(var(--sidebar-ring))',
+					'options-background': 'hsl(var(--sidebar-options-background))'
 				},
 				selection: {
 					DEFAULT: 'hsl(var(--selection))',

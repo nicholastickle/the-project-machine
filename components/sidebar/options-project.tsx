@@ -47,20 +47,20 @@ export function OptionsProject({ projectName }: OptionsProjectProps) {
                 </SidebarMenuAction>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                className="w-48 rounded-lg bg-sidebar-background shadow-md border border-sidebar-border text-foreground"
+                className="w-48 rounded-lg bg-sidebar-options-background shadow-md border border-sidebar-border text-foreground"
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
             >
-                <DropdownMenuItem onClick={handleViewProject}>
+                <DropdownMenuItem onClick={handleViewProject}  className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                     <Folder className="text-muted-foreground" />
                     <span>View Project</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleShareProject}>
+                <DropdownMenuItem onClick={handleShareProject} className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                     <Forward className="text-muted-foreground" />
                     <span>Share Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-sidebar-border" />
-                <DropdownMenuItem onClick={handleDeleteProject}>
+                <DropdownMenuItem onClick={handleDeleteProject} className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                     <Trash2 className="text-muted-foreground" />
                     <span>Delete Project</span>
                 </DropdownMenuItem>

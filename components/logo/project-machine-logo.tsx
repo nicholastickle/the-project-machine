@@ -55,7 +55,7 @@ export function ProjectMachineLogo({
     }
 
     const LogoContent = () => (
-        <div className={`flex items-center gap-5 transition-all duration-300 ${className}`}>
+        <div className={`flex items-center gap-3 transition-all duration-300 ${className}`}>
             <div className={`${sizeClasses[size]} relative flex-shrink-0`}>
                 <Image
                     src="/logos/logo.svg"

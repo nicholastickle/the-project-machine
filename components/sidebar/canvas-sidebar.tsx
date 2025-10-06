@@ -11,6 +11,7 @@ import {
 import { NavProjects } from "@/components/sidebar/nav-projects"
 import { NavTasks } from "@/components/sidebar/nav-tasks"
 import { NavUser } from "@/components/sidebar/nav-user"
+import { NavHelp } from "@/components/sidebar/nav-help"
 import { ProjectMachineLogo } from "@/components/logo/project-machine-logo"
 import {
     Sidebar,
@@ -90,7 +91,10 @@ export function CanvasSidebar(props: React.ComponentProps<typeof Sidebar>) {
                 <NavTasks tasks={data.tasks} />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                <div className="flex items-center justify-between w-full">
+                    <NavUser user={data.user} />
+                    <NavHelp />
+                </div>
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>
