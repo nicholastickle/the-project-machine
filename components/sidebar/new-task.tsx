@@ -15,7 +15,7 @@ export function NewTask() {
         <SidebarMenuSubItem>
             <SidebarMenuButton onClick={handleAddNewTask} className="text-muted-foreground">
                 <Plus className="h-4 w-4" />
-                <span>Add new favourite task</span>
+                <span>Add new favorite task</span>
             </SidebarMenuButton>
         </SidebarMenuSubItem>
     )
