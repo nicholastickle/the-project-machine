@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/collapsible"
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -17,16 +16,17 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import { NewTask } from "./new-task"
 
-export function NavMain({
-  items,
+export function NavTasks({
+  tasks,
 }: {
-  items: {
+  tasks: {
     title: string
     url: string
     icon?: LucideIcon
     isActive?: boolean
-    items?: {
+    tasks?: {
       title: string
       url: string
     }[]
@@ -34,35 +34,39 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+
       <SidebarMenu>
-        {items.map((item) => (
+        {tasks.map((task) => (
           <Collapsible
-            key={item.title}
+            key={task.title}
             asChild
-            defaultOpen={item.isActive}
+            defaultOpen={task.isActive}
             className="group/collapsible"
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
+                <SidebarMenuButton tooltip={task.title}>
+                  {task.icon && <task.icon />}
+                  <span>{task.title}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
+                  <NewTask />
+
+                  {task.tasks?.map((subItem) => (
+                    <SidebarMenuSubItem key={subItem.title} className="flex items-center">
+                      <SidebarMenuSubButton asChild className="flex-1">
                         <a href={subItem.url}>
                           <span>{subItem.title}</span>
                         </a>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}
+
                 </SidebarMenuSub>
+
               </CollapsibleContent>
             </SidebarMenuItem>
           </Collapsible>

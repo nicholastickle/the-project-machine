@@ -1,18 +1,15 @@
 
 import * as React from "react"
 import {
-    
-    BookOpen,
-    Bot,
-    Frame,
-    Map,
-    PieChart,
-    Settings2,
-    SquareTerminal,
+
+
+
+    LayoutDashboard,
+    ClipboardList,
 } from "lucide-react"
 
-import { NavMain } from "@/components/sidebar/nav-main"
 import { NavProjects } from "@/components/sidebar/nav-projects"
+import { NavTasks } from "@/components/sidebar/nav-tasks"
 import { NavUser } from "@/components/sidebar/nav-user"
 import { ProjectMachineLogo } from "@/components/logo/project-machine-logo"
 import {
@@ -32,109 +29,51 @@ const data = {
         email: "user@projectmachine.com",
         avatar: "/images/avatars/robert-fox.png",
     },
-  
-    navMain: [
+
+    projects: [
         {
-            title: "Playground",
+            title: "Projects",
             url: "#",
-            icon: SquareTerminal,
+            icon: LayoutDashboard,
             isActive: true,
             items: [
                 {
-                    title: "History",
+                    title: "Board 1",
                     url: "#",
                 },
                 {
-                    title: "Starred",
+                    title: "Board 2",
                     url: "#",
                 },
                 {
-                    title: "Settings",
+                    title: "Board 3",
                     url: "#",
                 },
             ],
         },
-        {
-            title: "Models",
-            url: "#",
-            icon: Bot,
-            items: [
-                {
-                    title: "Genesis",
-                    url: "#",
-                },
-                {
-                    title: "Explorer",
-                    url: "#",
-                },
-                {
-                    title: "Quantum",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Documentation",
-            url: "#",
-            icon: BookOpen,
-            items: [
-                {
-                    title: "Introduction",
-                    url: "#",
-                },
-                {
-                    title: "Get Started",
-                    url: "#",
-                },
-                {
-                    title: "Tutorials",
-                    url: "#",
-                },
-                {
-                    title: "Changelog",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Settings",
-            url: "#",
-            icon: Settings2,
-            items: [
-                {
-                    title: "General",
-                    url: "#",
-                },
-                {
-                    title: "Team",
-                    url: "#",
-                },
-                {
-                    title: "Billing",
-                    url: "#",
-                },
-                {
-                    title: "Limits",
-                    url: "#",
-                },
-            ],
-        },
+
+
     ],
-    projects: [
+    tasks: [
         {
-            name: "Design Engineering",
+            title: "Favorite Tasks",
             url: "#",
-            icon: Frame,
-        },
-        {
-            name: "Sales & Marketing",
-            url: "#",
-            icon: PieChart,
-        },
-        {
-            name: "Travel",
-            url: "#",
-            icon: Map,
+            icon: ClipboardList,
+            isActive: true,
+            tasks: [
+                {
+                    title: "Task 1",
+                    url: "#",
+                },
+                {
+                    title: "Task 2",
+                    url: "#",
+                },
+                {
+                    title: "Task 3",
+                    url: "#",
+                },
+            ],
         },
     ],
 }
@@ -147,8 +86,8 @@ export function CanvasSidebar(props: React.ComponentProps<typeof Sidebar>) {
                 <ProjectMachineLogo size="md" href="/" />
             </SidebarHeader>
             <SidebarContent>
-                <NavMain items={data.navMain} />
-                <NavProjects projects={data.projects} />
+                <NavProjects items={data.projects} />
+                <NavTasks tasks={data.tasks} />
             </SidebarContent>
             <SidebarFooter>
                 <NavUser user={data.user} />
