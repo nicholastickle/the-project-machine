@@ -22,7 +22,7 @@ function CanvasPageContent() {
             <AIOrb />
             <CanvasSidebar />
             <SidebarTrigger
-                className={`absolute top-2.5 z-50 bg-background/80 backdrop-blur-sm border shadow-md hover:bg-background/90 transition-all duration-300 ${open ? 'left-[265px]' : 'left-[5px] md:left-[60px]'
+                className={`absolute top-2.5 z-50 bg-background/80 hover:bg-muted-foreground/10 hover:text-current transition-all duration-300 ${open ? 'left-[265px]' : 'left-[5px] md:left-[60px]'
                     }`}
             />
         </div>

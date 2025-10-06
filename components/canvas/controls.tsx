@@ -8,15 +8,15 @@ export default function CanvasControls() {
         <Controls
             showZoom={true}
             showFitView={true}
-            showInteractive={true}
+            showInteractive={false}
             fitViewOptions={{ duration: 1000 }}
             // onZoomIn={() => console.log('Zoom In')}
             // onZoomOut={() => console.log('Zoom Out')}
             // onFitView={() => console.log('Fit View')}
             // onInteractiveChange={(state) => console.log('Interactive State:', state)}
-            position='center-right'
+            position='bottom-right'
             aria-label='Canvas Controls'
-            orientation='vertical'
+            orientation='horizontal'
            
 
         />

@@ -1,12 +1,10 @@
 
 import * as React from "react"
 import {
-    AudioWaveform,
+    
     BookOpen,
     Bot,
-    Command,
     Frame,
-    GalleryVerticalEnd,
     Map,
     PieChart,
     Settings2,
@@ -16,7 +14,7 @@ import {
 import { NavMain } from "@/components/sidebar/nav-main"
 import { NavProjects } from "@/components/sidebar/nav-projects"
 import { NavUser } from "@/components/sidebar/nav-user"
-import { TeamSwitcher } from "@/components/sidebar/team-switcher"
+import { ProjectMachineLogo } from "@/components/logo/project-machine-logo"
 import {
     Sidebar,
     SidebarContent,
@@ -34,23 +32,7 @@ const data = {
         email: "user@projectmachine.com",
         avatar: "/images/avatars/robert-fox.png",
     },
-    teams: [
-        {
-            name: "Acme Inc",
-            logo: GalleryVerticalEnd,
-            plan: "Enterprise",
-        },
-        {
-            name: "Acme Corp.",
-            logo: AudioWaveform,
-            plan: "Startup",
-        },
-        {
-            name: "Evil Corp.",
-            logo: Command,
-            plan: "Free",
-        },
-    ],
+  
     navMain: [
         {
             title: "Playground",
@@ -162,7 +144,7 @@ export function CanvasSidebar(props: React.ComponentProps<typeof Sidebar>) {
 
         <Sidebar collapsible="icon" className="z-40" {...props}>
             <SidebarHeader>
-                <TeamSwitcher teams={data.teams} />
+                <ProjectMachineLogo size="md" href="/" />
             </SidebarHeader>
             <SidebarContent>
                 <NavMain items={data.navMain} />

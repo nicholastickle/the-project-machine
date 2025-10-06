@@ -1,6 +1,6 @@
 .react-flow__selection {
-    background: rgba(135, 103, 0, 0.1);
-    border: 0.5px solid #644600;
+    background: hsl(var(--selection));
+    border: 0.5px solid hsl(var(--selection-border));
     border-radius: 10px;
 }
 

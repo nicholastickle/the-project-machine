@@ -82,6 +82,10 @@ const config = {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
+				selection: {
+					DEFAULT: 'hsl(var(--selection))',
+					border: 'hsl(var(--selection-border))'
+				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',
 					'2': 'hsl(var(--chart-2))',
