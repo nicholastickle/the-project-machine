@@ -486,36 +486,37 @@ export function HeroSection() {
       </div>
 
       <div className="absolute top-0 left-0 right-0 z-20">
+        <AnimatedSection delay={5}>
         <Header />
+        </AnimatedSection>
       </div>
 
       <div className="relative z-10 space-y-6 md:space-y-9 lg:space-y-12 mb-7 md:mb-8 lg:mb-16 max-w-md md:max-w-[500px] lg:max-w-[588px] mt-28 md:mt-[120px] lg:mt-[160px] px-4">
-        <AnimatedSection delay={0.3}>
+        <AnimatedSection delay={5.5}>
           <h1 className="text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight">
             All Projects Start Here
           </h1>
         </AnimatedSection>
-        <AnimatedSection delay={0.5}>
+        <AnimatedSection delay={6}>
           <p className="text-foreground text-sm md:text-base lg:text-lg font-normal leading-relaxed max-w-lg mx-auto">
             AI Project Manager using Canvas planning to formulate early project plans, task durations, risk, and resourcing.
           </p>
         </AnimatedSection>
       </div>
 
-      <AnimatedSection delay={0.7}>
+      <AnimatedSection delay={6.5}>
         <Link href="/canvas">
           <div className="relative group">
             {/* Rotating orange light border */}
             <div className="absolute -inset-0.5 rounded-full overflow-hidden">
               <div className="w-full h-full rounded-full animate-spin"
-
               >
               </div>
             </div>
             <Button className="relative z-10 bg-white/10 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/20 px-8 py-3 rounded-full font-medium text-base shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-3 pulse-button">
 
-              Start
-            </Button>
+                Start
+              </Button>
           </div>
         </Link>
       </AnimatedSection>
