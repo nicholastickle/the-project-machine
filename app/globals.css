@@ -5,7 +5,7 @@
 @layer base {
   :root {
 
-    --background: 0 0% 99%;
+    --background: 0 0% 98%;
     --foreground: 210 11% 7%;
 
     --muted: 240 2% 40%;
@@ -51,22 +51,36 @@
     --chart-5: 70 75% 77%;
 
     --sidebar: 0 0% 98%;
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 0 0% 97%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 97%;
     --sidebar-accent: 240 4.8% 94%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 210 17% 6% / 0.15;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    --sidebar-options-background: 0 0% 98%;
+    --sidebar-options-background: 0 0% 97%;
 
-    --toolbar: 0 0% 98%;
-    --toolbar-background: 0 0% 98%;
+    --toolbar: 0 0% 97%;
+    --toolbar-background: 0 0% 97%;
     --toolbar-foreground: 240 5.3% 26.1%;
     --toolbar-accent: 240 4.8% 94%;
     --toolbar-accent-foreground: 240 5.9% 10%;
     --toolbar-border: 210 17% 6% / 0.15;
+
+    --control: 0 0% 97%;
+    --control-background: 0 0% 97%;
+    --control-foreground: 240 5.3% 26.1%;
+    --control-accent: 240 4.8% 94%;
+    --control-accent-foreground: 240 5.9% 10%;
+    --control-border: 210 17% 6% / 0.15;
+
+
+    --minimap-background: 0 0% 98%;
+    --minimap-mask: 0 0% 96% / 0.6;
+    --minimap-mask-stroke: 210 17% 6% / 0.15;
+    --minimap-border: 210 17% 6% / 0.15;
+
 
     --selection: 45 100% 27% / 0.1;
     --selection-border: 45 100% 20%;
@@ -74,7 +88,7 @@
 
   .dark {
     --background: 240 10% 5%;
-    --foreground: 0 0% 95%;
+    --foreground: 0 0% 90%;
 
     --muted: 240 3.7% 50%;
     --muted-foreground: 240 5% 64.9%;
@@ -96,7 +110,7 @@
     --secondary-foreground: 0 0% 98%;
 
     --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent-foreground: 0 0% 90%;
 
     --border: 0 0% 80%;
     --border-light: 0 0% 70%;
@@ -118,10 +132,10 @@
     --chart-5: 16 80% 65%;
 
     --sidebar: 240 5.9% 10%;
-    --sidebar-background: 240 5.9% 5%;
+    --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-primary-foreground: 0 0% 90%;
     --sidebar-accent: 240 3.7% 16%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 0 0% 15%;
@@ -129,11 +143,23 @@
     --sidebar-options-background: 240 5.9% 10%;
 
     --toolbar: 240 5.9% 10%;
-    --toolbar-background: 240 5.9% 5%;
+    --toolbar-background: 240 5.9% 10%;
     --toolbar-foreground: 240 4.8% 95.9%;
     --toolbar-accent: 240 3.7% 16%;
     --toolbar-accent-foreground: 240 4.8% 95.9%;
     --toolbar-border: 0 0% 15%;
+
+    --control: 240 5.9% 10%;
+    --control-background: 240 5.9% 5%;
+    --control-foreground: 240 4.8% 95.9%;
+    --control-accent: 240 3.7% 16%;
+    --control-accent-foreground: 240 4.8% 95.9%;
+    --control-border: 0 0% 15%;
+
+    --minimap-background: 240 5.9% 50%;
+    --minimap-mask: 240 0% 0% / 0.8;
+    --minimap-mask-stroke: 0 0% 15%;
+    --minimap-border: 0 0% 15%;
 
     --selection: 25 95% 53% / 0.05;
     --selection-border: 25 95% 15%;

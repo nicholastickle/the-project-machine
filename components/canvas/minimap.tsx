@@ -1,33 +1,26 @@
 import { MiniMap } from '@xyflow/react';
+import './minimap.css'
+import { useSidebar } from "@/components/ui/sidebar"
 
 export default function CanvasMinimap() {
+    const { open, isMobile } = useSidebar()
     return (
         <MiniMap
-
-            position='top-right'
-            // onClick={(event) => {
-            //     event.stopPropagation();
-            // }}
-            // nodeColor={"#10B981"}
-            // nodeStrokeColor={"#212529"}
             nodeBorderRadius={10}
             nodeStrokeWidth={1}
-            bgColor='#262626'
-            maskColor="#00000066"
-            maskStrokeColor='#00000066'
+            bgColor='hsl(var(--minimap-background))'
+            maskColor="hsl(var(--minimap-mask))"
+            maskStrokeColor='hsl(var(--minimap-mask-stroke))'
             maskStrokeWidth={1}
-            // onNodeClick={(event, node) => {
-            //     event.stopPropagation();
-            //     console.log('Node clicked:', node);
-            // }}
             zoomable
             pannable
             aria-label='Canvas Minimap'
             inversePan={false}
-            className="shadow-lg rounded-3xl overflow-hidden"
+            className={`z-50 shadow-md rounded-lg overflow-hidden border border-minimap-border w-[200px] transition-all duration-300  ${
+               !isMobile && open ? 'left-[240px]' : 'left-[5px] md:left-[30px]'} ${isMobile && !open ? 'left-[0px]' : ''}`}
             zoomStep={1}
-            offsetScale={20}
-        // className='bg-[#0F172A] rounded-md p-1'
+            offsetScale={80}
+
 
         />
     );

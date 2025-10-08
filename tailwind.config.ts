@@ -95,6 +95,20 @@ const config = {
 					'accent-foreground': 'hsl(var(--toolbar-accent-foreground))',
 					border: 'hsl(var(--toolbar-border))'
 				},
+				control: {
+					DEFAULT: 'hsl(var(--control))',
+					background: 'hsl(var(--control-background))',
+					foreground: 'hsl(var(--control-foreground))',
+					accent: 'hsl(var(--control-accent))',
+					'accent-foreground': 'hsl(var(--control-accent-foreground))',
+					border: 'hsl(var(--control-border))'
+				},
+				minimap: {
+					background: 'hsl(var(--minimap-background))',
+					mask: 'hsl(var(--minimap-mask))',
+					'mask-stroke': 'hsl(var(--minimap-mask-stroke))',
+					border: 'hsl(var(--minimap-border))'
+				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',
 					'2': 'hsl(var(--chart-2))',

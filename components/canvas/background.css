@@ -4,3 +4,11 @@
     border-radius: 10px;
 }
 
+.react-flow__pane.selection {
+    cursor: default;
+}
+
+.react-flow__pane.dragging {
+    cursor: grabbing;
+}
+

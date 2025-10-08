@@ -1,5 +1,3 @@
-"use client"
-
 import { LucideIcon } from "lucide-react"
 import {
     Tooltip,
@@ -23,14 +21,12 @@ export function ToolIcon({ icon: Icon, toolName, isActive = false, onAction }: T
                     <button
                         onClick={onAction}
                         className={`
-                            flex items-center justify-center w-10 h-10 rounded-lg
-                            transition-all duration-200 ease-in-out
-                            hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
-                            focus:bg-sidebar-accent focus:text-sidebar-accent-foreground
-                            focus:outline-none focus:ring-2 focus:ring-sidebar-ring
+                            flex items-center justify-center w-8 h-8 rounded-lg 
+                            hover:bg-toolbar-accent
+                            
                             ${isActive
-                                ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-sm'
-                                : 'text-sidebar-foreground hover:shadow-sm'
+                                ? 'bg-toolbar-accent text-toolbar-foreground/70'
+                                : 'text-toolbar-foreground/50'
                             }
                         `}
                     >
@@ -38,7 +34,7 @@ export function ToolIcon({ icon: Icon, toolName, isActive = false, onAction }: T
                         <span className="sr-only">{toolName}</span>
                     </button>
                 </TooltipTrigger>
-                <TooltipContent side="right" className="bg-sidebar-background border-sidebar-border">
+                <TooltipContent side="right" className="bg-toolbar border-toolbar-border text-toolbar-foreground/60">
                     <p className="text-sm">{toolName}</p>
                 </TooltipContent>
             </Tooltip>
