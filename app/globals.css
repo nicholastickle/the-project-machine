@@ -84,6 +84,24 @@
 
     --selection: 45 100% 27% / 0.1;
     --selection-border: 45 100% 20%;
+
+    --task-card-background: 0 0% 100%;
+    --task-card-background-accent: 240 4.8% 94%;
+    --task-card-foreground: 240 5.3% 26.1%;
+    --task-card-border: 210 17% 6% / 0.15;
+    --task-card-border-accent: 25 95% 53%/0.5;
+    --task-card-icon-foreground: 240 5.3% 26.1%;
+    --task-card-accent: 240 4.8% 94%;
+    --task-card-accent-foreground: 240 5.3% 26.1%;
+
+    --task-card-complete: 120 100% 25%;
+    --task-card-not-started: 0 0% 50%;
+    --task-card-on-going: 45 100% 50%;
+    --task-card-stuck: 0 100% 50%;
+    --task-card-abandoned: 240 5.3% 26.1% / 0.1;
+
+
+
   }
 
   .dark {
@@ -163,6 +181,21 @@
 
     --selection: 25 95% 53% / 0.05;
     --selection-border: 25 95% 15%;
+
+    --task-card-background: 240 10% 3.9%;
+    --task-card-background-accent: 240 3.7% 16%;
+    --task-card-foreground: 240 4.8% 95.9%;
+    --task-card-border: 0 0% 15%;
+    --task-card-border-accent: 25 95% 53%/0.5;
+    --task-card-icon-foreground: 240 4.8% 95.9%;
+    --task-card-accent: 240 3.7% 16%;
+    --task-card-accent-foreground: 240 4.8% 95.9%;
+
+    --task-card-complete: 120 100% 25%;
+    --task-card-not-started: 0 0% 50%;
+    --task-card-on-going: 45 100% 50%;
+    --task-card-stuck: 0 100% 50%;
+    --task-card-abandoned: 240 4.8% 95.9% / 0.1;
   }
 }
 

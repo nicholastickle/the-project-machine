@@ -109,6 +109,21 @@ const config = {
 					'mask-stroke': 'hsl(var(--minimap-mask-stroke))',
 					border: 'hsl(var(--minimap-border))'
 				},
+				'task-card': {
+					background: 'hsl(var(--task-card-background))',
+					'background-accent': 'hsl(var(--task-card-background-accent))',
+					foreground: 'hsl(var(--task-card-foreground))',
+					border: 'hsl(var(--task-card-border))',
+					'icon-foreground': 'hsl(var(--task-card-icon-foreground))',
+					'border-accent': 'hsl(var(--task-card-border-accent))',
+					accent: 'hsl(var(--task-card-accent))',
+					'accent-foreground': 'hsl(var(--task-card-accent-foreground))',
+					complete: 'hsl(var(--task-card-complete))',
+					'not-started': 'hsl(var(--task-card-not-started))',
+					'on-going': 'hsl(var(--task-card-on-going))',
+					stuck: 'hsl(var(--task-card-stuck))',
+					abandoned: 'hsl(var(--task-card-abandoned))'
+				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',
 					'2': 'hsl(var(--chart-2))',

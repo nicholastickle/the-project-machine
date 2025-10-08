@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useSidebar } from "@/components/ui/sidebar"
 
 interface ProjectMachineLogoProps {
-    size?: "sm" | "md" | "lg" | "xl"
+    size?: "sm" | "md" | "lg" | "xl" | "xxl"
     showText?: boolean
     href?: string
     className?: string
@@ -44,14 +44,16 @@ export function ProjectMachineLogo({
         sm: "w-6 h-6",
         md: "w-8 h-8",
         lg: "w-10 h-10",
-        xl: "w-12 h-12"
+        xl: "w-12 h-12",
+        xxl: "w-100 h-100"
     }
 
     const textSizeClasses = {
         sm: "text-sm",
         md: "text-base",
         lg: "text-lg",
-        xl: "text-xl"
+        xl: "text-xl",
+        xxl: "text-2xl"
     }
 
     const LogoContent = () => (
@@ -60,8 +62,8 @@ export function ProjectMachineLogo({
                 <Image
                     src="/logos/logo.svg"
                     alt="Project Machine"
-                    width={48}
-                    height={48}
+                    width={100}
+                    height={100}
                     className="w-full h-full object-contain"
                     priority
                 />
