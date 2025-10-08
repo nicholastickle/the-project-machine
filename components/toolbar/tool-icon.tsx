@@ -1,6 +1,7 @@
 import { LucideIcon } from "lucide-react"
 import {
     Tooltip,
+
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
@@ -25,8 +26,8 @@ export function ToolIcon({ icon: Icon, toolName, isActive = false, onAction }: T
                             hover:bg-toolbar-accent
                             
                             ${isActive
-                                ? 'bg-toolbar-accent text-toolbar-foreground/70'
-                                : 'text-toolbar-foreground/50'
+                                ? 'bg-toolbar-accent text-toolbar-foreground/90'
+                                : 'text-toolbar-foreground/90'
                             }
                         `}
                     >
@@ -34,8 +35,13 @@ export function ToolIcon({ icon: Icon, toolName, isActive = false, onAction }: T
                         <span className="sr-only">{toolName}</span>
                     </button>
                 </TooltipTrigger>
-                <TooltipContent side="right" className="bg-toolbar border-toolbar-border text-toolbar-foreground/60">
-                    <p className="text-sm">{toolName}</p>
+                <TooltipContent
+                    side="right"
+                    className="border-none bg-popover text-popover-foreground"
+                    sideOffset={12}
+                >
+
+                    <p className="text-xs">{toolName}</p>
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>

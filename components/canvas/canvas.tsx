@@ -13,8 +13,9 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import CanvasBackground from '@/components/canvas/background';
-import CanvasControls from '@/components/canvas/controls';
-import CanvasMinimap from '@/components/canvas/minimap';
+import CanvasControls from '@/components/navigation-controls/controls';
+import CanvasMinimap from '@/components/navigation-controls/minimap';
+import NavControlBar from '../navigation-controls/nav-control-bar';
 
 import { initialNodes } from './initial-nodes';
 import { initialEdges } from './initial-edges';
@@ -63,8 +64,7 @@ export default function Canvas() {
 
             >
                 <CanvasBackground />
-                <CanvasControls />
-                <CanvasMinimap />
+                <NavControlBar />
             </ReactFlow>
         </div>
     );

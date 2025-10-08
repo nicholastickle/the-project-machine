@@ -98,8 +98,8 @@
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 85%;
+    --popover-foreground: 240 10% 5%;
 
     --primary: 25 95% 49%;
     --primary-foreground: 0 0% 100%;
@@ -150,7 +150,7 @@
     --toolbar-border: 0 0% 15%;
 
     --control: 240 5.9% 10%;
-    --control-background: 240 5.9% 5%;
+    --control-background: 240 5.9% 10%;
     --control-foreground: 240 4.8% 95.9%;
     --control-accent: 240 3.7% 16%;
     --control-accent-foreground: 240 4.8% 95.9%;
