@@ -196,6 +196,8 @@
     --task-card-on-going: 45 100% 50%;
     --task-card-stuck: 0 100% 50%;
     --task-card-abandoned: 240 4.8% 95.9% / 0.1;
+
+    --task-card-handles-background: 240 4.8% 95.9% / 0.1;
   }
 }
 

@@ -5,6 +5,7 @@ import {
     applyEdgeChanges,
     addEdge,
     SelectionMode,
+    ConnectionMode,
     type Node,
     type Edge,
     type NodeChange,
@@ -18,10 +19,10 @@ import NavControlBar from '../navigation-controls/nav-control-bar';
 import { initialNodes } from './initial-nodes';
 import { initialEdges } from './initial-edges';
 
-import TaskCard from './task-card-node';
+import TaskCard from '../task-card/task-card-node';
 import LogoNode from '@/components/logo/logo-node';
 
-const nodeTypes = { textUpdater: TaskCard, canvasLogo: LogoNode };
+const nodeTypes = { taskCardNode: TaskCard, canvasLogo: LogoNode };
 
 
 
@@ -60,6 +61,7 @@ export default function Canvas() {
                 fitView
                 aria-label='Canvas Component'
                 proOptions={{ hideAttribution: true }}
+                connectionMode={ConnectionMode.Loose}
 
             >
                 <CanvasBackground />

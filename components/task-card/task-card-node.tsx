@@ -1,5 +1,7 @@
 
 import { Ellipsis, List, SquareCheckBig, AlarmClock, Play } from 'lucide-react';
+import { TaskHandles } from './task-handles';
+
 interface TaskCardProps {
     id?: string;
     data?: {
@@ -12,7 +14,7 @@ function TaskCard({ id, data }: TaskCardProps) {
 
 
     return (
-        <div className="w-[350px] h-[175px] border border-task-card-border bg-task-card-background flex flex-col shadow-lg rounded-xl outline-offset-2 hover:outline hover:outline-4 hover:outline-task-card-border-accent transition-all duration-100">
+        <div className="w-[350px] h-[175px] border border-task-card-border bg-task-card-background flex flex-col shadow-lg rounded-xl outline-offset-2 hover:outline hover:outline-3 hover:outline-task-card-border-accent transition-all duration-100">
             <div className="flex flex-[3] flex-row">
                 <div className='flex-[11] items-center flex px-4 text-md font-medium text-task-card-foreground'>
                     <p>Prelim geometry sizing</p>
@@ -59,6 +61,7 @@ function TaskCard({ id, data }: TaskCardProps) {
                     </div>
                 </div>
             </div>
+            <TaskHandles />
         </div>
     );
 }
