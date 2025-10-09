@@ -124,7 +124,8 @@ const config = {
 					'on-going': 'hsl(var(--task-card-on-going))',
 					stuck: 'hsl(var(--task-card-stuck))',
 					abandoned: 'hsl(var(--task-card-abandoned))',
-					'handles-background': 'hsl(var(--task-card-handles-background))'
+					'handles-background': 'hsl(var(--task-card-handles-background))',
+					'edges': 'hsl(var(--edges))'
 				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',
