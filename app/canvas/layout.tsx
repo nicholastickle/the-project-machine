@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
 
-
 export const viewport: Viewport = {
   themeColor: '#ff8c00', // Orange theme color for the canvas
 }

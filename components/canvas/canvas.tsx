@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useCallback } from 'react';
 import {
     ReactFlow,
@@ -13,7 +15,7 @@ import {
     type EdgeChange,
     type Connection
 } from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
+
 import CanvasBackground from '@/components/canvas/background';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
 
@@ -22,7 +24,7 @@ import { initialEdges } from './initial-edges';
 
 import TaskCard from '@/components/task-card/task-card-node';
 import LogoNode from '@/components/logo/logo-node';
-import { animate } from 'framer-motion';
+
 
 const nodeTypes = { taskCardNode: TaskCard, canvasLogo: LogoNode };
 

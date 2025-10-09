@@ -1,5 +1,3 @@
-"use client"
-
 import Canvas from "@/components/canvas/canvas"
 import AIOrb from "@/components/ai-chat/ai-orb";
 import { SidebarProvider } from "@/components/ui/sidebar"
@@ -10,19 +8,13 @@ import { CanvasSidebarTrigger } from "@/components/sidebar/sidebar-trigger"
 export default function CanvasPage() {
     return (
         <SidebarProvider defaultOpen={false}>
-            <CanvasPageContent />
+            <div className="fixed inset-0 h-screen w-screen overflow-hidden">
+                <Canvas />
+                <AIOrb />
+                <CanvasSidebar />
+                <CanvasToolbar />
+                <CanvasSidebarTrigger />
+            </div>
         </SidebarProvider>
-    )
-}
-
-function CanvasPageContent() {
-    return (
-        <div className="fixed inset-0 h-screen w-screen overflow-hidden">
-            <Canvas />
-            <AIOrb />
-            <CanvasSidebar />
-            <CanvasToolbar />
-            <CanvasSidebarTrigger />
-        </div>
     )
 }

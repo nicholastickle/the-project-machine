@@ -7,6 +7,7 @@ export const initialEdges: Edge[] = [
         target: 'n2',
         type: 'smoothstep',
         label: '',
+        animated: true,
         sourceHandle: 'b',
         targetHandle: 'a',
         markerEnd: { type: 'arrowclosed' },

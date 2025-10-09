@@ -1,9 +1,7 @@
+"use client"
 
 import * as React from "react"
 import {
-
-
-
     LayoutDashboard,
     ClipboardList,
 } from "lucide-react"
@@ -52,14 +50,12 @@ const data = {
                 },
             ],
         },
-
-
     ],
     tasks: [
         {
             title: "Favorite Tasks",
             url: "#",
-            icon: ClipboardList,
+            icon: ClipboardList, // ✅ Now this works because we're in a client component
             isActive: true,
             tasks: [
                 {
@@ -81,7 +77,6 @@ const data = {
 
 export function CanvasSidebar(props: React.ComponentProps<typeof Sidebar>) {
     return (
-
         <Sidebar collapsible="icon" className="z-40" {...props}>
             <SidebarHeader>
                 <ProjectMachineLogo size="md" href="/" />
