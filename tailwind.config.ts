@@ -107,7 +107,8 @@ const config = {
 					background: 'hsl(var(--minimap-background))',
 					mask: 'hsl(var(--minimap-mask))',
 					'mask-stroke': 'hsl(var(--minimap-mask-stroke))',
-					border: 'hsl(var(--minimap-border))'
+					border: 'hsl(var(--minimap-border))',
+					'nodes': 'hsl(var(--minimap-nodes))'
 				},
 				'task-card': {
 					background: 'hsl(var(--task-card-background))',

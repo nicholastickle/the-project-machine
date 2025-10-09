@@ -15,12 +15,27 @@ export default function CanvasMinimap() {
             inversePan={false}
             className=""
             offsetScale={80}
-             style={{
-                    position: 'static',
-                    margin: '0',
-                }}
+            style={{
+                position: 'static',
+                margin: '0',
+            }}
+            nodeComponent={({ id, x, y, width, height, style, className }) => {
+                
+                if (id === 'CanvasLogo') return null;
 
-
+               
+                return <rect
+                    x={x}
+                    y={y}
+                    width={width}
+                    height={height}
+                    className={className}
+                    style={{
+                        ...style,
+                        fill: 'hsl(var(--minimap-nodes))',
+                    }}
+                />
+            }}
         />
     );
 }
