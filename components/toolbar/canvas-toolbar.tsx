@@ -4,12 +4,14 @@ import { useState } from "react"
 import { MousePointer, Hand, Plus } from "lucide-react"
 import { ToolIcon } from "./tool-icon"
 import { useSidebar } from "@/components/ui/sidebar"
+import useStore from '@/stores/flow-store'
 
 type ToolType = 'select' | 'pan' | 'add'
 
 export function CanvasToolbar() {
     const [activeTool, setActiveTool] = useState<ToolType>('select')
     const { open, isMobile } = useSidebar()
+    const addTaskNode = useStore(state => state.addTaskNode)
 
     const handleSelectTool = () => {
         setActiveTool('select')
@@ -21,9 +23,11 @@ export function CanvasToolbar() {
         console.log('Pan tool activated')
     }
 
-    const handleAddTool = () => {
+    const handleAddTask = () => {
         setActiveTool('select')
-        console.log('Add task tool activated')
+        addTaskNode({
+            title: 'New Task'
+        })
     }
 
     return (
@@ -46,7 +50,7 @@ export function CanvasToolbar() {
                 <ToolIcon
                     icon={Plus}
                     toolName="Add New Task"
-                    onAction={handleAddTool}
+                    onAction={handleAddTask}
                 />
             </div>
         </div>

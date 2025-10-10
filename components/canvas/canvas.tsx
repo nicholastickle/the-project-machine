@@ -1,65 +1,40 @@
 "use client"
 
-import { useState, useCallback } from 'react';
+import React from 'react';
+import { useShallow } from 'zustand/react/shallow';
+
 import {
     ReactFlow,
-    applyNodeChanges,
-    applyEdgeChanges,
-    addEdge,
     SelectionMode,
     ConnectionMode,
     ConnectionLineType,
-    type Node,
-    type Edge,
-    type NodeChange,
-    type EdgeChange,
-    type Connection
 } from '@xyflow/react';
+
+
+import useStore from '@/stores/flow-store';
+import { type AppState } from '@/stores/types';
 
 import CanvasBackground from '@/components/canvas/background';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
-
-import { initialNodes } from './initial-nodes';
-import { initialEdges } from './initial-edges';
-
 import TaskCard from '@/components/task-card/task-card-node';
 import LogoNode from '@/components/logo/logo-node';
 
+const selector = (state: AppState) => ({
+  nodes: state.nodes,
+  edges: state.edges,
+  onNodesChange: state.onNodesChange,
+  onEdgesChange: state.onEdgesChange,
+  onConnect: state.onConnect,
+});
+
 
 const nodeTypes = { taskCardNode: TaskCard, canvasLogo: LogoNode };
-
-
 const panOnDrag = [1, 2];
 
 export default function Canvas() {
-    const [nodes, setNodes] = useState<Node[]>(initialNodes);
-    const [edges, setEdges] = useState<Edge[]>(initialEdges);
-
-    const onNodesChange = useCallback(
-        (changes: NodeChange[]) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-        [],
-    );
-    const onEdgesChange = useCallback(
-        (changes: EdgeChange[]) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-        [],
-    );
-    const onConnect = useCallback(
-        (params: Connection) => {
-            const newEdge = {
-                ...params,
-                type: 'smoothstep',
-                markerEnd: { type: 'arrowclosed' },
-                animated: true,
-                style: {
-                    stroke: 'hsl(var(--edges))',
-                    strokeWidth: 2,
-                    animationDuration: '1s',
-                },
-            };
-            setEdges((edgesSnapshot) => addEdge(newEdge, edgesSnapshot));
-        },
-        [],
-    );
+     const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(
+    useShallow(selector),
+  );
 
     return (
         <div className='w-full h-screen z-0'>

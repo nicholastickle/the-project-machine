@@ -6,13 +6,13 @@ export default function TaskHandles() {
             <Handle 
             type="target" 
             position={Position.Left} 
-            id="a" 
+            id="in" 
             className='!w-4 !h-4 !border-none !bg-task-card-handles-background !-left-[15px]'
             />
             <Handle 
             type="source" 
             position={Position.Right} 
-            id="b" 
+            id="out" 
             className='!w-4 !h-4 !border-none !bg-task-card-handles-background !-right-[15px] '
             />
         </>

@@ -54,9 +54,7 @@ export default function CanvasLayout({
   children: React.ReactNode
 }>) {
   return (
-
     <main>
-
       <div className="canvas-layout">
         {children}
       </div>
