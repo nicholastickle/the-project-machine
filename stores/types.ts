@@ -17,4 +17,5 @@ export type AppState = {
   setNodes: (nodes: AppNode[]) => void;
   setEdges: (edges: Edge[]) => void;
   addTaskNode: (nodeData?: { title?: string; position?: { x: number; y: number } }) => string;
+  resetCanvas: () => void;
 };
