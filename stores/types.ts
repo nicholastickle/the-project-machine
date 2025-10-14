@@ -5,9 +5,9 @@ import {
   type OnEdgesChange,
   type OnConnect,
 } from '@xyflow/react';
- 
+
 export type AppNode = Node;
- 
+
 export type AppState = {
   nodes: AppNode[];
   edges: Edge[];
@@ -18,4 +18,6 @@ export type AppState = {
   setEdges: (edges: Edge[]) => void;
   addTaskNode: (nodeData?: { title?: string; position?: { x: number; y: number } }) => string;
   resetCanvas: () => void;
+  updateNodeData: (id: string, data: Partial<Node['data']>) => void;
+
 };

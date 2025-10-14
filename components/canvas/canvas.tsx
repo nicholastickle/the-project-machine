@@ -20,11 +20,11 @@ import TaskCard from '@/components/task-card/task-card-node';
 import LogoNode from '@/components/logo/logo-node';
 
 const selector = (state: AppState) => ({
-  nodes: state.nodes,
-  edges: state.edges,
-  onNodesChange: state.onNodesChange,
-  onEdgesChange: state.onEdgesChange,
-  onConnect: state.onConnect,
+    nodes: state.nodes,
+    edges: state.edges,
+    onNodesChange: state.onNodesChange,
+    onEdgesChange: state.onEdgesChange,
+    onConnect: state.onConnect,
 });
 
 
@@ -32,9 +32,9 @@ const nodeTypes = { taskCardNode: TaskCard, canvasLogo: LogoNode };
 const panOnDrag = [1, 2];
 
 export default function Canvas() {
-     const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(
-    useShallow(selector),
-  );
+    const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(
+        useShallow(selector),
+    );
 
     return (
         <div className='w-full h-screen z-0'>
@@ -50,11 +50,13 @@ export default function Canvas() {
                 panOnDrag={panOnDrag}
                 selectionMode={SelectionMode.Partial}
                 connectionLineType={ConnectionLineType.SmoothStep}
-                connectionLineStyle={{stroke: 'hsl(var(--edges))',strokeWidth: 2}}
+                connectionLineStyle={{ stroke: 'hsl(var(--edges))', strokeWidth: 2 }}
                 fitView
                 aria-label='Canvas Component'
                 proOptions={{ hideAttribution: true }}
                 connectionMode={ConnectionMode.Loose}
+                minZoom={0.2}
+                maxZoom={2}
 
             >
                 <CanvasBackground />

@@ -90,6 +90,7 @@
     --task-card-background: 0 0% 100%;
     --task-card-background-accent: 240 4.8% 94%;
     --task-card-foreground: 240 5.3% 26.1%;
+    --task-card-placeholder: 240 5% 60%;
     --task-card-border: 210 17% 6% / 0.15;
     --task-card-border-accent: 25 95% 53%/0.5;
     --task-card-icon-foreground: 240 5.3% 26.1%;
@@ -189,6 +190,7 @@
     --task-card-background: 240 10% 3.9%;
     --task-card-background-accent: 240 3.7% 16%;
     --task-card-foreground: 240 4.8% 95.9%;
+    --task-card-placeholder: 240 5% 50%;
     --task-card-border: 0 0% 15%;
     --task-card-border-accent: 25 95% 53%/0.5;
     --task-card-icon-foreground: 240 4.8% 95.9%;

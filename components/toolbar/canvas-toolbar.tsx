@@ -26,9 +26,7 @@ export function CanvasToolbar() {
 
     const handleAddTask = () => {
         setActiveTool('select')
-        addTaskNode({
-            title: 'New Task'
-        })
+        addTaskNode()
     }
 
     const handleReset = () => {
@@ -61,12 +59,12 @@ export function CanvasToolbar() {
                     onAction={handleAddTask}
                 />
                 {process.env.NODE_ENV === 'development' && (
-                <ToolIcon
-                    icon={RotateCcw}
-                    toolName="Reset Canvas"
-                    onAction={handleReset}
-                />
-                )}  
+                    <ToolIcon
+                        icon={RotateCcw}
+                        toolName="Reset Canvas"
+                        onAction={handleReset}
+                    />
+                )}
             </div>
         </div>
     )

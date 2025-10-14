@@ -64,7 +64,7 @@ const useStore = create<AppState>()(
                         type: 'taskCardNode',
                         position: centerPosition,
                         data: {
-                            title: nodeData?.title || 'New Task',
+                            title: nodeData?.title ?? "",
                         },
                     };
 
@@ -74,6 +74,17 @@ const useStore = create<AppState>()(
 
                     return newNode.id;
                 },
+
+                updateNodeData: (nodeId: string, newData: Partial<{ title: string }>) => {
+                    set({
+                        nodes: get().nodes.map(node =>
+                            node.id === nodeId
+                                ? { ...node, data: { ...node.data, ...newData } }
+                                : node
+                        )
+                    });
+                },
+
 
                 resetCanvas: () => {
                     set({

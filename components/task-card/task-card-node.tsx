@@ -1,22 +1,26 @@
 
 import { Ellipsis, List, SquareCheckBig, AlarmClock, Play } from 'lucide-react';
 import TaskHandles from './task-handles';
+import EditableTitle from './editable-title';
 
 interface TaskCardProps {
     id: string;
     data: {
         title: string;
-        
+
     };
 }
 
-function TaskCard({ id, data}: TaskCardProps) {
+function TaskCard({ id, data }: TaskCardProps) {
 
     return (
-        <div className='w-[350px] h-[175px] border border-task-card-border bg-task-card-background flex flex-col shadow-lg rounded-xl outline-offset-2 hover:outline hover:outline-3 hover:outline-task-card-border-accent transition-all duration-100'>
+        <div className='w-[350px] h-[175px] border border-task-card-border bg-task-card-background flex flex-col shadow-lg rounded-xl'>
             <div className='flex flex-[3] flex-row'>
                 <div className='flex-[11] items-center flex px-4 text-md font-medium text-task-card-foreground'>
-                    <p>{data.title}</p>
+                    <EditableTitle
+                        nodeId={id}
+                        title={data.title}
+                    />
                 </div>
                 <div className='flex flex-[1] items-center justify-center m-2 text-task-card-icon-foreground hover:bg-task-card-background-accent rounded-md transition-colors cursor-pointer'>
                     <Ellipsis />
