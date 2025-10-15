@@ -9,7 +9,7 @@ import { Menu } from "lucide-react"
 import Link from "next/link"
 import { ModeToggle } from "@/components/theme-provider/theme-toggle"
 
-export function Header() {
+export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const navItems = [
     { name: "Features", href: "#features-section" },

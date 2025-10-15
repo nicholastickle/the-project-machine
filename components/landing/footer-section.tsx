@@ -1,9 +1,6 @@
-"use client"
-
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 
-// Social Media Icons
 const LinkedInIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
@@ -26,9 +23,9 @@ export default function FooterSection() {
   return (
     <footer className="w-full max-w-[1320px] mx-auto px-5 py-10 md:py-10">
       <Separator className="mb-6 bg-muted/20" />
-      {/* Main Footer Content */}
+      
       <div className="flex flex-col md:flex-row justify-between items-start gap-8 md:gap-0">
-        {/* Left Section: Logo, Description, Social Links */}
+        
         <div className="flex flex-col justify-start items-start gap-8 p-4 md:p-8">
           <div className="flex gap-3 items-stretch justify-center">
             <div className="text-center text-foreground text-xl font-semibold leading-4">Project Machine</div>
@@ -46,7 +43,7 @@ export default function FooterSection() {
             </a>
           </div>
         </div>
-        {/* Right Section: Product, Company, Legal */}
+       
         <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 p-4 md:p-8 w-full md:w-auto">
           <div className="flex flex-col justify-start items-start gap-3">
             <h3 className="text-muted-foreground text-sm font-medium leading-5">Product</h3>
@@ -93,7 +90,7 @@ export default function FooterSection() {
         </div>
       </div>
 
-      {/* Copyright Section - Always at bottom */}
+     
       <div className="w-full mt-8">
         <Separator className="mb-6 bg-muted/20" />
         <div className="flex justify-center items-center gap-4 px-4 md:px-8">

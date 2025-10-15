@@ -1,14 +1,12 @@
 import React from "react"
 import { Button } from "@/components/ui/button"
-import { Header } from "./header"
-import AnimatedSection from "../ui/animated-section"
+import Header from "@/components/landing/header"
+import AnimatedSection from "@/components/ui/animated-section"
 import Link from "next/link"
-
 export default function HeroSection() {
   return (
-    <section
-      className="flex flex-col items-center text-center relative mx-auto rounded-2xl overflow-hidden my-6 py-0 px-4
-         w-full h-[400px] sm:h-[450px] md:w-[98vw] md:h-[500px] lg:w-[98vw] lg:h-[600px] xl:w-[1220px] xl:h-[810px] md:px-0 max-w-[1220px]"
+    <main
+      className="max-w-[1320px] mx-auto relative flex flex-col items-center text-center rounded-2xl overflow-hidden my-6 py-0 px-4 w-full h-[400px] sm:h-[450px] md:w-[98vw] md:h-[500px] lg:w-[98vw] lg:h-[600px] xl:w-[1220px] xl:h-[810px] md:px-0 max-w-[1220px]"
       style={{
         '--primary': '25 95% 53%',
         '--primary-light': '33 100% 70%'
@@ -16,28 +14,28 @@ export default function HeroSection() {
     >
       <style dangerouslySetInnerHTML={{
         __html: `
-          @keyframes blinkSlow {
-            0% { opacity: 0.01; }
-            25% { opacity: 0.15; }
-            40% { opacity: 0.15; }
-            70% { opacity: 0.01; }
-            100% { opacity: 0.01; }
-          }
-          @keyframes blinkMedium {
-            0% { opacity: 0.01; }
-            30% { opacity: 0.15; }
-            45% { opacity: 0.15; }
-            75% { opacity: 0.01; }
-            100% { opacity: 0.01; }
-          }
-          @keyframes blinkFast {
-            0% { opacity: 0.01; }
-            35% { opacity: 0.15; }
-            50% { opacity: 0.15; }
-            80% { opacity: 0.01; }
-            100% { opacity: 0.01; }
-          }
-          @keyframes buttonPulse {
+            @keyframes blinkSlow {
+              0% { opacity: 0.01; }
+              25% { opacity: 0.15; }
+              40% { opacity: 0.15; }
+              70% { opacity: 0.01; }
+              100% { opacity: 0.01; }
+            }
+            @keyframes blinkMedium {
+              0% { opacity: 0.01; }
+              30% { opacity: 0.15; }
+              45% { opacity: 0.15; }
+              75% { opacity: 0.01; }
+              100% { opacity: 0.01; }
+            }
+            @keyframes blinkFast {
+              0% { opacity: 0.01; }
+              35% { opacity: 0.15; }
+              50% { opacity: 0.15; }
+              80% { opacity: 0.01; }
+              100% { opacity: 0.01; }
+            }
+            @keyframes buttonPulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
           }
@@ -507,7 +505,6 @@ export default function HeroSection() {
       <AnimatedSection delay={6.5}>
         <Link href="/canvas">
           <div className="relative group">
-            {/* Rotating orange light border */}
             <div className="absolute -inset-0.5 rounded-full overflow-hidden">
               <div className="w-full h-full rounded-full animate-spin"
               >
@@ -520,6 +517,7 @@ export default function HeroSection() {
           </div>
         </Link>
       </AnimatedSection>
-    </section>
+    </main>
   )
 }
+

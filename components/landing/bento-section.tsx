@@ -1,48 +1,5 @@
-import React from "react"
-import Image from "next/image"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
-
-interface BentoCardProps {
-  title: string;
-  description: string;
-  imageSrc: string;
-  imageAlt: string;
-  priority?: boolean;
-}
-
-const BentoCard = ({ title, description, imageSrc, imageAlt, priority = false }: BentoCardProps) => (
-  <div className="overflow-hidden rounded-2xl bg-white/10  backdrop-blur-md border border-border-dark flex flex-col justify-start items-start relative">
-
-
-
-
-
-    <div className="self-stretch p-6 flex flex-col justify-start items-start gap-2 relative z-10 min-h-32 sm:min-h-36 md:min-h-40 lg:min-h-44">
-      <div className="self-stretch flex flex-col justify-start items-start gap-1.5">
-        <p className="self-stretch text-foreground text-lg font-normal leading-7 ">
-          {title} <br />
-          <span className="text-muted-foreground text-sm">{description}</span>
-        </p>
-      </div>
-    </div>
-    <div className="self-stretch  relative -mt-0.5 z-10 overflow-hidden">
-      <AspectRatio ratio={16 / 9}>
-        <Image
-          src={imageSrc}
-          alt={imageAlt}
-          fill
-          priority={priority}
-          className="object-center rounded-xl opacity-80 mix-blend-luminosity"
-        />
-      </AspectRatio>
-
-
-    </div>
-  </div>
-
-
-)
-
+import AnimatedSection from "@/components/ui/animated-section"
+import BentoCard from "@/components/landing/bento-card"
 export default function BentoSection() {
   const cards = [
     {
@@ -90,25 +47,28 @@ export default function BentoSection() {
   ]
 
   return (
-    <section className="w-full px-5 flex flex-col justify-center items-center overflow-visible bg-transparent mt-60 md:mt-32 lg:mt-48">
-      <div className="w-full py-8 md:py-16 relative flex flex-col justify-start items-start gap-6">
+    <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto mt-1" delay={0.2}>
+      <section className="w-full px-5 flex flex-col justify-center items-center overflow-visible bg-transparent mt-60 md:mt-32 lg:mt-48">
+        <div className="w-full py-8 md:py-16 relative flex flex-col justify-start items-start gap-6">
 
-        <div className="self-stretch py-8 md:py-14 flex flex-col justify-center items-center gap-2 z-10">
-          <div className="flex flex-col justify-start items-center gap-10">
-            <h2 className="w-full max-w-[655px] text-center text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight md:leading-[66px]">
-              Your Personal AI Project Manager
-            </h2>
-            <p className="w-full max-w-[600px] text-center text-muted-foreground text-md md:text-lg font-medium leading-relaxed">
-              Ask your AI Project Manager to build your project plans, timelines, and resources. Get it to save project data for future reference.
-            </p>
+          <div className="self-stretch py-8 md:py-14 flex flex-col justify-center items-center gap-2 z-10">
+            <div className="flex flex-col justify-start items-center gap-10">
+              <h2 className="w-full max-w-[655px] text-center text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight md:leading-[66px]">
+                Your Personal AI Project Manager
+              </h2>
+              <p className="w-full max-w-[600px] text-center text-muted-foreground text-md md:text-lg font-medium leading-relaxed">
+                Ask your AI Project Manager to build your project plans, timelines, and resources. Get it to save project data for future reference.
+              </p>
+            </div>
+          </div>
+          <div className="self-stretch grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 z-10">
+            {cards.map((card, index) => (
+              <BentoCard key={card.title} {...card} priority={index < 2} />
+            ))}
           </div>
         </div>
-        <div className="self-stretch grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 z-10">
-          {cards.map((card, index) => (
-            <BentoCard key={card.title} {...card} priority={index < 2} />
-          ))}
-        </div>
-      </div>
-    </section>
+      </section>
+    </AnimatedSection>
   )
 }
+
