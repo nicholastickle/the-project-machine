@@ -1,15 +1,7 @@
-import type { Metadata, Viewport } from 'next'
 
-export const viewport: Viewport = {
-  themeColor: '#ff8c00', // Orange theme color for the canvas
-}
-
-export const metadata: Metadata = {
+export const metadata = {
   metadataBase: new URL('https://projectmachine.com'),
-  title: {
-    template: '%s | Canvas - Project Machine',
-    default: 'Project Canvas - AI Project Planning | Project Machine'
-  },
+  title: 'Project Machine - Project Canvas',
   description: 'Interactive canvas for AI-powered project planning. Create flow diagrams, manage tasks, estimate durations, and collaborate with your AI project manager in real-time.',
   keywords: [
     'project planning canvas',
@@ -23,19 +15,15 @@ export const metadata: Metadata = {
     'AI planning assistant',
     'project management software'
   ],
-  authors: [
-    { name: 'Project Machine Team' },
-    { name: 'Nicholas Tickle', url: 'https://linkedin.com/in/nicholastickle' },
-    { name: 'Brighton Tandabantu', url: 'https://linkedin.com/in/bthanda' }
-  ],
+
   robots: {
-    index: false, // Canvas pages are typically user-specific and shouldn't be indexed
+    index: false,
     follow: false,
     noarchive: true,
     nosnippet: true,
   },
   openGraph: {
-    title: 'Project Canvas - AI Project Planning',
+    title: 'Project Machine - Project Canvas',
     description: 'Interactive canvas for AI-powered project planning with flow diagrams, task management, and intelligent duration estimation.',
     type: 'website',
     locale: 'en_GB',
@@ -43,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Project Canvas - AI Project Planning',
+    title: 'Project Machine - Project Canvas',
     description: 'Create, plan, and manage projects with AI assistance using our interactive canvas interface.',
   },
 }

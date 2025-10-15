@@ -1,10 +1,10 @@
 import React from "react"
 import { Button } from "@/components/ui/button"
 import { Header } from "./header"
-import { AnimatedSection } from "./animated-section"
+import AnimatedSection from "../ui/animated-section"
 import Link from "next/link"
 
-export function HeroSection() {
+export default function HeroSection() {
   return (
     <section
       className="flex flex-col items-center text-center relative mx-auto rounded-2xl overflow-hidden my-6 py-0 px-4
@@ -487,7 +487,7 @@ export function HeroSection() {
 
       <div className="absolute top-0 left-0 right-0 z-20">
         <AnimatedSection delay={5}>
-        <Header />
+          <Header />
         </AnimatedSection>
       </div>
 
@@ -515,8 +515,8 @@ export function HeroSection() {
             </div>
             <Button className="relative z-10 bg-white/10 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/20 px-8 py-3 rounded-full font-medium text-base shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-3 pulse-button">
 
-                Start
-              </Button>
+              Start
+            </Button>
           </div>
         </Link>
       </AnimatedSection>

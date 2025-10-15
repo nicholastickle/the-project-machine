@@ -5,7 +5,7 @@ import { Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
-export function PricingSection() {
+export default function PricingSection() {
   const [isAnnual, setIsAnnual] = useState(false)
 
   const pricingPlans = [

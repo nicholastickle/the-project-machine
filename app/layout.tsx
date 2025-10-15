@@ -12,10 +12,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://projectmachine.com'),
-  title: {
-    template: '%s | Project Machine',
-    default: 'Project Machine - AI Project Manager & Canvas Planning Platform'
-  },
+  
+  title: "Project Machine",
   description: 'Transform your project management with Project Machine. AI-powered canvas planning for early project plans, task durations, risk assessment, and resource allocation. Start planning smarter today.',
   keywords: ['AI project manager', 'canvas planning', 'project management', 'task planning', 'risk assessment', 'resource allocation', 'project planning software', 'AI planning tool'],
   authors: [

@@ -8,7 +8,7 @@ import useStore from '@/stores/flow-store'
 
 type ToolType = 'select' | 'pan' | 'add'
 
-export function CanvasToolbar() {
+export default function CanvasToolbar() {
     const [activeTool, setActiveTool] = useState<ToolType>('select')
     const { open, isMobile } = useSidebar()
     const addTaskNode = useStore(state => state.addTaskNode)

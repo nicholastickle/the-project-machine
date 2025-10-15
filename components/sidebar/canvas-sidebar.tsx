@@ -75,7 +75,7 @@ const data = {
     ],
 }
 
-export function CanvasSidebar(props: React.ComponentProps<typeof Sidebar>) {
+export default function CanvasSidebar(props: React.ComponentProps<typeof Sidebar>) {
     return (
         <Sidebar collapsible="icon" className="z-40" {...props}>
             <SidebarHeader>

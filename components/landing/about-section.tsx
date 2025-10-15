@@ -14,7 +14,7 @@ const XIcon = () => (
     </svg>
 )
 
-export function AboutSection() {
+export default function AboutSection() {
     const founders = [
         {
             name: "Nicholas Tickle",

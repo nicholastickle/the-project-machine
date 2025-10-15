@@ -769,3 +769,5 @@ export {
   SidebarTrigger,
   useSidebar,
 }
+
+export default SidebarProvider;

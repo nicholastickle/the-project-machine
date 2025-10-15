@@ -1,6 +1,6 @@
 import React from "react"
 
-export function DataSecurity() {
+export default function DataSecurity() {
     return (
         <section id="data-security" className="space-y-6">
             <div className="pb-4">

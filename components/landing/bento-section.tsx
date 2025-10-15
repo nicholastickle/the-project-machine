@@ -13,7 +13,7 @@ interface BentoCardProps {
 const BentoCard = ({ title, description, imageSrc, imageAlt, priority = false }: BentoCardProps) => (
   <div className="overflow-hidden rounded-2xl bg-white/10  backdrop-blur-md border border-border-dark flex flex-col justify-start items-start relative">
 
-  
+
 
 
 
@@ -36,14 +36,14 @@ const BentoCard = ({ title, description, imageSrc, imageAlt, priority = false }:
         />
       </AspectRatio>
 
-     
+
     </div>
   </div>
 
 
 )
 
-export function BentoSection() {
+export default function BentoSection() {
   const cards = [
     {
       title: "The Co-pilot/Cursor for project planning",
@@ -92,7 +92,7 @@ export function BentoSection() {
   return (
     <section className="w-full px-5 flex flex-col justify-center items-center overflow-visible bg-transparent mt-60 md:mt-32 lg:mt-48">
       <div className="w-full py-8 md:py-16 relative flex flex-col justify-start items-start gap-6">
-     
+
         <div className="self-stretch py-8 md:py-14 flex flex-col justify-center items-center gap-2 z-10">
           <div className="flex flex-col justify-start items-center gap-10">
             <h2 className="w-full max-w-[655px] text-center text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight md:leading-[66px]">

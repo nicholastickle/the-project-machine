@@ -1,9 +1,9 @@
 import Canvas from "@/components/canvas/canvas"
 import AIOrb from "@/components/ai-chat/ai-orb";
-import { SidebarProvider } from "@/components/ui/sidebar"
-import { CanvasSidebar } from "@/components/sidebar/canvas-sidebar"
-import { CanvasToolbar } from "@/components/toolbar/canvas-toolbar"
-import { CanvasSidebarTrigger } from "@/components/sidebar/sidebar-trigger"
+import SidebarProvider from "@/components/ui/sidebar"
+import CanvasSidebar from "@/components/sidebar/canvas-sidebar"
+import CanvasToolbar from "@/components/toolbar/canvas-toolbar"
+import CanvasSidebarTrigger from "@/components/sidebar/sidebar-trigger"
 
 export default function CanvasPage() {
     return (

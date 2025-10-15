@@ -1,16 +1,15 @@
 "use client"
 
-import { HeroSection } from "@/components/landing/hero-section"
-import { DashboardPreview } from "@/components/landing/dashboard-preview"
-import { BentoSection } from "@/components/landing/bento-section"
-import { PricingSection } from "@/components/landing/pricing-section"
-import { FAQSection } from "@/components/landing/faq-section"
-import { CTASection } from "@/components/landing/cta-section"
-import { FooterSection } from "@/components/landing/footer-section"
-import { AnimatedSection } from "@/components/landing/animated-section"
-import { Separator } from "@/components/ui/separator"
-import { AboutSection } from "@/components/landing/about-section"
-import { LoadingScreen } from "@/components/landing/landing-loading"
+import HeroSection from "@/components/landing/hero-section"
+import DashboardPreview from "@/components/landing/dashboard-preview"
+import BentoSection from "@/components/landing/bento-section"
+import PricingSection from "@/components/landing/pricing-section"
+import FAQSection from "@/components/landing/faq-section"
+import CTASection from "@/components/landing/cta-section"
+import FooterSection from "@/components/landing/footer-section"
+import AnimatedSection from "@/components/ui/animated-section"
+import AboutSection from "@/components/landing/about-section"
+import LoadingScreen from "@/components/landing/landing-loading"
 
 import { useState } from "react"
 
@@ -45,9 +44,9 @@ export default function Home() {
       <div className="min-h-screen bg-background relative pb-0">
         <div className="relative z-10">
           <main className="max-w-[1320px] mx-auto relative">
-            
+
             <HeroSection />
-            
+
           </main>
           <div className="flex justify-center -mt-20 sm:-mt-40 md:-mt-40 lg:-mt-20 xl:-mt-72 z-30 relative">
             <AnimatedSection delay={6}>
@@ -77,7 +76,7 @@ export default function Home() {
           </AnimatedSection>
           <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
             <CTASection />
-            <Separator className="bg-muted/20" />
+
           </AnimatedSection>
           <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto" delay={0.2}>
             <FooterSection />

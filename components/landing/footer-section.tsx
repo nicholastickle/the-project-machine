@@ -22,9 +22,10 @@ const RedditIcon = () => (
   </svg>
 )
 
-export function FooterSection() {
+export default function FooterSection() {
   return (
     <footer className="w-full max-w-[1320px] mx-auto px-5 py-10 md:py-10">
+      <Separator className="mb-6 bg-muted/20" />
       {/* Main Footer Content */}
       <div className="flex flex-col md:flex-row justify-between items-start gap-8 md:gap-0">
         {/* Left Section: Logo, Description, Social Links */}
