@@ -53,6 +53,7 @@ const useStore = create<AppState>()(
                 addTaskNode: (nodeData?: {
                     title?: string;
                     position?: { x: number; y: number }
+                    status?: string;
                 }) => {
                     const centerPosition = nodeData?.position || {
                         x: 200,
@@ -65,6 +66,7 @@ const useStore = create<AppState>()(
                         position: centerPosition,
                         data: {
                             title: nodeData?.title ?? "",
+                            status: nodeData?.status ?? 'Not started',
                         },
                     };
 
@@ -75,7 +77,7 @@ const useStore = create<AppState>()(
                     return newNode.id;
                 },
 
-                updateNodeData: (nodeId: string, newData: Partial<{ title: string }>) => {
+                updateNodeData: (nodeId: string, newData: Partial<{ title: string; status: string }>) => {
                     set({
                         nodes: get().nodes.map(node =>
                             node.id === nodeId

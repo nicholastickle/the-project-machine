@@ -1,18 +1,19 @@
 
 import { Ellipsis, List, SquareCheckBig, AlarmClock, Play } from 'lucide-react';
-import TaskHandles from './task-handles';
-import EditableTitle from './editable-title';
+import TaskHandles from '@/components/task-card-node/task-handles';
+import EditableTitle from '@/components/task-card-node/editable-title';
+import SelectStatus from '@/components/task-card-node/status-options';
 
 interface TaskCardProps {
     id: string;
     data: {
         title: string;
-
+        status: string;
     };
 }
 
-function TaskCard({ id, data }: TaskCardProps) {
 
+function TaskCard({ id, data }: TaskCardProps) {
     return (
         <div className='w-[350px] h-[175px] border border-task-card-border bg-task-card-background flex flex-col shadow-lg rounded-xl'>
             <div className='flex flex-[3] flex-row'>
@@ -27,7 +28,6 @@ function TaskCard({ id, data }: TaskCardProps) {
                 </div>
             </div>
             <div className='flex flex-[6] flex-row bg-task-card-background-accent rounded-3xl mx-1'>
-
                 <div className='flex-[3.5]  items-center flex justify-center text-task-card-icon-foreground'>
                     <List />
                 </div>
@@ -53,7 +53,7 @@ function TaskCard({ id, data }: TaskCardProps) {
             </div>
             <div className="flex flex-[3] flex-row ">
                 <div className='flex flex-[6] items-center px-4 text-sm text-task-card-completed'>
-                    <p>On-going</p>
+                    <SelectStatus nodeId={id} status={data.status} />
                 </div>
                 <div className='flex flex-[6] flex-row '>
                     <div className='flex flex-[9] items-center justify-end px-1 text-sm text-task-card-foreground'>

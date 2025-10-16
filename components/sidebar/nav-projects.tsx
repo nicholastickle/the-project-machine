@@ -14,8 +14,8 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
-import { NewProject } from "./new-project"
-import { OptionsProject } from "./options-project"
+import { NewProject } from "@/components/sidebar/new-project"
+import { OptionsProject } from "@/components/sidebar/options-project"
 
 export function NavProjects({
   items,

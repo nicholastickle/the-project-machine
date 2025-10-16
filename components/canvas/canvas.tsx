@@ -16,7 +16,7 @@ import { type AppState } from '@/stores/types';
 
 import CanvasBackground from '@/components/canvas/background';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
-import TaskCard from '@/components/task-card/task-card-node';
+import TaskCard from '@/components/task-card-node/task-card-node';
 import LogoNode from '@/components/logo/logo-node';
 
 const selector = (state: AppState) => ({
