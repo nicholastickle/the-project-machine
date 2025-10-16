@@ -6,14 +6,14 @@ export default function BentoSection() {
       title: "The Co-pilot/Cursor for project planning",
       description: "Let your AI project manager create plans, ideate, make updates, set durations, determine risks.",
 
-      imageSrc: "/images/bento/01-Copilot-cursor-for-pm.png",
+      imageSrc: "/images/bento/01-copilot-cursor-for-pm.png",
       imageAlt: "The Co-pilot/Cursor for project planning",
     },
     {
       title: "AI voice chats",
       description: "Talk to your AI project manager as part of your team",
 
-      imageSrc: "/images/bento/02-AI-voice-chats.gif",
+      imageSrc: "/images/bento/02-ai-voice-chats.gif",
       imageAlt: "AI voice chats",
     },
     {
@@ -34,14 +34,14 @@ export default function BentoSection() {
       title: "AI Estimated task durations",
       description: "Let AI determine your task durations",
 
-      imageSrc: "/images/bento/05-Task-durations.gif",
+      imageSrc: "/images/bento/05-task-durations.gif",
       imageAlt: "AI Estimated task durations",
     },
     {
       title: "Task database",
       description: "Store completed tasks so you know how long the task takes for next time",
 
-      imageSrc: "/images/bento/06-Task-database.gif",
+      imageSrc: "/images/bento/06-task-database.gif",
       imageAlt: "Task database",
     },
   ]
