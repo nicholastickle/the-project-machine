@@ -1,10 +1,10 @@
 
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import AnimatedSection from "@/components/ui/animated-section"
+import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 export default function CTASection() {
   return (
-    <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
+    <AnimatedSectionWhileInView className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
       <section className="w-full pt-20 md:pt-60 lg:pt-60 pb-10 md:pb-20 px-5 relative flex flex-col justify-center items-center overflow-visible">
         <div className="absolute inset-0 top-[-90px]">
           <svg
@@ -123,7 +123,7 @@ export default function CTASection() {
         </div>
       </section>
 
-    </AnimatedSection>
+    </AnimatedSectionWhileInView>
   )
 }
 

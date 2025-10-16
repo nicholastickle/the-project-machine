@@ -1,7 +1,7 @@
 import React from "react"
 import { Button } from "@/components/ui/button"
 import Header from "@/components/landing/header"
-import AnimatedSection from "@/components/ui/animated-section"
+import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 import Link from "next/link"
 export default function HeroSection() {
   return (
@@ -48,7 +48,7 @@ export default function HeroSection() {
           .pulse-button { animation: buttonPulse 3s ease-in-out infinite; }
         `
       }} />
-      {/* SVG Background */}
+    
       <div className="absolute inset-0 z-0">
         <svg
           width="100%"
@@ -484,25 +484,25 @@ export default function HeroSection() {
       </div>
 
       <div className="absolute top-0 left-0 right-0 z-20">
-        <AnimatedSection delay={5}>
+        <AnimatedSectionWhileInView delay={5}>
           <Header />
-        </AnimatedSection>
+        </AnimatedSectionWhileInView>
       </div>
 
       <div className="relative z-10 space-y-6 md:space-y-9 lg:space-y-12 mb-7 md:mb-8 lg:mb-16 max-w-md md:max-w-[500px] lg:max-w-[588px] mt-28 md:mt-[120px] lg:mt-[160px] px-4">
-        <AnimatedSection delay={5.5}>
+        <AnimatedSectionWhileInView delay={5.5}>
           <h1 className="text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight">
             All Projects Start Here
           </h1>
-        </AnimatedSection>
-        <AnimatedSection delay={6}>
+        </AnimatedSectionWhileInView>
+        <AnimatedSectionWhileInView delay={6}>
           <p className="text-foreground text-sm md:text-base lg:text-lg font-normal leading-relaxed max-w-lg mx-auto">
             AI Project Manager using Canvas planning to formulate early project plans, task durations, risk, and resourcing.
           </p>
-        </AnimatedSection>
+        </AnimatedSectionWhileInView>
       </div>
 
-      <AnimatedSection delay={6.5}>
+      <AnimatedSectionWhileInView delay={6.5}>
         <Link href="/canvas">
           <div className="relative group">
             <div className="absolute -inset-0.5 rounded-full overflow-hidden">
@@ -516,7 +516,7 @@ export default function HeroSection() {
             </Button>
           </div>
         </Link>
-      </AnimatedSection>
+      </AnimatedSectionWhileInView>
     </main>
   )
 }

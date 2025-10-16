@@ -1,11 +1,11 @@
 "use client";
-import AnimatedSection from "@/components/ui/animated-section";
+import { AnimatedSection } from "@/components/ui/animated-section";
 import { Separator } from "@/components/ui/separator";
 
 export default function LegalContentsTable() {
     const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
         e.preventDefault();
-        const targetId = href.substring(1); 
+        const targetId = href.substring(1);
         const targetElement = document.getElementById(targetId);
         if (targetElement) {
             targetElement.scrollIntoView({ behavior: "smooth" });

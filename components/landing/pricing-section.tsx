@@ -1,6 +1,6 @@
 "use client"
 
-import AnimatedSection from "@/components/ui/animated-section"
+import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 
 import { useState } from "react"
 import { Check } from "lucide-react"
@@ -11,9 +11,9 @@ export default function PricingSection() {
   const [isAnnual, setIsAnnual] = useState(false)
 
   return (
-    <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
+    <AnimatedSectionWhileInView className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
       <PricingSectionContent isAnnual={isAnnual} setIsAnnual={setIsAnnual} />
-    </AnimatedSection>
+    </AnimatedSectionWhileInView>
   )
 }
 

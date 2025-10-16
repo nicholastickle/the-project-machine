@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import AnimatedSection from "@/components/ui/animated-section";
+import { AnimatedSection } from "@/components/ui/animated-section";
 
 export default function LegalHeader() {
     return (

@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Separator } from "@/components/ui/separator"
-import AnimatedSection from "@/components/ui/animated-section"
+import {AnimatedSection} from "@/components/ui/animated-section"
 
 export default function PrivacyPolicy() {
     return (

@@ -1,6 +1,6 @@
 
 import Image from "next/image"
-
+import { AnimatedSection, AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 
 const LinkedInIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -13,7 +13,6 @@ const XIcon = () => (
         <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
     </svg>
 )
-import AnimatedSection from "@/components/ui/animated-section"
 
 export default function AboutSection() {
     const founders = [
@@ -36,7 +35,7 @@ export default function AboutSection() {
     ]
 
     return (
-        <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
+        <AnimatedSectionWhileInView className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
             <section id="about-section" className="w-full px-5 overflow-hidden flex flex-col justify-start items-center my-0 py-8 md:py-14">
                 <div className="self-stretch relative flex flex-col justify-center items-center gap-2 py-0">
                     <div className="flex flex-col justify-start items-center gap-10 mb-6">
@@ -110,6 +109,6 @@ export default function AboutSection() {
                     ))}
                 </div>
             </section>
-        </AnimatedSection>
+        </AnimatedSectionWhileInView>
     )
 }

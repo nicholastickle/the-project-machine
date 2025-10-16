@@ -1,9 +1,9 @@
 import Image from "next/image"
-import AnimatedSection from "@/components/ui/animated-section"
+import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 
 export default function DashboardPreview() {
   return (
-    <AnimatedSection delay={6}>
+    <AnimatedSectionWhileInView delay={6}>
       <section className="flex justify-center -mt-20 sm:-mt-40 md:-mt-40 lg:-mt-20 xl:-mt-72 z-30 relative w-[calc(100vw-32px)] sm:w-[calc(100vw-48px)] md:w-[95vw] lg:w-[90vw] xl:w-[1160px] max-w-[1160px] mx-auto bg-primary-light/50 rounded-2xl p-2 shadow-2xl">
         <Image
           src="/images/dashboard-preview.png"
@@ -14,6 +14,6 @@ export default function DashboardPreview() {
           className="w-full h-full object-cover rounded-xl shadow-lg"
         />
       </section>
-    </AnimatedSection>
+    </AnimatedSectionWhileInView>
   )
 }

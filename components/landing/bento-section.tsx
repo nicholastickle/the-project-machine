@@ -1,4 +1,4 @@
-import AnimatedSection from "@/components/ui/animated-section"
+import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 import BentoCard from "@/components/landing/bento-card"
 export default function BentoSection() {
   const cards = [
@@ -47,7 +47,7 @@ export default function BentoSection() {
   ]
 
   return (
-    <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto mt-1" delay={0.2}>
+    <AnimatedSectionWhileInView className="relative z-10 max-w-[1320px] mx-auto mt-1" delay={0.2}>
       <section className="w-full px-5 flex flex-col justify-center items-center overflow-visible bg-transparent mt-60 md:mt-32 lg:mt-48">
         <div className="w-full py-8 md:py-16 relative flex flex-col justify-start items-start gap-6">
 
@@ -68,7 +68,7 @@ export default function BentoSection() {
           </div>
         </div>
       </section>
-    </AnimatedSection>
+    </AnimatedSectionWhileInView>
   )
 }
 
