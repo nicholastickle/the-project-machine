@@ -1,4 +1,3 @@
-import React from "react"
 
 export default function DataSecurity() {
     return (

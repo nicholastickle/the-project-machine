@@ -1,7 +1,7 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+
+import { useState, useCallback } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
@@ -19,28 +19,32 @@ export default function Header() {
 
   ]
 
-  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault()
-    const targetId = href.substring(1)
-    const targetElement = document.getElementById(targetId)
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: "smooth" })
-    }
-  }
-
-  const handleMobileNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault()
-
-    setIsSheetOpen(false)
-
-    setTimeout(() => {
+  const handleScroll = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+      e.preventDefault()
       const targetId = href.substring(1)
       const targetElement = document.getElementById(targetId)
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: "smooth" })
       }
-    }, 300)
-  }
+    },
+    []
+  )
+
+  const handleMobileNavClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+      e.preventDefault()
+      setIsSheetOpen(false)
+      setTimeout(() => {
+        const targetId = href.substring(1)
+        const targetElement = document.getElementById(targetId)
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: "smooth" })
+        }
+      }, 300)
+    },
+    [setIsSheetOpen]
+  )
 
   return (
     <header className="w-full py-4 px-6">

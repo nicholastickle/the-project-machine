@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import {
     LayoutDashboard,
     ClipboardList,
@@ -18,9 +17,6 @@ import {
     SidebarHeader,
     SidebarRail,
 } from "@/components/ui/sidebar"
-
-const SIDEBAR_WIDTH = "16rem"
-const SIDEBAR_WIDTH_MOBILE = "18rem"
 
 const data = {
     user: {

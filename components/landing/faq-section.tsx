@@ -1,8 +1,8 @@
 "use client"
 
 
-import type React from "react"
-import { useState } from "react"
+
+import { useState, useCallback } from "react"
 import FAQItem from "@/components/landing/faq-item"
 import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 
@@ -64,7 +64,7 @@ const faqData = [
 
 export default function FAQSection() {
   const [openItems, setOpenItems] = useState<Set<number>>(new Set())
-  const toggleItem = (index: number) => {
+  const toggleItem = useCallback((index: number) => {
     const newOpenItems = new Set(openItems)
     if (newOpenItems.has(index)) {
       newOpenItems.delete(index)
@@ -72,7 +72,7 @@ export default function FAQSection() {
       newOpenItems.add(index)
     }
     setOpenItems(newOpenItems)
-  }
+  }, [openItems])
   return (
     <AnimatedSectionWhileInView className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
       <section className="w-full pt-[20px] pb-10 md:pb-20 px-5 relative flex flex-col justify-center items-center">

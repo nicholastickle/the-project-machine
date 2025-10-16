@@ -1,5 +1,3 @@
-"use client"
-
 import { HelpCircle } from "lucide-react"
 import { OptionsHelp } from "./options-help"
 

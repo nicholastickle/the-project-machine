@@ -1,4 +1,5 @@
-import type React from "react"
+
+import { useCallback } from "react"
 import { ChevronDown } from "lucide-react"
 
 export interface FAQItemProps {
@@ -9,10 +10,11 @@ export interface FAQItemProps {
 }
 
 const FAQItem = ({ question, answer, isOpen, onToggle }: FAQItemProps) => {
-    const handleClick = (e: React.MouseEvent) => {
+    const handleClick = useCallback((e: React.MouseEvent) => {
         e.preventDefault()
         onToggle()
-    }
+    }, [onToggle])
+
     return (
         <div
             className={`w-full bg-white/10 backdrop-blur-md border border-border-dark shadow-lg overflow-hidden rounded-[10px] transition-all duration-500 ease-out cursor-pointer`}

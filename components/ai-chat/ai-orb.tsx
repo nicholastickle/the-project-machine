@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import './ai-orb.css'
 
 type OrbState = 'dormant' | 'speaking'
@@ -18,27 +18,18 @@ export default function AIOrb({
 }: AIorbProps) {
     const [state, setState] = useState<OrbState>(initialState)
 
-    const handleClick = () => {
-        const newState = state === 'dormant' ? 'speaking' : 'dormant'
-        setState(newState)
-        onStateChange?.(newState)
-    }
+  const handleClick = useCallback(() => {
+    const newState = state === 'dormant' ? 'speaking' : 'dormant'
+    setState(newState)
+    onStateChange?.(newState)
+}, [state, onStateChange])
 
-    const getOrbClassName = () => {
-        let baseClass = 'ai-orb'
-
-        if (state === 'speaking') {
-            baseClass += ' speaking'
-        } else {
-            baseClass += ' listening'
-        }
-
-        if (className) {
-            baseClass += ` ${className}`
-        }
-
-        return baseClass
-    }
+const getOrbClassName = useCallback(() => {
+    let baseClass = 'ai-orb'
+    baseClass += state === 'speaking' ? ' speaking' : ' listening'
+    if (className) baseClass += ` ${className}`
+    return baseClass
+}, [state, className])
 
     return (
         <div className="ai-orb-container">

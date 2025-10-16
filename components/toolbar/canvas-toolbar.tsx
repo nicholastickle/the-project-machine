@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { MousePointer, Hand, Plus, RotateCcw } from "lucide-react"
 import { ToolIcon } from "./tool-icon"
 import { useSidebar } from "@/components/ui/sidebar"
@@ -14,27 +14,27 @@ export default function CanvasToolbar() {
     const addTaskNode = useStore(state => state.addTaskNode)
     const resetCanvas = useStore(state => state.resetCanvas)
 
-    const handleSelectTool = () => {
+    const handleSelectTool = useCallback(() => {
         setActiveTool('select')
         console.log('Selection tool activated')
-    }
+    }, [])
 
-    const handlePanTool = () => {
+    const handlePanTool = useCallback(() => {
         setActiveTool('pan')
         console.log('Pan tool activated')
-    }
+    }, [])
 
-    const handleAddTask = () => {
+    const handleAddTask = useCallback(() => {
         setActiveTool('select')
         addTaskNode()
-    }
+    }, [addTaskNode])
 
-    const handleReset = () => {
+    const handleReset = useCallback(() => {
         if (confirm('Are you sure you want to reset the canvas? This will clear all your work.')) {
             resetCanvas()
             setActiveTool('select')
         }
-    }
+    }, [resetCanvas])
 
 
     return (
