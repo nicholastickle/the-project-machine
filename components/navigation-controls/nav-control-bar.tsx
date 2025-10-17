@@ -10,7 +10,7 @@ import { ZoomIn, ZoomOut, Maximize } from "lucide-react"
 
 export default function NavControlBar() {
     const { open, isMobile } = useSidebar()
-    const [showMinimap, setShowMinimap] = useState(true)
+    const [showMinimap, setShowMinimap] = useState(false)
     const { zoomIn, zoomOut, fitView } = useReactFlow()
 
     const handleZoomIn = useCallback(() => zoomIn(), [zoomIn])

@@ -55,15 +55,18 @@ const useStore = create<AppState>()(
                     position?: { x: number; y: number }
                     status?: string;
                 }) => {
-                    const centerPosition = nodeData?.position || {
-                        x: 200,
-                        y: 200,
-                    };
+                    const OFFSET = 15;
+                    let position = nodeData?.position || { x: 200, y: 200 };
+                    const nodes = get().nodes;
+
+                    while (nodes.some(node => node.position.x === position.x && node.position.y === position.y)) {
+                        position = { x: position.x + OFFSET, y: position.y + OFFSET };
+                    }
 
                     const newNode: Node = {
                         id: `task-${uuidv4()}`,
                         type: 'taskCardNode',
-                        position: centerPosition,
+                        position: position,
                         data: {
                             title: nodeData?.title ?? "",
                             status: nodeData?.status ?? 'Not started',
