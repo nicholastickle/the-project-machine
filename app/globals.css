@@ -82,7 +82,7 @@
     --minimap-mask: 0 0% 96% / 0.6;
     --minimap-mask-stroke: 210 17% 6% / 0.15;
     --minimap-border: 210 17% 6% / 0.15;
-    --minimap-nodes: 25 95% 53%;
+    --minimap-nodes: 240 4.8% 50%;
 
     --selection: 45 100% 27% / 0.1;
     --selection-border: 45 100% 20%;
@@ -97,11 +97,17 @@
     --task-card-accent: 240 4.8% 94%;
     --task-card-accent-foreground: 240 5.3% 26.1%;
 
-    --task-card-complete: 120 100% 25%;
-    --task-card-not-started: 0 0% 50%;
-    --task-card-on-going: 45 100% 50%;
-    --task-card-stuck: 0 100% 50%;
-    --task-card-abandoned: 240 5.3% 26.1% / 0.1;
+    --task-card-status-options-background: 0 0% 100%;
+    --task-card-status-options-foreground: 210 11% 7%;
+    --task-card-status-options-accent: 240 4.8% 94%;
+    --task-card-status-options-border: 210 17% 6% / 0.15;
+
+
+    --task-card-not-started: 240 4.8% 94%;
+    --task-card-on-going: 45 99.2% 48.6%;
+    --task-card-stuck: 0 68.5% 49.8%;
+    --task-card-complete: 135 59.2% 41.4%;
+    --task-card-abandoned: 256 100% 24.3%;
 
     --task-card-handles-background: 240 4.8% 85%;
 
@@ -182,7 +188,7 @@
     --minimap-mask: 240 0% 0% / 0.4;
     --minimap-mask-stroke: 0 0% 15%;
     --minimap-border: 0 0% 15%;
-    --minimap-nodes: 25 95% 53%;
+    --minimap-nodes: 240 3.7% 60%;
 
     --selection: 25 95% 53% / 0.05;
     --selection-border: 25 95% 15%;
@@ -197,11 +203,16 @@
     --task-card-accent: 240 3.7% 16%;
     --task-card-accent-foreground: 240 4.8% 95.9%;
 
-    --task-card-complete: 120 100% 25%;
-    --task-card-not-started: 0 0% 50%;
-    --task-card-on-going: 45 100% 50%;
-    --task-card-stuck: 0 100% 50%;
-    --task-card-abandoned: 240 4.8% 95.9% / 0.1;
+    --task-card-status-options-background: 240 10% 3.9%;
+    --task-card-status-options-foreground: 0 0% 90%;
+    --task-card-status-options-accent: 240 3.7% 16%;
+    --task-card-status-options-border: 0 0% 15%;
+
+    --task-card-not-started: 240 3.7% 16%;
+    --task-card-on-going: 45 99.2% 48.6%;
+    --task-card-stuck: 0 68.5% 49.8%;
+    --task-card-complete: 135 59.2% 41.4%;
+    --task-card-abandoned: 256 100% 24.3%;
 
     --task-card-handles-background: 240 4.8% 95.9% / 0.1;
 

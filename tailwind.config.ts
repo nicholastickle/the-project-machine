@@ -126,7 +126,13 @@ const config = {
 					abandoned: 'hsl(var(--task-card-abandoned))',
 					'handles-background': 'hsl(var(--task-card-handles-background))',
 					'edges': 'hsl(var(--edges))',
-					'placeholder': 'hsl(var(--task-card-placeholder))'
+					'placeholder': 'hsl(var(--task-card-placeholder))',
+					
+					'status-options-background': 'hsl(var(--task-card-status-options-background))',
+					'status-options-foreground': 'hsl(var(--task-card-status-options-foreground))',
+					'status-options-border': 'hsl(var(--task-card-status-options-border))',
+					'status-options-accent': 'hsl(var(--task-card-status-options-accent))'
+
 				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',

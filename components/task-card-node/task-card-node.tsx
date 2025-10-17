@@ -13,9 +13,45 @@ interface TaskCardProps {
 }
 
 
-function TaskCard({ id, data }: TaskCardProps) {
+export default function TaskCard({ id, data }: TaskCardProps) {
+
+// const statusColorClass = (() => {
+//     switch (data.status) {
+//         case 'Not started':
+//             return 'border-task-card-border';
+//         case 'On-going':
+//             return 'border-task-card-on-going';
+//         case 'Stuck':
+//             return 'border-task-card-stuck';
+//         case 'Complete':
+//             return 'border-task-card-complete';
+//         case 'Abandoned':
+//             return 'border-task-card-abandoned';
+//         default:
+//             return 'border-task-card-background';
+//     }
+// })();
+
+const statusColorClass = (() => {
+    switch (data.status) {
+        case 'Not started':
+            return 'bg-task-card-background-accent';
+        case 'On-going':
+            return 'bg-task-card-on-going/20';
+        case 'Stuck':
+            return 'bg-task-card-stuck/20';
+        case 'Complete':
+            return 'bg-task-card-complete/20';
+        case 'Abandoned':
+            return 'bg-task-card-abandoned/20';
+        default:
+            return 'bg-task-card-background-accent';
+    }
+})();
+
+
     return (
-        <div className='w-[350px] h-[175px] border border-task-card-border bg-task-card-background flex flex-col shadow-lg rounded-xl'>
+        <div className={`w-[350px] h-[175px] border border-task-card-border  bg-task-card-background flex flex-col shadow-lg rounded-xl`}>
             <div className='flex flex-[3] flex-row'>
                 <div className='flex-[11] items-center flex px-4 text-md font-medium text-task-card-foreground'>
                     <EditableTitle
@@ -27,7 +63,7 @@ function TaskCard({ id, data }: TaskCardProps) {
                     <Ellipsis />
                 </div>
             </div>
-            <div className='flex flex-[6] flex-row bg-task-card-background-accent rounded-3xl mx-1'>
+            <div className={`flex flex-[6] flex-row ${statusColorClass} rounded-3xl mx-1`}>
                 <div className='flex-[3.5]  items-center flex justify-center text-task-card-icon-foreground'>
                     <List />
                 </div>
@@ -68,5 +104,3 @@ function TaskCard({ id, data }: TaskCardProps) {
         </div>
     );
 }
-
-export default TaskCard;
