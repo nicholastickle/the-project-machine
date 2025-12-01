@@ -1,7 +1,7 @@
 
 export const metadata = {
   metadataBase: new URL('https://projectmachine.com'),
-  title: 'Project Machine - Project Canvas',
+  title: 'Project Machine - Project Canvas+',
   description: 'Interactive canvas for AI-powered project planning. Create flow diagrams, manage tasks, estimate durations, and collaborate with your AI project manager in real-time.',
   keywords: [
     'project planning canvas',
