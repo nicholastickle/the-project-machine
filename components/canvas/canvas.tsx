@@ -17,6 +17,7 @@ import { type AppState } from '@/stores/types';
 
 import CanvasBackground from '@/components/canvas/background';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
+import CanvasToolbar from '@/components/toolbar/canvas-toolbar';
 import TaskCard from '@/components/task-card-node/task-card-node';
 
 const selector = (state: AppState) => ({
@@ -65,6 +66,7 @@ export default function Canvas({ onInit }: CanvasProps) {
 
             >
                 <CanvasBackground />
+                <CanvasToolbar />
                 <NavControlBar />
             </ReactFlow>
         </div>

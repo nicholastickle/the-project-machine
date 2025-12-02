@@ -99,6 +99,8 @@ const useStore = create<AppState>()(
                     title?: string;
                     position?: { x: number; y: number }
                     status?: string;
+                    estimatedHours?: number;
+                    timeSpent?: number;
                 }) => {
                     get().saveHistory();
                     
@@ -139,6 +141,8 @@ const useStore = create<AppState>()(
                         data: {
                             title: nodeData?.title ?? "",
                             status: nodeData?.status ?? 'Not started',
+                            estimatedHours: nodeData?.estimatedHours,
+                            timeSpent: nodeData?.timeSpent ?? 0,
                         },
                     };
 
@@ -149,8 +153,11 @@ const useStore = create<AppState>()(
                     return newNode.id;
                 },
 
-                updateNodeData: (nodeId: string, newData: Partial<{ title: string; status: string }>) => {
-                    get().saveHistory();
+                updateNodeData: (nodeId: string, newData: Partial<{ title: string; status: string; timeSpent: number; estimatedHours: number }>, saveToHistory: boolean = true) => {
+                    // Only save history for user-initiated changes (not time tracking ticks)
+                    if (saveToHistory) {
+                        get().saveHistory();
+                    }
                     set({
                         nodes: get().nodes.map(node =>
                             node.id === nodeId

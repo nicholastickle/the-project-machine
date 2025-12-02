@@ -2,6 +2,7 @@
 
 import Canvas from "@/components/canvas/canvas"
 import AIOrb from "@/components/ai-chat/ai-orb"
+import CanvasSidebar, { SidebarProvider } from "@/components/sidebar/canvas-sidebar"
 import { useRealtimeSession } from "@/hooks/use-realtime-session"
 import useStore from "@/stores/flow-store"
 import { useEffect, useRef, type RefObject } from "react"
@@ -50,7 +51,8 @@ export default function CanvasPage() {
         tasks.forEach((task) => {
             const nodeId = addTaskNode({
                 title: task.title,
-                status: 'Not started'
+                status: 'Not started',
+                estimatedHours: task.estimatedHours
             })
             newNodeIds.push(nodeId)
         })
@@ -98,14 +100,17 @@ export default function CanvasPage() {
     )
 
     return (
-        <div className="fixed inset-0 h-screen w-screen overflow-hidden">
-            <Canvas onInit={setReactFlowInstance} />
-            <AIOrb 
-                onConnect={connect}
-                onDisconnect={disconnect}
-                isConnected={isConnected}
-                isSpeaking={isSpeaking}
-            />
-        </div>
+        <SidebarProvider>
+            <div className="fixed inset-0 h-screen w-screen overflow-hidden">
+                <CanvasSidebar />
+                <Canvas onInit={setReactFlowInstance} />
+                <AIOrb 
+                    onConnect={connect}
+                    onDisconnect={disconnect}
+                    isConnected={isConnected}
+                    isSpeaking={isSpeaking}
+                />
+            </div>
+        </SidebarProvider>
     )
 }
