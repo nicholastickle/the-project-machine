@@ -20,7 +20,7 @@ const useStore = create<AppState>()(
                 saveHistory: () => {
                     const { nodes, edges, history, historyIndex } = get();
                     const newHistory = history.slice(0, historyIndex + 1);
-                    newHistory.push({ nodes, edges });
+                    newHistory.push({ nodes: [...nodes], edges: [...edges] });
                     if (newHistory.length > MAX_HISTORY) {
                         newHistory.shift();
                     }
@@ -169,7 +169,6 @@ const useStore = create<AppState>()(
                 },
 
                 connectTasks: (sourceId: string, targetId: string) => {
-                    console.log('🔗 connectTasks called:', sourceId, '→', targetId)
                     get().saveHistory();
                     const connection = {
                         source: sourceId,
@@ -177,9 +176,7 @@ const useStore = create<AppState>()(
                         sourceHandle: 'right',
                         targetHandle: 'left'
                     };
-                    console.log('🔗 Creating connection:', connection)
                     get().onConnect(connection);
-                    console.log('✅ Edges after connect:', get().edges.length)
                 },
 
                 resetCanvas: () => {
@@ -194,10 +191,9 @@ const useStore = create<AppState>()(
             {
                 name: 'canvas-storage',
                 partialize: (state) => ({
-                    // Only persist certain parts of state. Not the functions.
+                    // Only persist certain parts of state. Not the functions or history.
                     nodes: state.nodes,
                     edges: state.edges,
-
                 }),
                 version: 1, // Version for migrations
             }

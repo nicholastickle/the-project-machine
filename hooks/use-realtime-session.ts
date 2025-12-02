@@ -137,11 +137,9 @@ export function useRealtimeSession(
 
       ws.addEventListener('message', async (event) => {
         const data = JSON.parse(event.data)
-        console.log('📨 Message:', data.type, data)
 
         // Handle audio responses
         if (data.type === 'response.audio.delta') {
-          console.log('🔊 Audio delta:', data.delta?.length || 0, 'bytes')
           setIsSpeaking(true)
           // Play audio chunk
           const audioData = atob(data.delta)
@@ -149,29 +147,23 @@ export function useRealtimeSession(
           for (let i = 0; i < audioData.length; i++) {
             audioBuffer[i] = audioData.charCodeAt(i)
           }
-          console.log('🎵 Playing audio chunk:', audioBuffer.length, 'bytes')
           await playAudioChunk(audioBuffer)
         }
 
         if (data.type === 'response.audio.done') {
-          console.log('✅ Audio done')
           setIsSpeaking(false)
         }
 
         // Handle function calls
         if (data.type === 'response.function_call_arguments.done') {
-          console.log('🔧 Function call:', data.name, data.arguments)
           const args = JSON.parse(data.arguments)
           
           if (data.name === 'create_tasks' && args.tasks) {
-            const taskIds = onTasksGenerated(args.tasks)
-            console.log('Created tasks with IDs:', taskIds)
+            onTasksGenerated(args.tasks)
           } else if (data.name === 'connect_tasks' && args.connections) {
             onConnectTasks(args.connections)
-            console.log('Connected tasks:', args.connections)
           } else if (data.name === 'clear_canvas') {
             onClearCanvas()
-            console.log('Canvas cleared')
           }
         }
       })
@@ -243,9 +235,7 @@ export function useRealtimeSession(
   const playAudioChunk = async (audioData: Uint8Array) => {
     const audioContext = audioContextRef.current!
     
-    console.log('🔈 AudioContext state:', audioContext.state)
     if (audioContext.state === 'suspended') {
-      console.log('⏸️ Resuming AudioContext...')
       await audioContext.resume()
     }
 
@@ -264,7 +254,6 @@ export function useRealtimeSession(
     
     const now = audioContext.currentTime
     const startTime = Math.max(now, nextPlayTimeRef.current)
-    console.log('▶️ Starting audio at', startTime, 'duration:', audioBuffer.duration)
     source.start(startTime)
     nextPlayTimeRef.current = startTime + audioBuffer.duration
     

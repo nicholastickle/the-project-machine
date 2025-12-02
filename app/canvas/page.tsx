@@ -18,6 +18,15 @@ export default function CanvasPage() {
         reactFlowInstance.current = instance
     }
 
+    // Initialize history on mount
+    useEffect(() => {
+        const saveHistory = useStore.getState().saveHistory
+        const history = useStore.getState().history
+        if (history.length === 0) {
+            saveHistory()
+        }
+    }, [])
+
     // Keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -37,7 +46,6 @@ export default function CanvasPage() {
     const connectTasks = useStore((state) => state.connectTasks)
     
     const handleTasksGenerated = (tasks: any[]): string[] => {
-        console.log('🎯 Generating', tasks.length, 'tasks')
         const newNodeIds: string[] = []
         tasks.forEach((task) => {
             const nodeId = addTaskNode({
@@ -47,12 +55,9 @@ export default function CanvasPage() {
             newNodeIds.push(nodeId)
         })
         
-        console.log('🆔 New task IDs:', newNodeIds)
-        
         // Auto-connect tasks in sequence
         if (newNodeIds.length > 1) {
             for (let i = 0; i < newNodeIds.length - 1; i++) {
-                console.log('🔗 Connecting', newNodeIds[i], '→', newNodeIds[i + 1])
                 connectTasks(newNodeIds[i], newNodeIds[i + 1])
             }
         }
