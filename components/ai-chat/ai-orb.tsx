@@ -7,22 +7,30 @@ type OrbState = 'dormant' | 'speaking'
 
 interface AIorbProps {
     initialState?: OrbState
-    onStateChange?: (state: OrbState) => void
+    onConnect?: () => void
+    onDisconnect?: () => void
+    isConnected?: boolean
+    isSpeaking?: boolean
     className?: string
 }
 
 export default function AIOrb({
     initialState = 'dormant',
-    onStateChange,
+    onConnect,
+    onDisconnect,
+    isConnected = false,
+    isSpeaking = false,
     className = ''
 }: AIorbProps) {
-    const [state, setState] = useState<OrbState>(initialState)
+    const state = isConnected ? (isSpeaking ? 'speaking' : 'speaking') : 'dormant'
 
-  const handleClick = useCallback(() => {
-    const newState = state === 'dormant' ? 'speaking' : 'dormant'
-    setState(newState)
-    onStateChange?.(newState)
-}, [state, onStateChange])
+    const handleClick = useCallback(() => {
+        if (isConnected) {
+            onDisconnect?.()
+        } else {
+            onConnect?.()
+        }
+    }, [isConnected, onConnect, onDisconnect])
 
 const getOrbClassName = useCallback(() => {
     let baseClass = 'ai-orb'

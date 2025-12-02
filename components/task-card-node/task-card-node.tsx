@@ -1,8 +1,9 @@
-import { Play, Pause } from 'lucide-react';
+import { Play, Pause, X } from 'lucide-react';
 import TaskHandles from '@/components/task-card-node/task-handles';
 import EditableTitle from '@/components/task-card-node/editable-title';
 import SelectStatus from '@/components/task-card-node/status-options';
 import { useState } from 'react';
+import useStore from '@/stores/flow-store';
 
 interface TaskCardProps {
     id: string;
@@ -15,6 +16,7 @@ interface TaskCardProps {
 
 
 export default function TaskCard({ id, data }: TaskCardProps) {
+    const deleteNode = useStore((state) => state.deleteNode);
     const [isTracking, setIsTracking] = useState(false);
     const timeSpent = data.timeSpent || 0;
     const hours = Math.floor(timeSpent / 3600);
@@ -38,8 +40,15 @@ export default function TaskCard({ id, data }: TaskCardProps) {
     })();
 
 
+    // Stagger animation - use a stable delay based on position rather than random
+    const nodeIndex = id.split('-').pop() || '0';
+    const animationDelay = `${(parseInt(nodeIndex.substring(0, 4), 16) % 5) * 150}ms`;
+    
     return (
-        <div className={`w-[350px] h-[175px] border border-task-card-border bg-task-card-background flex flex-col shadow-lg rounded-xl`}>
+        <div 
+            className="w-[350px] h-[175px] border border-task-card-border bg-task-card-background flex flex-col shadow-lg rounded-xl animate-in fade-in zoom-in-95 duration-500"
+            style={{ animationDelay, animationFillMode: 'both' }}
+        >
             <div className='flex flex-[3] flex-row'>
                 <div className='flex-[11] items-center flex px-4 text-md font-medium text-task-card-foreground'>
                     <EditableTitle
@@ -47,6 +56,13 @@ export default function TaskCard({ id, data }: TaskCardProps) {
                         title={data.title}
                     />
                 </div>
+                <button
+                    onClick={() => deleteNode(id)}
+                    className='flex items-center justify-center w-8 h-8 mr-2 mt-2 text-task-card-icon-foreground hover:bg-red-500/20 hover:text-red-500 rounded-md transition-colors'
+                    title="Delete task"
+                >
+                    <X className='w-4 h-4' />
+                </button>
             </div>
             <div className={`flex flex-[6] flex-row ${statusColorClass} rounded-3xl mx-1`}>
             </div>
