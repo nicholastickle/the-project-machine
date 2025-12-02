@@ -3,7 +3,7 @@
 import Canvas from "@/components/canvas/canvas"
 import AIOrb from "@/components/ai-chat/ai-orb"
 import CanvasSidebar, { SidebarProvider } from "@/components/sidebar/canvas-sidebar"
-import { useRealtimeSession } from "@/hooks/use-realtime-session"
+import { useRealtimeWebRTC } from "@/hooks/use-realtime-webrtc"
 import useStore from "@/stores/flow-store"
 import { useEffect, useRef, type RefObject } from "react"
 import type { ReactFlowInstance } from '@xyflow/react'
@@ -48,32 +48,36 @@ export default function CanvasPage() {
     
     const handleTasksGenerated = (tasks: any[]): string[] => {
         const newNodeIds: string[] = []
-        tasks.forEach((task) => {
-            const nodeId = addTaskNode({
-                title: task.title,
-                status: 'Not started',
-                estimatedHours: task.estimatedHours
-            })
-            newNodeIds.push(nodeId)
-        })
         
-        // Auto-connect tasks in sequence
-        if (newNodeIds.length > 1) {
-            for (let i = 0; i < newNodeIds.length - 1; i++) {
-                connectTasks(newNodeIds[i], newNodeIds[i + 1])
-            }
-        }
-        
-        // Smooth auto-zoom to fit all tasks with padding
-        setTimeout(() => {
-            if (reactFlowInstance.current) {
-                reactFlowInstance.current.fitView({
-                    padding: 0.2,
-                    duration: 800,
-                    maxZoom: 1
+        // Add cards one at a time with delays
+        tasks.forEach((task, index) => {
+            setTimeout(() => {
+                const nodeId = addTaskNode({
+                    title: task.title,
+                    status: 'Not started',
+                    estimatedHours: task.estimatedHours
                 })
-            }
-        }, 600) // Wait for animations to start
+                newNodeIds.push(nodeId)
+                
+                // Auto-connect to previous task
+                if (index > 0 && newNodeIds.length > 1) {
+                    connectTasks(newNodeIds[index - 1], nodeId)
+                }
+                
+                // Smooth auto-zoom after last card
+                if (index === tasks.length - 1) {
+                    setTimeout(() => {
+                        if (reactFlowInstance.current) {
+                            reactFlowInstance.current.fitView({
+                                padding: 0.2,
+                                duration: 800,
+                                maxZoom: 1
+                            })
+                        }
+                    }, 800)
+                }
+            }, index * 2000) // 2 second delay between cards for better pacing
+        })
         
         return newNodeIds
     }
@@ -93,7 +97,7 @@ export default function CanvasPage() {
         resetCanvas()
     }
 
-    const { connect, disconnect, isConnected, isSpeaking } = useRealtimeSession(
+    const { connect, disconnect, isConnected, isSpeaking } = useRealtimeWebRTC(
         handleTasksGenerated,
         handleConnectTasks,
         handleClearCanvas

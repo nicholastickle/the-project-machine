@@ -37,7 +37,7 @@ export default function CanvasToolbar() {
 
     return (
         <TooltipProvider>
-            <div className={`absolute top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2 bg-toolbar-background border border-toolbar-border rounded-full p-2 shadow-lg transition-all duration-300 ${!isMobile && isOpen ? 'left-[263px]' : 'left-[7px]'}`}>
+            <div className={`absolute top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2 bg-toolbar-background/80 backdrop-blur-xl border-2 border-toolbar-border rounded-full p-2 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.3)] hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.4)] transition-all duration-300 ${!isMobile && isOpen ? 'left-[275px]' : 'left-[55px]'}`}>
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button

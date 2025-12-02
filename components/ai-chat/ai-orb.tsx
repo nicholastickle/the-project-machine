@@ -40,7 +40,7 @@ const getOrbClassName = useCallback(() => {
 }, [state, className])
 
     return (
-        <div className="ai-orb-container">
+        <div className="ai-orb-container shadow-[0_30px_70px_-15px_rgba(0,0,0,0.4)]">
             <div
                 className={getOrbClassName()}
                 onClick={handleClick}

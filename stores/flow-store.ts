@@ -72,13 +72,13 @@ const useStore = create<AppState>()(
                         type: 'smoothstep',
                         markerEnd: {
                             type: 'arrowclosed',
-                            color: 'hsl(var(--edges))',
+                            color: '#6366f1',
                             width: 20,
                             height: 20
                         },
                         animated: true,
                         style: {
-                            stroke: 'hsl(var(--edges))',
+                            stroke: '#6366f1',
                             strokeWidth: 3,
                         },
                     };

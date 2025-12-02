@@ -70,12 +70,12 @@ export default function CanvasSidebar() {
 
             {/* Sidebar Panel */}
             <div className={cn(
-                "fixed left-0 top-0 h-full w-64 bg-sidebar-background border-r border-sidebar-border z-40 transition-transform",
+                "fixed left-0 top-0 h-full w-64 bg-sidebar-background/90 backdrop-blur-xl border-r-2 border-sidebar-border z-40 transition-transform shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)]",
                 "flex flex-col",
                 isOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 {/* Header */}
-                <div className="p-4 border-b border-sidebar-border">
+                <div className="p-4 border-b-2 border-sidebar-border">
                     <h2 className="text-lg font-semibold text-sidebar-foreground">Project Machine</h2>
                     <p className="text-xs text-sidebar-foreground/60 mt-1">Ctrl+B to toggle</p>
                 </div>
