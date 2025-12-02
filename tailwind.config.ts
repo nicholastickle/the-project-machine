@@ -127,7 +127,13 @@ const config = {
 					'handles-background': 'hsl(var(--task-card-handles-background))',
 					'edges': 'hsl(var(--edges))',
 					'placeholder': 'hsl(var(--task-card-placeholder))',
-					
+					'panel-background': 'hsl(var(--task-card-panel-background))',
+					'panel-background-accent': 'hsl(var(--task-card-panel-background-accent))',
+					'panel-foreground': 'hsl(var(--task-card-panel-foreground))',
+					'panel-accent': 'hsl(var(--task-card-panel-accent))',
+					'panel-border': 'hsl(var(--task-card-panel-border))',
+					'panel-placeholder': 'hsl(var(--task-card-panel-placeholder))',
+
 					'status-options-background': 'hsl(var(--task-card-status-options-background))',
 					'status-options-foreground': 'hsl(var(--task-card-status-options-foreground))',
 					'status-options-border': 'hsl(var(--task-card-status-options-border))',

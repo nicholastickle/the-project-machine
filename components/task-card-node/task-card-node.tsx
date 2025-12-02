@@ -1,5 +1,6 @@
+import TaskCardOptionsPanel from "@/components/task-card-options/task-card-options-panel";
 
-import { Ellipsis, List, SquareCheckBig, AlarmClock, Play } from 'lucide-react';
+import { List, SquareCheckBig, AlarmClock, Play } from 'lucide-react';
 import TaskHandles from '@/components/task-card-node/task-handles';
 import EditableTitle from '@/components/task-card-node/editable-title';
 import SelectStatus from '@/components/task-card-node/status-options';
@@ -15,39 +16,22 @@ interface TaskCardProps {
 
 export default function TaskCard({ id, data }: TaskCardProps) {
 
-// const statusColorClass = (() => {
-//     switch (data.status) {
-//         case 'Not started':
-//             return 'border-task-card-border';
-//         case 'On-going':
-//             return 'border-task-card-on-going';
-//         case 'Stuck':
-//             return 'border-task-card-stuck';
-//         case 'Complete':
-//             return 'border-task-card-complete';
-//         case 'Abandoned':
-//             return 'border-task-card-abandoned';
-//         default:
-//             return 'border-task-card-background';
-//     }
-// })();
-
-const statusColorClass = (() => {
-    switch (data.status) {
-        case 'Not started':
-            return 'bg-task-card-background-accent';
-        case 'On-going':
-            return 'bg-task-card-on-going/20';
-        case 'Stuck':
-            return 'bg-task-card-stuck/20';
-        case 'Complete':
-            return 'bg-task-card-complete/20';
-        case 'Abandoned':
-            return 'bg-task-card-abandoned/20';
-        default:
-            return 'bg-task-card-background-accent';
-    }
-})();
+    const statusColorClass = (() => {
+        switch (data.status) {
+            case 'Not started':
+                return 'bg-task-card-background-accent';
+            case 'On-going':
+                return 'bg-task-card-on-going/20';
+            case 'Stuck':
+                return 'bg-task-card-stuck/20';
+            case 'Complete':
+                return 'bg-task-card-complete/20';
+            case 'Abandoned':
+                return 'bg-task-card-abandoned/20';
+            default:
+                return 'bg-task-card-background-accent';
+        }
+    })();
 
 
     return (
@@ -60,7 +44,15 @@ const statusColorClass = (() => {
                     />
                 </div>
                 <div className='flex flex-[1] items-center justify-center m-2 text-task-card-icon-foreground hover:bg-task-card-background-accent rounded-md transition-colors cursor-pointer'>
-                    <Ellipsis />
+                    <TaskCardOptionsPanel
+                        nodeId={id}
+                        title={data.title}
+                        status={data.status}
+                    />
+
+
+
+
                 </div>
             </div>
             <div className={`flex flex-[6] flex-row ${statusColorClass} rounded-3xl mx-1`}>

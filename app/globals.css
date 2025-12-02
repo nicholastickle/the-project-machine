@@ -111,6 +111,13 @@
 
     --task-card-handles-background: 240 4.8% 85%;
 
+    --task-card-panel-background: 240 4.8% 94%;
+    --task-card-panel-background-accent: 240 3.7% 16%;
+    --task-card-panel-foreground: 0 0% 90%;
+    --task-card-panel-accent: 240 3.7% 16%;
+    --task-card-panel-border: 0 0% 15%;
+    --task-card-panel-placeholder: 240 5% 50%;
+
     --edges: 240 10% 5%;
   }
 
@@ -215,6 +222,13 @@
     --task-card-abandoned: 256 100% 24.3%;
 
     --task-card-handles-background: 240 4.8% 95.9% / 0.1;
+
+    --task-card-panel-background: 240 5.9% 10%;
+    --task-card-panel-background-accent: 240 3.7% 16%;
+    --task-card-panel-foreground: 240 4.8% 95.9%;
+    --task-card-panel-accent: 240 3.7% 16%;
+    --task-card-panel-border: 0 0% 15%;
+    --task-card-panel-placeholder: 240 5% 50%;
 
     --edges: 0 0% 98%;
   }
