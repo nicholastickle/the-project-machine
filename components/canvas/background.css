@@ -11,3 +11,21 @@
 .react-flow__pane.dragging {
     cursor: grabbing;
 }
+
+@keyframes card-entrance {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        box-shadow: 0 0 40px 10px rgba(37, 99, 235, 0.3);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3);
+    }
+}

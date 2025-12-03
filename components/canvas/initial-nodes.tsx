@@ -1,4 +1,14 @@
 import { type Node } from '@xyflow/react';
 
-// Start with blank canvas for storyboard
-export const initialNodes: Node[] = [];
+export const initialNodes: Node[] = [
+    {
+        id: 'logo-node',
+        type: 'logoNode',
+        position: { x: 0, y: 0 },
+        data: {},
+        draggable: false,
+        selectable: false,
+        focusable: false,
+        deletable: false,
+    }
+];
