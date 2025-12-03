@@ -98,7 +98,7 @@ export default function CanvasPage() {
         resetCanvas()
     }
 
-    const { connect, disconnect, isConnected, isSpeaking } = useRealtimeWebRTC(
+    const { connect, disconnect, isConnected, isSpeaking, isConnecting, isMuted, toggleMute } = useRealtimeWebRTC(
         handleTasksGenerated,
         handleConnectTasks,
         handleClearCanvas
@@ -114,8 +114,11 @@ export default function CanvasPage() {
                     onDisconnect={disconnect}
                     isConnected={isConnected}
                     isSpeaking={isSpeaking}
+                    isConnecting={isConnecting}
+                    isMuted={isMuted}
+                    onToggleMute={toggleMute}
                 />
-                <UsageDisplay />
+                {process.env.NODE_ENV === 'development' && <UsageDisplay />}
             </div>
         </SidebarProvider>
     )

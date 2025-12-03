@@ -5,6 +5,9 @@ interface RealtimeWebRTCHook {
   disconnect: () => void;
   isConnected: boolean;
   isSpeaking: boolean;
+  isConnecting: boolean;
+  isMuted: boolean;
+  toggleMute: () => void;
 }
 
 export function useRealtimeWebRTC(
@@ -14,12 +17,22 @@ export function useRealtimeWebRTC(
 ): RealtimeWebRTCHook {
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
+  const audioStreamRef = useRef<MediaStream | null>(null);
   const sessionStartRef = useRef<number | null>(null);
 
   const connect = useCallback(async () => {
+    // Prevent multiple simultaneous connections
+    if (isConnecting || isConnected || peerConnectionRef.current) {
+      console.log('Connection already in progress or established');
+      return;
+    }
+    
+    setIsConnecting(true);
     try {
       // Step 1: Get ephemeral token from our backend
       const sessionResponse = await fetch('/api/session', {
@@ -60,6 +73,7 @@ export function useRealtimeWebRTC(
           autoGainControl: true,
         } 
       });
+      audioStreamRef.current = stream;
       
       stream.getTracks().forEach((track) => {
         pc.addTrack(track, stream);
@@ -235,9 +249,22 @@ export function useRealtimeWebRTC(
     } catch (error) {
       console.error('Failed to connect:', error);
       setIsConnected(false);
+      setIsConnecting(false);
       disconnect();
+    } finally {
+      setIsConnecting(false);
     }
   }, [onTasksGenerated, onConnectTasks, onClearCanvas]);
+
+  const toggleMute = useCallback(() => {
+    if (audioStreamRef.current) {
+      const audioTracks = audioStreamRef.current.getAudioTracks();
+      audioTracks.forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      setIsMuted(!audioTracks[0]?.enabled);
+    }
+  }, []);
 
   const disconnect = useCallback(() => {
     // Track session end
@@ -268,8 +295,14 @@ export function useRealtimeWebRTC(
       audioElementRef.current.srcObject = null;
     }
 
+    if (audioStreamRef.current) {
+      audioStreamRef.current.getTracks().forEach(track => track.stop());
+      audioStreamRef.current = null;
+    }
+
     setIsConnected(false);
     setIsSpeaking(false);
+    setIsMuted(false);
   }, []);
 
   return {
@@ -277,5 +310,8 @@ export function useRealtimeWebRTC(
     disconnect,
     isConnected,
     isSpeaking,
+    isConnecting,
+    isMuted,
+    toggleMute,
   };
 }
