@@ -1,0 +1,16 @@
+{
+  "sessions": [
+    {
+      "timestamp": "2025-12-03T10:06:28.860Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 30483
+    },
+    {
+      "timestamp": "2025-12-03T10:07:37.399Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 75023
+    }
+  ],
+  "totalSessions": 2,
+  "lastReset": "2025-12-03T10:06:28.860Z"
+}

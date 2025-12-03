@@ -8,6 +8,7 @@ import {
     SelectionMode,
     ConnectionMode,
     ConnectionLineType,
+    type ReactFlowInstance,
 } from '@xyflow/react';
 
 
@@ -15,7 +16,10 @@ import useStore from '@/stores/flow-store';
 import { type AppState } from '@/stores/types';
 
 import CanvasBackground from '@/components/canvas/background';
+import CanvasWatermark from '@/components/canvas/canvas-watermark';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
+import CanvasToolbar from '@/components/toolbar/canvas-toolbar';
+import ExportButtons from '@/components/export/export-buttons';
 import TaskCard from '@/components/task-card-node/task-card-node';
 import LogoNode from '@/components/logo/logo-node';
 import TaskBook from '@/components/task-book/task-book';
@@ -29,16 +33,21 @@ const selector = (state: AppState) => ({
 });
 
 
-const nodeTypes = { taskCardNode: TaskCard, canvasLogo: LogoNode };
+const nodeTypes = { taskCardNode: TaskCard, logoNode: LogoNode };
 const panOnDrag = [1, 2];
 
-export default function Canvas() {
+interface CanvasProps {
+    onInit?: (instance: ReactFlowInstance) => void;
+}
+
+export default function Canvas({ onInit }: CanvasProps) {
     const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(
         useShallow(selector),
     );
 
     return (
-        <div className='w-full h-screen z-0'>
+        <div className='w-full h-screen z-0 relative'>
+            <CanvasWatermark />
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -46,12 +55,13 @@ export default function Canvas() {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
+                onInit={onInit}
                 panOnScroll
                 selectionOnDrag
                 panOnDrag={panOnDrag}
                 selectionMode={SelectionMode.Partial}
                 connectionLineType={ConnectionLineType.SmoothStep}
-                connectionLineStyle={{ stroke: 'hsl(var(--edges))', strokeWidth: 2 }}
+                connectionLineStyle={{ stroke: '#6366f1', strokeWidth: 2 }}
                 fitView
                 aria-label='Canvas Component'
                 proOptions={{ hideAttribution: true }}
@@ -61,8 +71,9 @@ export default function Canvas() {
 
             >
                 <CanvasBackground />
+                <CanvasToolbar />
                 <NavControlBar />
-                <TaskBook />
+                <ExportButtons />
             </ReactFlow>
         </div>
     );

@@ -1,5 +1,4 @@
 import { memo } from 'react';
-
 import { ProjectMachineLogo } from '@/components/logo/project-machine-logo';
 
 interface LogoNodeProps {
@@ -12,12 +11,12 @@ interface LogoNodeProps {
 
 function LogoNode({ id, data }: LogoNodeProps) {
     return (
-        <div className="flex items-center justify-center p-4 bg-background backdrop-blur-sm rounded-full opacity-15">
+        <div className="flex items-center justify-center p-8 bg-background/50 backdrop-blur-md rounded-full opacity-20 hover:opacity-30 transition-opacity duration-500">
             <ProjectMachineLogo
                 size="xxl"
                 showText={false}
                 href=""
-                className="opacity-30"
+                className="opacity-40"
             />
         </div>
     );
