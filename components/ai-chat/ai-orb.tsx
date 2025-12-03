@@ -14,6 +14,7 @@ interface AIorbProps {
     isConnecting?: boolean
     isMuted?: boolean
     onToggleMute?: () => void
+    hasTaskNodes?: boolean
     className?: string
 }
 
@@ -26,6 +27,7 @@ export default function AIOrb({
     isConnecting = false,
     isMuted = false,
     onToggleMute,
+    hasTaskNodes = false,
     className = ''
 }: AIorbProps) {
     const state: OrbState = isConnecting ? 'connecting' : isConnected ? (isSpeaking ? 'speaking' : 'speaking') : 'dormant'
@@ -45,8 +47,10 @@ export default function AIOrb({
         return baseClass
     }, [state, className])
 
+    const containerClassName = `ai-orb-container shadow-[0_30px_70px_-15px_rgba(0,0,0,0.4)] ${!hasTaskNodes ? 'centered' : ''}`
+
     return (
-        <div className="ai-orb-container shadow-[0_30px_70px_-15px_rgba(0,0,0,0.4)]">
+        <div className={containerClassName}>
             <div
                 className={getOrbClassName()}
                 onClick={handleClick}
