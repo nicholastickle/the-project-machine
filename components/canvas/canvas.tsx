@@ -18,6 +18,7 @@ import CanvasBackground from '@/components/canvas/background';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
 import TaskCard from '@/components/task-card-node/task-card-node';
 import LogoNode from '@/components/logo/logo-node';
+import TaskBook from '@/components/task-book/task-book';
 
 const selector = (state: AppState) => ({
     nodes: state.nodes,
@@ -61,6 +62,7 @@ export default function Canvas() {
             >
                 <CanvasBackground />
                 <NavControlBar />
+                <TaskBook />
             </ReactFlow>
         </div>
     );
