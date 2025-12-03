@@ -74,6 +74,7 @@ export default function Canvas({ onInit }: CanvasProps) {
                 <CanvasToolbar />
                 <NavControlBar />
                 <ExportButtons />
+                <TaskBook />
             </ReactFlow>
         </div>
     );

@@ -10,7 +10,7 @@ export default function TaskBook() {
     };
 
     return (
-        <div className="absolute top-4 right-4 z-10">
+        <div className="absolute bottom-4 left-[150px] z-10">
             <TaskBookDialog isOpen={isOpen} onOpenChange={setIsOpen}>
                 <TaskBookIcon
                     isOpen={isOpen}

@@ -108,7 +108,7 @@ const config = {
 					mask: 'hsl(var(--minimap-mask))',
 					'mask-stroke': 'hsl(var(--minimap-mask-stroke))',
 					border: 'hsl(var(--minimap-border))',
-					'nodes': 'hsl(var(--minimap-nodes))'
+					nodes: 'hsl(var(--minimap-nodes))'
 				},
 				'task-card': {
 					background: 'hsl(var(--task-card-background))',
@@ -125,20 +125,21 @@ const config = {
 					stuck: 'hsl(var(--task-card-stuck))',
 					abandoned: 'hsl(var(--task-card-abandoned))',
 					'handles-background': 'hsl(var(--task-card-handles-background))',
-					'edges': 'hsl(var(--edges))',
-					'placeholder': 'hsl(var(--task-card-placeholder))',
+					edges: 'hsl(var(--edges))',
+					placeholder: 'hsl(var(--task-card-placeholder))',
 					'panel-background': 'hsl(var(--task-card-panel-background))',
 					'panel-background-accent': 'hsl(var(--task-card-panel-background-accent))',
 					'panel-foreground': 'hsl(var(--task-card-panel-foreground))',
 					'panel-accent': 'hsl(var(--task-card-panel-accent))',
 					'panel-border': 'hsl(var(--task-card-panel-border))',
 					'panel-placeholder': 'hsl(var(--task-card-panel-placeholder))',
-
 					'status-options-background': 'hsl(var(--task-card-status-options-background))',
 					'status-options-foreground': 'hsl(var(--task-card-status-options-foreground))',
 					'status-options-border': 'hsl(var(--task-card-status-options-border))',
 					'status-options-accent': 'hsl(var(--task-card-status-options-accent))'
-
+				},
+				'task-book': {
+					icon: 'hsl(var(--task-book-icon))'
 				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',
