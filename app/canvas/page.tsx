@@ -3,6 +3,7 @@
 import Canvas from "@/components/canvas/canvas"
 import AIOrb from "@/components/ai-chat/ai-orb"
 import CanvasSidebar, { SidebarProvider } from "@/components/sidebar/canvas-sidebar"
+import { UsageDisplay } from "@/components/admin/usage-display"
 import { useRealtimeWebRTC } from "@/hooks/use-realtime-webrtc"
 import useStore from "@/stores/flow-store"
 import { useEffect, useRef, type RefObject } from "react"
@@ -114,6 +115,7 @@ export default function CanvasPage() {
                     isConnected={isConnected}
                     isSpeaking={isSpeaking}
                 />
+                <UsageDisplay />
             </div>
         </SidebarProvider>
     )

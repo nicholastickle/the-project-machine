@@ -17,6 +17,7 @@ export function useRealtimeWebRTC(
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
+  const sessionStartRef = useRef<number | null>(null);
 
   const connect = useCallback(async () => {
     try {
@@ -71,18 +72,31 @@ export function useRealtimeWebRTC(
       dc.onopen = () => {
         console.log('Data channel opened');
         setIsConnected(true);
+        sessionStartRef.current = Date.now();
+        
+        // Track session start
+        fetch('/api/usage', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            action: 'start',
+            model: 'gpt-4o-mini-realtime-preview-2024-12-17'
+          }),
+        }).catch(console.error);
 
         // Send session update with instructions and tools
         dc.send(JSON.stringify({
           type: 'session.update',
           session: {
-            instructions: `You are PM (Project Machine), a helpful AI assistant for project planning. Have a natural conversation with the user about their project. When they describe what they want to build, call create_tasks with the appropriate number of tasks (could be 3, 5, 8, 10+ - whatever makes sense for the project scope). For each task, provide a realistic time estimate in hours (estimatedHours). Tasks appear one at a time on the canvas and are automatically connected sequentially. Be brief in your responses to avoid interrupting the user. Stay connected for follow-up requests. If asked to "clear the board", call clear_canvas.`,
+            instructions: `You're PM, a British AI helping with project planning. Be quick, encouraging, and get straight to business. Ask "What are you building?" then immediately generate 3-10 tasks with time estimates. Say things like "Brilliant!", "Let's crack on", "Sorted!", "Right then". Keep responses under 10 words when possible. For small projects, assume 3-10 tasks. Larger projects can have 8-10+. If they say "clear the board", call clear_canvas.`,
             turn_detection: {
               type: 'server_vad',
               threshold: 0.6,
               prefix_padding_ms: 500,
-              silence_duration_ms: 1000,
+              silence_duration_ms: 700,
             },
+            input_audio_transcription: null,
+            max_response_output_tokens: 1000,
             tools: [
               {
                 type: 'function',
@@ -226,6 +240,20 @@ export function useRealtimeWebRTC(
   }, [onTasksGenerated, onConnectTasks, onClearCanvas]);
 
   const disconnect = useCallback(() => {
+    // Track session end
+    if (sessionStartRef.current) {
+      const duration = Date.now() - sessionStartRef.current;
+      fetch('/api/usage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: 'end',
+          duration
+        }),
+      }).catch(console.error);
+      sessionStartRef.current = null;
+    }
+    
     if (dataChannelRef.current) {
       dataChannelRef.current.close();
       dataChannelRef.current = null;
