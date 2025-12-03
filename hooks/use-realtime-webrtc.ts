@@ -13,7 +13,8 @@ interface RealtimeWebRTCHook {
 export function useRealtimeWebRTC(
   onTasksGenerated: (tasks: any[]) => void,
   onConnectTasks: (connections: { from: number; to: number }[]) => void,
-  onClearCanvas: () => void
+  onClearCanvas: () => void,
+  onUpdateTask: (taskIndex: number, updates: { status?: string; estimatedHours?: number; title?: string }) => void
 ): RealtimeWebRTCHook {
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -85,7 +86,7 @@ export function useRealtimeWebRTC(
 
       dc.onopen = () => {
         console.log('Data channel opened');
-        setIsConnected(true);
+        // Don't set connected yet - wait for session.updated and first AI response
         sessionStartRef.current = Date.now();
         
         // Track session start
@@ -102,12 +103,22 @@ export function useRealtimeWebRTC(
         dc.send(JSON.stringify({
           type: 'session.update',
           session: {
-            instructions: `You're PM, a British AI helping with project planning. Be quick, encouraging, and get straight to business. Ask "What are you building?" then immediately generate 3-10 tasks with time estimates. Say things like "Brilliant!", "Let's crack on", "Sorted!", "Right then". Keep responses under 10 words when possible. For small projects, assume 3-10 tasks. Larger projects can have 8-10+. If they say "clear the board", call clear_canvas.`,
+            instructions: `You're PM, a British AI helping with project planning. Be quick, friendly, and get straight to business.
+
+When user describes a project, call create_tasks with 3-10 tasks (include estimatedHours for each), then ALWAYS respond verbally with something brief like "Sorted! Anything else?" to keep conversation flowing.
+
+CRITICAL: After calling ANY function (create_tasks, update_task, clear_canvas), you MUST respond with speech. Never go silent after a function call. Always acknowledge it worked.
+
+For updates: "mark task 3 done" = call update_task then say "Done!". "change task 2 to 5 hours" = call update_task then confirm briefly.
+
+Clear board: call clear_canvas then say "Cleared!".
+
+Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Done!", "Right then!"`,
             turn_detection: {
               type: 'server_vad',
-              threshold: 0.6,
-              prefix_padding_ms: 500,
-              silence_duration_ms: 700,
+              threshold: 0.5,
+              prefix_padding_ms: 300,
+              silence_duration_ms: 500,
             },
             input_audio_transcription: null,
             max_response_output_tokens: 1000,
@@ -159,6 +170,21 @@ export function useRealtimeWebRTC(
               },
               {
                 type: 'function',
+                name: 'update_task',
+                description: 'Update a task\'s status, time estimate, or title. Use when user says "mark as done", "change to X hours", "rename task", etc.',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    taskIndex: { type: 'number', description: 'Task number (1-based, as user would say it)' },
+                    status: { type: 'string', enum: ['Not started', 'In progress', 'Done'], description: 'New status' },
+                    estimatedHours: { type: 'number', description: 'New time estimate in hours' },
+                    title: { type: 'string', description: 'New task title' }
+                  },
+                  required: ['taskIndex']
+                }
+              },
+              {
+                type: 'function',
                 name: 'clear_canvas',
                 description: 'Clear all tasks from the canvas',
                 parameters: {
@@ -175,11 +201,31 @@ export function useRealtimeWebRTC(
         try {
           const message = JSON.parse(event.data);
           
+          // When session is ready, mark as connected and immediately trigger AI greeting
+          if (message.type === 'session.updated') {
+            setIsConnected(true);
+            setIsConnecting(false);
+            dc.send(JSON.stringify({
+              type: 'response.create'
+            }));
+          }
+          
           // Track speaking state
           if (message.type === 'response.audio.delta' || message.type === 'response.audio_transcript.delta') {
             setIsSpeaking(true);
           } else if (message.type === 'response.done') {
             setIsSpeaking(false);
+          }
+          
+          // Handle conversation interruptions/errors
+          if (message.type === 'error') {
+            console.error('OpenAI error:', message);
+          }
+          
+          // If conversation gets truncated, trigger new response
+          if (message.type === 'conversation.item.truncated') {
+            console.log('Conversation truncated, requesting continuation');
+            dc.send(JSON.stringify({ type: 'response.create' }));
           }
 
           // Handle function calls
@@ -187,10 +233,15 @@ export function useRealtimeWebRTC(
             const { name, call_id, arguments: argsString } = message;
             const args = JSON.parse(argsString);
 
+            console.log('Function call:', name, args);
+
             if (name === 'create_tasks' && args.tasks) {
               onTasksGenerated(args.tasks);
             } else if (name === 'connect_tasks' && args.connections) {
               onConnectTasks(args.connections);
+            } else if (name === 'update_task') {
+              const { taskIndex, ...updates } = args;
+              onUpdateTask(taskIndex, updates);
             } else if (name === 'clear_canvas') {
               onClearCanvas();
             }
@@ -204,10 +255,10 @@ export function useRealtimeWebRTC(
                 output: JSON.stringify({ success: true })
               }
             }));
-
-            // Trigger response
-            dc.send(JSON.stringify({ type: 'response.create' }));
           }
+          
+          // After a response completes with function calls, the conversation needs to continue
+          // Don't trigger new response here - let the natural flow handle it or user speak next
         } catch (error) {
           console.error('Error handling data channel message:', error);
         }
@@ -246,15 +297,15 @@ export function useRealtimeWebRTC(
       });
 
       console.log('WebRTC connection established');
+      // Keep isConnecting=true until session.updated triggers in onmessage
     } catch (error) {
       console.error('Failed to connect:', error);
       setIsConnected(false);
       setIsConnecting(false);
       disconnect();
-    } finally {
-      setIsConnecting(false);
     }
-  }, [onTasksGenerated, onConnectTasks, onClearCanvas]);
+    // Don't clear isConnecting here - let session.updated handler do it for smooth transition
+  }, [onTasksGenerated, onConnectTasks, onClearCanvas, onUpdateTask]);
 
   const toggleMute = useCallback(() => {
     if (audioStreamRef.current) {

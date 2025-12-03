@@ -60,7 +60,7 @@ export default function CanvasPage() {
                 })
                 newNodeIds.push(nodeId)
                 
-                // Auto-connect to previous task
+                // Auto-connect within this conversation batch (sequential flow)
                 if (index > 0 && newNodeIds.length > 1) {
                     connectTasks(newNodeIds[index - 1], nodeId)
                 }
@@ -98,10 +98,22 @@ export default function CanvasPage() {
         resetCanvas()
     }
 
+    const handleUpdateTask = (taskIndex: number, updates: { status?: string; estimatedHours?: number; title?: string }) => {
+        const nodes = useStore.getState().nodes
+        const taskNodes = nodes.filter(n => n.type === 'taskCardNode')
+        
+        // Convert 1-based user index to 0-based array index
+        const targetNode = taskNodes[taskIndex - 1]
+        if (targetNode) {
+            useStore.getState().updateNodeData(targetNode.id, updates)
+        }
+    }
+
     const { connect, disconnect, isConnected, isSpeaking, isConnecting, isMuted, toggleMute } = useRealtimeWebRTC(
         handleTasksGenerated,
         handleConnectTasks,
-        handleClearCanvas
+        handleClearCanvas,
+        handleUpdateTask
     )
 
     return (
