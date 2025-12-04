@@ -93,4 +93,13 @@
     gap: 1rem;
     user-select: none;
     pointer-events: auto;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ai-orb-container.centered {
+    top: 50%;
+    left: 50%;
+    bottom: auto;
+    right: auto;
+    transform: translate(-50%, -50%);
 }

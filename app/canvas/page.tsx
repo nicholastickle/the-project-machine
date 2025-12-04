@@ -60,9 +60,27 @@ export default function CanvasPage() {
                 })
                 newNodeIds.push(nodeId)
                 
-                // Auto-connect to previous task
+                // Auto-connect within this conversation batch (vertical flow: bottom→top)
                 if (index > 0 && newNodeIds.length > 1) {
-                    connectTasks(newNodeIds[index - 1], nodeId)
+                    const sourceId = newNodeIds[index - 1]
+                    const targetId = nodeId
+                    
+                    // Get positions of the actual nodes to determine if same column
+                    const nodes = useStore.getState().nodes
+                    const sourceNode = nodes.find(n => n.id === sourceId)
+                    const targetNode = nodes.find(n => n.id === targetId)
+                    
+                    // Check if same column (similar x position within 100px tolerance)
+                    const isSameColumn = sourceNode && targetNode && 
+                        Math.abs(sourceNode.position.x - targetNode.position.x) < 100
+                    
+                    if (isSameColumn) {
+                        // Vertical: bottom → top (step edge for 90-degree lines)
+                        connectTasks(sourceId, targetId, { sourceHandle: 'bottom', targetHandle: 'top' })
+                    } else {
+                        // Cross-column: right → left (smoothstep for curves)
+                        connectTasks(sourceId, targetId, { sourceHandle: 'right', targetHandle: 'left' })
+                    }
                 }
                 
                 // Smooth auto-zoom after last card
@@ -98,11 +116,26 @@ export default function CanvasPage() {
         resetCanvas()
     }
 
-    const { connect, disconnect, isConnected, isSpeaking } = useRealtimeWebRTC(
+    const handleUpdateTask = (taskIndex: number, updates: { status?: string; estimatedHours?: number; title?: string }) => {
+        const nodes = useStore.getState().nodes
+        const taskNodes = nodes.filter(n => n.type === 'taskCardNode')
+        
+        // Convert 1-based user index to 0-based array index
+        const targetNode = taskNodes[taskIndex - 1]
+        if (targetNode) {
+            useStore.getState().updateNodeData(targetNode.id, updates)
+        }
+    }
+
+    const { connect, disconnect, isConnected, isSpeaking, isConnecting, isMuted, toggleMute } = useRealtimeWebRTC(
         handleTasksGenerated,
         handleConnectTasks,
-        handleClearCanvas
+        handleClearCanvas,
+        handleUpdateTask
     )
+
+    const nodes = useStore((state) => state.nodes)
+    const hasTaskNodes = nodes.some(n => n.type === 'taskCardNode')
 
     return (
         <SidebarProvider>
@@ -114,8 +147,12 @@ export default function CanvasPage() {
                     onDisconnect={disconnect}
                     isConnected={isConnected}
                     isSpeaking={isSpeaking}
+                    isConnecting={isConnecting}
+                    isMuted={isMuted}
+                    onToggleMute={toggleMute}
+                    hasTaskNodes={hasTaskNodes}
                 />
-                <UsageDisplay />
+                {process.env.NODE_ENV === 'development' && <UsageDisplay />}
             </div>
         </SidebarProvider>
     )
