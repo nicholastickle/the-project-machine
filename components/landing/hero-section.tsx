@@ -2,6 +2,7 @@ import React from "react"
 import { Button } from "@/components/ui/button"
 import Header from "@/components/landing/header"
 import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
+import { TypewriterSubheadline } from "@/components/landing/typewriter-subheadline"
 import Link from "next/link"
 export default function HeroSection() {
   return (
@@ -484,39 +485,45 @@ export default function HeroSection() {
       </div>
 
       <div className="absolute top-0 left-0 right-0 z-20">
-        <AnimatedSectionWhileInView delay={1.5}>
+        <AnimatedSectionWhileInView delay={0.2}>
           <Header />
         </AnimatedSectionWhileInView>
       </div>
 
       <div className="relative z-10 space-y-6 md:space-y-9 lg:space-y-12 mb-7 md:mb-8 lg:mb-16 max-w-md md:max-w-[500px] lg:max-w-[588px] mt-28 md:mt-[120px] lg:mt-[160px] px-4">
         <AnimatedSectionWhileInView delay={0.2}>
-          <h1 className="text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight">
-            All Projects Start Here
+          <h1 className="text-6xl md:text-7xl font-bold tracking-tight">
+            <span className="text-foreground ">
+              All Projects Start Here
+            </span>
           </h1>
-        </AnimatedSectionWhileInView>
-        <AnimatedSectionWhileInView delay={1}>
-          <p className="text-foreground text-sm md:text-base lg:text-lg font-normal leading-relaxed max-w-lg mx-auto">
-            AI Project Manager using Canvas planning to formulate early project plans, task durations, risk, and resourcing.
+
+          <p className="text-sm md:text-base lg:text-lg text-foreground max-w-xl max-w-lg mx-auto mt-10">
+            Just talk about your project. Watch your plan come to life.
           </p>
+
+
+          <div className="flex justify-center mt-8">
+            <Link href="/canvas">
+              <div className="relative group">
+                <div className="absolute -inset-0.5 rounded-full overflow-hidden">
+                  <div className="w-full h-full rounded-full animate-spin"
+                  >
+                  </div>
+                </div>
+                <Button className="relative z-10 bg-white/10 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/20 px-8 py-3 rounded-full font-medium text-base shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-3 pulse-button">
+
+                  Start
+                </Button>
+              </div>
+            </Link>
+          </div>
+          <TypewriterSubheadline />
         </AnimatedSectionWhileInView>
+
       </div>
 
-      <AnimatedSectionWhileInView delay={1.5}>
-        <Link href="/canvas">
-          <div className="relative group">
-            <div className="absolute -inset-0.5 rounded-full overflow-hidden">
-              <div className="w-full h-full rounded-full animate-spin"
-              >
-              </div>
-            </div>
-            <Button className="relative z-10 bg-white/10 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/20 px-8 py-3 rounded-full font-medium text-base shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-3 pulse-button">
 
-              Start
-            </Button>
-          </div>
-        </Link>
-      </AnimatedSectionWhileInView>
     </main>
   )
 }

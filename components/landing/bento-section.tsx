@@ -1,63 +1,39 @@
 import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 import BentoCard from "@/components/landing/bento-card"
+import { TextCursor, Mic, Map } from "lucide-react"
+
 export default function BentoSection() {
   const cards = [
     {
-      title: "The Co-pilot/Cursor for project planning",
-      description: "Let your AI project manager create plans, ideate, make updates, set durations, determine risks.",
-
-      imageSrc: "/images/bento/01-copilot-cursor-for-pm.png",
-      imageAlt: "The Co-pilot/Cursor for project planning",
+      title: "The Copilot for project planning",
+      description: "Create plans, ideate, make updates, set durations, store history.",
+      icon: TextCursor,
     },
     {
-      title: "AI voice chats",
-      description: "Talk to your AI project manager as part of your team",
-
-      imageSrc: "/images/bento/02-ai-voice-chats.gif",
-      imageAlt: "AI voice chats",
+      title: "Voice-First",
+      description: "Describe your project naturally using your voice. No typing required.",
+      icon: Mic,
     },
     {
-      title: "Flow diagrams for planning",
-      description: "Visual project management for early ideation",
-
-      imageSrc: "/images/bento/03-flow-diagrams.gif",
-      imageAlt: "Flow diagrams for planning",
+      title: "Interactive Canvas",
+      description: "Drag, edit, and track your tasks on a beautiful visual workspace.",
+      icon: Map,
     },
-    {
-      title: "Export to Excel or Google Sheets",
-      description: "Export your plan for further use in Excel or Google Sheets",
 
-      imageSrc: "/images/bento/04-sheets.gif",
-      imageAlt: "Export to Excel or Google Sheets",
-    },
-    {
-      title: "AI Estimated task durations",
-      description: "Let AI determine your task durations",
-
-      imageSrc: "/images/bento/05-task-durations.gif",
-      imageAlt: "AI Estimated task durations",
-    },
-    {
-      title: "Task database",
-      description: "Store completed tasks so you know how long the task takes for next time",
-
-      imageSrc: "/images/bento/06-task-database.gif",
-      imageAlt: "Task database",
-    },
   ]
 
   return (
     <AnimatedSectionWhileInView className="relative z-10 max-w-[1320px] mx-auto mt-1" delay={0.2}>
-      <section id="features-section" className="w-full px-5 flex flex-col justify-center items-center overflow-visible bg-transparent mt-60 md:mt-32 lg:mt-48">
+      <section id="features-section" className="w-full px-5 flex flex-col justify-center items-center overflow-visible bg-transparent mt-20 md:mt-20 lg:mt-20">
         <div className="w-full py-8 md:py-16 relative flex flex-col justify-start items-start gap-6">
 
           <div className="self-stretch py-8 md:py-14 flex flex-col justify-center items-center gap-2 z-10">
             <div className="flex flex-col justify-start items-center gap-10">
               <h2 className="w-full max-w-[655px] text-center text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight md:leading-[66px]">
-                Your Personal AI Project Manager
+                The Planning Machine
               </h2>
               <p className="w-full max-w-[600px] text-center text-muted-foreground text-md md:text-lg font-medium leading-relaxed">
-                Ask your AI Project Manager to build your project plans, timelines, and resources. Get it to save project data for future reference.
+                We&apos;re redefining what project planning could be.
               </p>
             </div>
           </div>

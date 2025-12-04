@@ -19,7 +19,7 @@ export default function AboutSection() {
         {
             name: "Nicholas Tickle",
             title: "Co-Founder",
-            description: "Experienced project manager, bridge designer, and web developer with 10 years experience in Civil Engineering. Passionate about simplifying project management through AI.",
+            description: "Project manager, bridge designer, and web developer. 10 years experience in Civil Engineering.",
             image: "/images/founders/01-founder-1.jpeg",
             linkedIn: "https://www.linkedin.com/in/nicholastickle/",
             x: "https://x.com/TickleNicholas",
@@ -27,7 +27,7 @@ export default function AboutSection() {
         {
             name: "Brighton Tandabantu",
             title: "Co-Founder",
-            description: "Second time founder. Web developer with a passion for creating innovative solutions. Expert in fullstack web development and building scalable platforms.",
+            description: "Second time founder. Web developer. Expert in fullstack development.",
             image: "/images/founders/02-founder-2.jpeg",
             linkedIn: "https://www.linkedin.com/in/bthanda/",
             x: "https://x.com/Its_Thandah",
@@ -43,7 +43,7 @@ export default function AboutSection() {
                             Meet the Founders
                         </h2>
                         <p className="w-full max-w-[600px] text-center text-muted-foreground text-md md:text-lg font-medium leading-relaxed">
-                            We&apos;re passionate about transforming how teams plan and execute projects. Our combined expertise in project management and AI technology drives our mission to make project planning effortless and intelligent.
+                            We&apos;re passionate about how teams plan projects. We&apos;re on a mission to make project planning effortless.
                         </p>
                     </div>
                 </div>
@@ -86,7 +86,7 @@ export default function AboutSection() {
                                             href={founder.linkedIn}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="p-2 rounded-full bg-transparent  transition-colors duration-200 text-white hover:text-orange-400"
+                                            className="p-2 rounded-full bg-transparent  transition-colors duration-200 text-foreground hover:text-orange-400"
                                             aria-label={`${founder.name}'s LinkedIn profile`}
                                         >
                                             <LinkedInIcon />
@@ -97,7 +97,7 @@ export default function AboutSection() {
                                             href={founder.x}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="p-2 rounded-full bg-transparent transition-colors duration-200 text-white hover:text-orange-400"
+                                            className="p-2 rounded-full bg-transparent transition-colors duration-200 text-foreground hover:text-orange-400"
                                             aria-label={`${founder.name}'s X (Twitter) profile`}
                                         >
                                             <XIcon />

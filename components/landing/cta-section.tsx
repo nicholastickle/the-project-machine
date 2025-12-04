@@ -106,10 +106,10 @@ export default function CTASection() {
         <div className="relative z-10 flex flex-col justify-start items-center gap-9 max-w-4xl mx-auto">
           <div className="flex flex-col justify-start items-center gap-10 text-center mb-4">
             <h2 className="w-full max-w-[655px] text-center text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight md:leading-[66px]">
-              Project Management Made Effortless
+              Your Personal Project Manager
             </h2>
             <p className="w-full max-w-[600px] text-center text-muted-foreground text-md md:text-lg font-medium leading-relaxed">
-              Start today to visualize every step, build your library of proven task templates, and best of all... do it all with your AI project manager
+              Start today to visualize every step, build your library of proven task templates, and best of all... do it all through voice
             </p>
           </div>
           <Link href="/canvas">

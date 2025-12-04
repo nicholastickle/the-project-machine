@@ -1,20 +1,20 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 
 export function TypewriterSubheadline() {
     const [displayText, setDisplayText] = useState("")
     const [phraseIndex, setPhraseIndex] = useState(0)
     const [isDeleting, setIsDeleting] = useState(false)
 
-    const phrases = [
+    const phrases = useMemo(() => [
         "We built this because planning sucks",
         "Thoughts → Tasks. No bullshit.",
         "Built by people who hate meetings",
         "Because Jira makes you cry",
         "Turn rambling into tasks..",
         "From 'umm, so like...' to done",
-    ]
+    ], [])
 
     useEffect(() => {
         const currentPhrase = phrases[phraseIndex]
@@ -42,8 +42,8 @@ export function TypewriterSubheadline() {
     }, [displayText, isDeleting, phraseIndex, phrases])
 
     return (
-        <div className="text-xl md:text-2xl text-gray-700 max-w-2xl mx-auto leading-relaxed h-16 flex items-center justify-center">
-            <span className="font-semibold text-indigo-600 min-w-[400px] text-center">
+        <div className="text-lg md:text-2xl max-w-2xl mx-auto leading-relaxed h-16 flex items-center justify-center mt-5">
+            <span className=" text-foreground min-w-[400px] text-center">
                 {displayText}
                 <span className="animate-pulse">|</span>
             </span>
