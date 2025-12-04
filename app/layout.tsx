@@ -34,7 +34,7 @@ html {
 }
         `}</style>
       </head>
-      <body className="dark">
+      <body className="light">
         {children}
       </body>
     </html>
