@@ -4,6 +4,11 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider/theme-provider'
 
+export const metadata: Metadata = {
+  title: 'Project Machine',
+  description: 'Turn conversations into actionable project plans. AI project manager that creates tasks, estimates time, and organizes workflows through natural voice interaction.',
+}
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -25,16 +30,17 @@ html {
   --font-mono: ${GeistMono.variable};
 }
         `}</style>
+        <meta name="apple-mobile-web-app-title" content="Project Machine" />
       </head>
       <body>
-           <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )
