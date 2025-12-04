@@ -52,7 +52,7 @@ export function UsageDisplay() {
       {/* Toggle button */}
       <button
         onClick={() => setIsVisible(!isVisible)}
-        className="fixed bottom-4 right-4 z-50 bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-all"
+        className="fixed bottom-[240px] right-4 z-50 bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-all"
         title="Toggle usage stats (or Ctrl+Shift+U)"
       >
         <Activity className="w-5 h-5" />
@@ -60,7 +60,7 @@ export function UsageDisplay() {
 
       {/* Stats panel */}
       {isVisible && stats && (
-        <div className="fixed bottom-20 right-4 z-50 bg-white/95 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-4 shadow-xl w-64">
+        <div className="fixed bottom-[300px] right-4 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-2 border-indigo-200 dark:border-indigo-800 rounded-xl p-4 shadow-xl w-64">
           <h3 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
             <Activity className="w-4 h-4 text-indigo-600" />
             Usage Stats

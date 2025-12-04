@@ -67,9 +67,12 @@ const useStore = create<AppState>()(
                 },
 
                 onConnect: (connection) => {
+                    // Check if vertical connection (bottom to top)
+                    const isVertical = connection.sourceHandle === 'bottom' && connection.targetHandle === 'top';
+                    
                     const newEdge = {
                         ...connection,
-                        type: 'smoothstep',
+                        type: isVertical ? 'step' : 'smoothstep',
                         markerEnd: {
                             type: 'arrowclosed',
                             color: '#6366f1',
@@ -107,31 +110,26 @@ const useStore = create<AppState>()(
                     const nodes = get().nodes;
                     let position = nodeData?.position || { x: 200, y: 200 };
 
-                    // Smart positioning: check for overlaps and spread out nicely
+                    // Vertical column layout with dynamic viewport calculation
                     if (!nodeData?.position) {
-                        const occupiedPositions = nodes.map(n => n.position);
-                        let foundGoodSpot = false;
+                        const CARD_HEIGHT = 280;
+                        const CARD_VERTICAL_SPACING = 360; // Spacing to fit arrow clearly
+                        const COLUMN_SPACING = 500;
+                        const START_X = 300;
+                        const START_Y = 150;
                         
-                        // Try spreading horizontally with slight vertical variation for visual interest
-                        for (let row = 0; row < 10; row++) {
-                            for (let col = 0; col < 10; col++) {
-                                // Alternate vertical positions slightly for more organic flow
-                                const verticalOffset = (col % 2 === 0) ? 0 : 80;
-                                const testPos = { 
-                                    x: 100 + (col * 450), 
-                                    y: 150 + (row * 280) + verticalOffset 
-                                };
-                                const hasOverlap = occupiedPositions.some(
-                                    p => Math.abs(p.x - testPos.x) < 50 && Math.abs(p.y - testPos.y) < 50
-                                );
-                                if (!hasOverlap) {
-                                    position = testPos;
-                                    foundGoodSpot = true;
-                                    break;
-                                }
-                            }
-                            if (foundGoodSpot) break;
-                        }
+                        // Calculate max cards per column based on viewport
+                        const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1000;
+                        const maxCardsPerColumn = Math.max(3, Math.floor((viewportHeight - 200) / CARD_VERTICAL_SPACING));
+                        
+                        const taskNodes = nodes.filter(n => n.type === 'taskCardNode');
+                        const columnIndex = Math.floor(taskNodes.length / maxCardsPerColumn);
+                        const cardInColumn = taskNodes.length % maxCardsPerColumn;
+                        
+                        position = {
+                            x: START_X + (columnIndex * COLUMN_SPACING),
+                            y: START_Y + (cardInColumn * CARD_VERTICAL_SPACING)
+                        };
                     }
 
                     const newNode: Node = {
@@ -175,13 +173,13 @@ const useStore = create<AppState>()(
                     });
                 },
 
-                connectTasks: (sourceId: string, targetId: string) => {
+                connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => {
                     get().saveHistory();
                     const connection = {
                         source: sourceId,
                         target: targetId,
-                        sourceHandle: 'right',
-                        targetHandle: 'left'
+                        sourceHandle: handles?.sourceHandle || 'right',
+                        targetHandle: handles?.targetHandle || 'left'
                     };
                     get().onConnect(connection);
                 },

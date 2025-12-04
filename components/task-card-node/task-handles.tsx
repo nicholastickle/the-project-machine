@@ -3,6 +3,7 @@ import { Position, Handle } from '@xyflow/react';
 export default function TaskHandles() {
     return (
         <>
+            {/* Horizontal handles for cross-column connections */}
             <Handle 
             type="target" 
             position={Position.Left} 
@@ -14,6 +15,20 @@ export default function TaskHandles() {
             position={Position.Right} 
             id="right" 
             className='!w-6 !h-6 !border-none !bg-task-card-handles-background !-right-[15px] hover:!cursor-pointer'
+            />
+            
+            {/* Vertical handles for same-column connections */}
+            <Handle 
+            type="target" 
+            position={Position.Top} 
+            id="top" 
+            className='!w-4 !h-4 !border-2 !border-indigo-500 !bg-white !-top-[8px] hover:!cursor-pointer hover:!bg-indigo-100'
+            />
+            <Handle 
+            type="source" 
+            position={Position.Bottom} 
+            id="bottom" 
+            className='!w-4 !h-4 !border-2 !border-indigo-500 !bg-white !-bottom-[8px] hover:!cursor-pointer hover:!bg-indigo-100'
             />
         </>
     );
