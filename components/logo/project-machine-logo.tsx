@@ -2,6 +2,8 @@
 
 import Image from "next/image"
 import Link from "next/link"
+import { useState, useEffect } from "react"
+import { useSidebar } from "@/components/ui/sidebar"
 
 interface ProjectMachineLogoProps {
     size?: "sm" | "md" | "lg" | "xl" | "xxl"
@@ -16,6 +18,29 @@ export function ProjectMachineLogo({
     href = "/",
     className = ""
 }: ProjectMachineLogoProps) {
+    const { open, openMobile, isMobile } = useSidebar()
+
+    // Use the appropriate open state based on device type
+    const isOpen = isMobile ? openMobile : open
+    const [showDelayedText, setShowDelayedText] = useState(isOpen)
+
+    // Handle delayed text visibility
+    useEffect(() => {
+        if (isOpen && showText) {
+            // Delay showing text when opening (to allow sidebar animation to complete)
+            const timer = setTimeout(() => {
+                setShowDelayedText(true)
+            }, 150) // 150ms delay matches typical sidebar animation duration
+
+            return () => clearTimeout(timer)
+        } else {
+            // Hide text immediately when closing
+            setShowDelayedText(false)
+        }
+    }, [isOpen, showText])
+
+    // Only show text when conditions are met AND after delay
+    const shouldShowText = showText && isOpen && showDelayedText
 
     const sizeClasses = {
         sm: "w-6 h-6",
@@ -45,7 +70,7 @@ export function ProjectMachineLogo({
                     priority
                 />
             </div>
-            {showText && (
+            {shouldShowText && (
                 <span className={`font-semibold text-foreground ${textSizeClasses[size]} whitespace-nowrap transition-opacity duration-200`}>
                     Project Machine
                 </span>
@@ -57,7 +82,7 @@ export function ProjectMachineLogo({
         return (
             <Link
                 href={href}
-                className="flex items-center"
+                className="flex items-center "
                 aria-label="Project Machine - Go to homepage"
             >
                 <LogoContent />
