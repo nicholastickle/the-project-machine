@@ -121,22 +121,47 @@ export default function CanvasPage() {
         const nodes = useStore.getState().nodes
         const taskNodes = nodes.filter(n => n.type === 'taskCardNode')
         
+        console.log(`[Voice] Update task ${taskIndex}:`, updates)
+        console.log(`[Voice] Found ${taskNodes.length} task nodes`)
+        
         // Convert 1-based user index to 0-based array index
         const targetNode = taskNodes[taskIndex - 1]
         if (targetNode) {
+            console.log(`[Voice] Updating node ${targetNode.id}:`, updates)
             useStore.getState().updateNodeData(targetNode.id, updates)
+        } else {
+            console.error(`[Voice] Task ${taskIndex} not found. Valid range: 1-${taskNodes.length}`)
         }
     }
+
+    const handleDeleteTask = (taskIndex: number) => {
+        const nodes = useStore.getState().nodes
+        const taskNodes = nodes.filter(n => n.type === 'taskCardNode')
+        
+        console.log(`[Voice] Delete task ${taskIndex}`)
+        console.log(`[Voice] Found ${taskNodes.length} task nodes`)
+        
+        // Convert 1-based user index to 0-based array index
+        const targetNode = taskNodes[taskIndex - 1]
+        if (targetNode) {
+            console.log(`[Voice] Deleting node ${targetNode.id}`)
+            useStore.getState().deleteNode(targetNode.id)
+        } else {
+            console.error(`[Voice] Task ${taskIndex} not found. Valid range: 1-${taskNodes.length}`)
+        }
+    }
+
+    const nodes = useStore((state) => state.nodes)
+    const hasTaskNodes = nodes.some(n => n.type === 'taskCardNode')
 
     const { connect, disconnect, isConnected, isSpeaking, isConnecting, isMuted, toggleMute, currentActivity } = useRealtimeWebRTC(
         handleTasksGenerated,
         handleConnectTasks,
         handleClearCanvas,
-        handleUpdateTask
+        handleUpdateTask,
+        handleDeleteTask,
+        hasTaskNodes
     )
-
-    const nodes = useStore((state) => state.nodes)
-    const hasTaskNodes = nodes.some(n => n.type === 'taskCardNode')
 
     return (
         <SidebarProvider>
