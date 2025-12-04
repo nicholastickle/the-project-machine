@@ -1,110 +1,71 @@
 "use client"
 
-import { useState, useEffect, createContext, useContext, ReactNode } from "react"
-import { ChevronRight, FolderKanban, ListTodo, HelpCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { useIsMobile } from "@/hooks/use-mobile"
+import {
+    LayoutDashboard,
+} from "lucide-react"
 
-type SidebarContextType = {
-    isOpen: boolean
-    setIsOpen: (open: boolean) => void
-    isMobile: boolean
+import { NavProjects } from "@/components/sidebar/nav-projects"
+
+import { NavUser } from "@/components/sidebar/nav-user"
+import { NavHelp } from "@/components/sidebar/nav-help"
+import { ProjectMachineLogo } from "@/components/logo/project-machine-logo"
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarRail,
+} from "@/components/ui/sidebar"
+
+const data = {
+    user: {
+        name: "Project User",
+        email: "user@projectmachine.com",
+        avatar: "/images/avatars/robert-fox.png",
+    },
+
+    projects: [
+        {
+            title: "Projects",
+            url: "#",
+            icon: LayoutDashboard,
+            isActive: true,
+            items: [
+                {
+                    title: "Board 1",
+                    url: "#",
+                },
+                {
+                    title: "Board 2",
+                    url: "#",
+                },
+                {
+                    title: "Board 3",
+                    url: "#",
+                },
+            ],
+        },
+    ],
+    
 }
 
-const SidebarContext = createContext<SidebarContextType | null>(null)
-
-export function useSidebar() {
-    const context = useContext(SidebarContext)
-    if (!context) {
-        throw new Error('useSidebar must be used within SidebarProvider')
-    }
-    return context
-}
-
-export function SidebarProvider({ children }: { children: ReactNode }) {
-    const [isOpen, setIsOpen] = useState(false)
-    const isMobile = useIsMobile()
-
-    // Keyboard shortcut: Ctrl+B to toggle sidebar
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
-                e.preventDefault()
-                setIsOpen(prev => !prev)
-            }
-        }
-        window.addEventListener('keydown', handleKeyDown)
-        return () => window.removeEventListener('keydown', handleKeyDown)
-    }, [])
-
-    const contextValue = { isOpen, setIsOpen, isMobile }
-
+export default function CanvasSidebar(props: React.ComponentProps<typeof Sidebar>) {
     return (
-        <SidebarContext.Provider value={contextValue}>
-            {children}
-        </SidebarContext.Provider>
-    )
-}
-
-export default function CanvasSidebar() {
-    const { isOpen, setIsOpen } = useSidebar()
-
-    return (
-        <>
-            {/* Toggle Button */}
-            <Button
-                onClick={() => setIsOpen(!isOpen)}
-                className={cn(
-                    "fixed top-1/2 -translate-y-1/2 z-50 h-12 w-8 rounded-r-lg rounded-l-none p-0 transition-all",
-                    "bg-sidebar-background border border-sidebar-border border-l-0",
-                    "hover:bg-sidebar-accent",
-                    isOpen ? "left-64" : "left-0"
-                )}
-            >
-                <ChevronRight className={cn(
-                    "h-4 w-4 transition-transform",
-                    isOpen && "rotate-180"
-                )} />
-            </Button>
-
-            {/* Sidebar Panel */}
-            <div className={cn(
-                "fixed left-0 top-0 h-full w-64 bg-sidebar-background/90 backdrop-blur-xl border-r-2 border-sidebar-border z-40 transition-transform shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)]",
-                "flex flex-col",
-                isOpen ? "translate-x-0" : "-translate-x-full"
-            )}>
-                {/* Header */}
-                <div className="p-4 border-b-2 border-sidebar-border">
-                    <h2 className="text-lg font-semibold text-sidebar-foreground">Project Machine</h2>
-                    <p className="text-xs text-sidebar-foreground/60 mt-1">Ctrl+B to toggle</p>
+        <Sidebar collapsible="icon" className="z-40" {...props}>
+            <SidebarHeader>
+                <ProjectMachineLogo size="md" href="/" />
+            </SidebarHeader>
+            <SidebarContent>
+                <NavProjects items={data.projects} />
+                
+            </SidebarContent>
+            <SidebarFooter>
+                <div className="flex items-center justify-between w-full">
+                    <NavUser user={data.user} />
+                    <NavHelp />
                 </div>
-
-                {/* Navigation */}
-                <nav className="flex-1 p-4 space-y-2">
-                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground transition-colors">
-                        <FolderKanban className="h-5 w-5" />
-                        <span>Projects</span>
-                    </button>
-
-                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground transition-colors">
-                        <ListTodo className="h-5 w-5" />
-                        <span>Tasks</span>
-                    </button>
-
-                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground transition-colors">
-                        <HelpCircle className="h-5 w-5" />
-                        <span>Help</span>
-                    </button>
-                </nav>
-
-                {/* Footer */}
-                <div className="p-4 border-t border-sidebar-border">
-                    <p className="text-xs text-sidebar-foreground/60">
-                        Voice-first project planning
-                    </p>
-                </div>
-            </div>
-        </>
+            </SidebarFooter>
+            <SidebarRail />
+        </Sidebar>
     )
 }

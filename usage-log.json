@@ -13,9 +13,48 @@
     {
       "timestamp": "2025-12-04T15:32:42.392Z",
       "model": "gpt-4o-mini-realtime-preview-2024-12-17",
-      "duration": 732381
+      "duration": 5970
+    },
+    {
+      "timestamp": "2025-12-03T21:06:02.691Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 34
+    },
+    {
+      "timestamp": "2025-12-03T21:06:09.848Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 13368
+    },
+    {
+      "timestamp": "2025-12-03T21:06:32.903Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T21:06:59.756Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 25454
+    },
+    {
+      "timestamp": "2025-12-03T21:07:33.439Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 100
+    },
+    {
+      "timestamp": "2025-12-03T21:07:38.491Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 14131
+    },
+    {
+      "timestamp": "2025-12-04T12:04:38.360Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 105637
+    },
+    {
+      "timestamp": "2025-12-04T17:59:14.213Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 39462
     }
   ],
-  "totalSessions": 3,
-  "lastReset": "2025-12-04T15:14:48.811Z"
+  "totalSessions": 13,
+  "lastReset": "2025-12-03T10:06:28.860Z"
 }

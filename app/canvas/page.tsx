@@ -2,7 +2,14 @@
 
 import Canvas from "@/components/canvas/canvas"
 import AIOrb from "@/components/ai-chat/ai-orb"
-import CanvasSidebar, { SidebarProvider } from "@/components/sidebar/canvas-sidebar"
+import SidebarProvider from "@/components/ui/sidebar"
+import CanvasSidebar from "@/components/sidebar/canvas-sidebar"
+import CanvasToolbar from "@/components/toolbar/canvas-toolbar"
+import CanvasSidebarTrigger from "@/components/sidebar/sidebar-trigger"
+import ExportButtons from "@/components/export/export-buttons"
+import TaskBook from "@/components/task-book/task-book"
+
+
 import { UsageDisplay } from "@/components/admin/usage-display"
 import { AIStatusIndicator } from "@/components/admin/ai-status-indicator"
 import { useRealtimeWebRTC } from "@/hooks/use-realtime-webrtc"
@@ -47,10 +54,10 @@ export default function CanvasPage() {
     }, [undo, redo])
 
     const connectTasks = useStore((state) => state.connectTasks)
-    
+
     const handleTasksGenerated = (tasks: any[]): string[] => {
         const newNodeIds: string[] = []
-        
+
         // Add cards one at a time with delays
         tasks.forEach((task, index) => {
             setTimeout(() => {
@@ -60,21 +67,21 @@ export default function CanvasPage() {
                     estimatedHours: task.estimatedHours
                 })
                 newNodeIds.push(nodeId)
-                
+
                 // Auto-connect within this conversation batch (vertical flow: bottom→top)
                 if (index > 0 && newNodeIds.length > 1) {
                     const sourceId = newNodeIds[index - 1]
                     const targetId = nodeId
-                    
+
                     // Get positions of the actual nodes to determine if same column
                     const nodes = useStore.getState().nodes
                     const sourceNode = nodes.find(n => n.id === sourceId)
                     const targetNode = nodes.find(n => n.id === targetId)
-                    
+
                     // Check if same column (similar x position within 100px tolerance)
-                    const isSameColumn = sourceNode && targetNode && 
+                    const isSameColumn = sourceNode && targetNode &&
                         Math.abs(sourceNode.position.x - targetNode.position.x) < 100
-                    
+
                     if (isSameColumn) {
                         // Vertical: bottom → top (step edge for 90-degree lines)
                         connectTasks(sourceId, targetId, { sourceHandle: 'bottom', targetHandle: 'top' })
@@ -83,7 +90,7 @@ export default function CanvasPage() {
                         connectTasks(sourceId, targetId, { sourceHandle: 'right', targetHandle: 'left' })
                     }
                 }
-                
+
                 // Smooth auto-zoom after last card
                 if (index === tasks.length - 1) {
                     setTimeout(() => {
@@ -98,14 +105,14 @@ export default function CanvasPage() {
                 }
             }, index * 2000) // 2 second delay between cards for better pacing
         })
-        
+
         return newNodeIds
     }
 
     const handleConnectTasks = (connections: { from: number; to: number }[]) => {
         const nodes = useStore.getState().nodes
         const latestTasks = nodes.slice(-10) // Get recent tasks
-        
+
         connections.forEach(({ from, to }) => {
             if (from < latestTasks.length && to < latestTasks.length) {
                 connectTasks(latestTasks[from].id, latestTasks[to].id)
@@ -164,11 +171,12 @@ export default function CanvasPage() {
     )
 
     return (
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={false}>
             <div className="fixed inset-0 h-screen w-screen overflow-hidden">
-                <CanvasSidebar />
                 <Canvas onInit={setReactFlowInstance} />
-                <AIOrb 
+                <ExportButtons />
+                <TaskBook />
+                <AIOrb
                     onConnect={connect}
                     onDisconnect={disconnect}
                     isConnected={isConnected}
