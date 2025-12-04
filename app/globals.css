@@ -111,7 +111,10 @@
 
     --task-card-handles-background: 240 4.8% 85%;
 
-    --task-book-icon: 240 4.8% 32%;
+    --task-book-icon-background: 0 0% 97%;
+    --task-book-icon-foreground: 240 5.3% 50%;
+    --task-book-icon-border: 210 17% 6% / 0.15;
+
 
     --edges: 244 58% 60%;
   }

@@ -139,7 +139,10 @@ const config = {
 					'status-options-accent': 'hsl(var(--task-card-status-options-accent))'
 				},
 				'task-book': {
-					icon: 'hsl(var(--task-book-icon))'
+					icon: 'hsl(var(--task-book-icon))',
+					'icon-background': 'hsl(var(--task-book-icon-background))',
+					'icon-foreground': 'hsl(var(--task-book-icon-foreground))',
+					'icon-border': 'hsl(var(--task-book-icon-border))'
 				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',

@@ -9,10 +9,10 @@ interface TaskBookIconProps {
 export default function TaskBookIcon({ size = 24, onClick, isOpen = false }: TaskBookIconProps) {
     return (
         <div 
-            className="cursor-pointer hover:opacity-60 transition-opacity text-task-book-icon"
+            className="cursor-pointer hover:opacity-60 transition-opacity"
             onClick={onClick}
         >
-            {isOpen ? <BookOpen size={size} /> : <Book size={size} />}
+            {isOpen ? <BookOpen size={size} className='text-task-book-icon-foreground' /> : <Book size={size} className='text-task-book-icon-foreground' />}
         </div>
     );
 }
