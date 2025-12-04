@@ -22,6 +22,7 @@ import CanvasToolbar from '@/components/toolbar/canvas-toolbar';
 import ExportButtons from '@/components/export/export-buttons';
 import TaskCard from '@/components/task-card-node/task-card-node';
 import LogoNode from '@/components/logo/logo-node';
+import TaskBook from '@/components/task-book/task-book';
 
 const selector = (state: AppState) => ({
     nodes: state.nodes,
@@ -73,6 +74,7 @@ export default function Canvas({ onInit }: CanvasProps) {
                 <CanvasToolbar />
                 <NavControlBar />
                 <ExportButtons />
+                <TaskBook />
             </ReactFlow>
         </div>
     );
