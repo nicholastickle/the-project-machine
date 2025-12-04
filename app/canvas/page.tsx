@@ -65,25 +65,21 @@ export default function CanvasPage() {
                     const sourceId = newNodeIds[index - 1]
                     const targetId = nodeId
                     
-                    // Calculate which column each card is in based on task count
-                    const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1000
-                    const maxCardsPerColumn = Math.max(3, Math.floor((viewportHeight - 200) / 320))
+                    // Get positions of the actual nodes to determine if same column
+                    const nodes = useStore.getState().nodes
+                    const sourceNode = nodes.find(n => n.id === sourceId)
+                    const targetNode = nodes.find(n => n.id === targetId)
                     
-                    const sourceColumn = Math.floor((index - 1) / maxCardsPerColumn)
-                    const targetColumn = Math.floor(index / maxCardsPerColumn)
-                    const isSameColumn = sourceColumn === targetColumn
+                    // Check if same column (similar x position within 100px tolerance)
+                    const isSameColumn = sourceNode && targetNode && 
+                        Math.abs(sourceNode.position.x - targetNode.position.x) < 100
                     
                     if (isSameColumn) {
-                        // Vertical: bottom → top
-                        useStore.getState().onConnect({
-                            source: sourceId,
-                            target: targetId,
-                            sourceHandle: 'bottom',
-                            targetHandle: 'top'
-                        })
+                        // Vertical: bottom → top (step edge for 90-degree lines)
+                        connectTasks(sourceId, targetId, { sourceHandle: 'bottom', targetHandle: 'top' })
                     } else {
-                        // Cross-column: right → left
-                        connectTasks(sourceId, targetId)
+                        // Cross-column: right → left (smoothstep for curves)
+                        connectTasks(sourceId, targetId, { sourceHandle: 'right', targetHandle: 'left' })
                     }
                 }
                 

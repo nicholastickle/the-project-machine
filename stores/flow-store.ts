@@ -67,18 +67,12 @@ const useStore = create<AppState>()(
                 },
 
                 onConnect: (connection) => {
-                    // Determine if connection is within same column (vertical) or cross-column
-                    const nodes = get().nodes;
-                    const sourceNode = nodes.find(n => n.id === connection.source);
-                    const targetNode = nodes.find(n => n.id === connection.target);
-                    
-                    // Check if nodes are in same column (similar x position within 100px tolerance)
-                    const isSameColumn = sourceNode && targetNode && 
-                        Math.abs(sourceNode.position.x - targetNode.position.x) < 100;
+                    // Check if vertical connection (bottom to top)
+                    const isVertical = connection.sourceHandle === 'bottom' && connection.targetHandle === 'top';
                     
                     const newEdge = {
                         ...connection,
-                        type: isSameColumn ? 'straight' : 'smoothstep',
+                        type: isVertical ? 'step' : 'smoothstep',
                         markerEnd: {
                             type: 'arrowclosed',
                             color: '#6366f1',
@@ -119,11 +113,10 @@ const useStore = create<AppState>()(
                     // Vertical column layout with dynamic viewport calculation
                     if (!nodeData?.position) {
                         const CARD_HEIGHT = 280;
-                        const CARD_VERTICAL_SPACING = 320; // Includes card + gap
+                        const CARD_VERTICAL_SPACING = 360; // Spacing to fit arrow clearly
                         const COLUMN_SPACING = 500;
                         const START_X = 300;
                         const START_Y = 150;
-                        const JITTER_AMOUNT = 40; // Horizontal variation for organic feel
                         
                         // Calculate max cards per column based on viewport
                         const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1000;
@@ -133,11 +126,8 @@ const useStore = create<AppState>()(
                         const columnIndex = Math.floor(taskNodes.length / maxCardsPerColumn);
                         const cardInColumn = taskNodes.length % maxCardsPerColumn;
                         
-                        // Add slight horizontal jitter for organic feel
-                        const jitter = (Math.random() * JITTER_AMOUNT) - (JITTER_AMOUNT / 2);
-                        
                         position = {
-                            x: START_X + (columnIndex * COLUMN_SPACING) + jitter,
+                            x: START_X + (columnIndex * COLUMN_SPACING),
                             y: START_Y + (cardInColumn * CARD_VERTICAL_SPACING)
                         };
                     }
@@ -183,13 +173,13 @@ const useStore = create<AppState>()(
                     });
                 },
 
-                connectTasks: (sourceId: string, targetId: string) => {
+                connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => {
                     get().saveHistory();
                     const connection = {
                         source: sourceId,
                         target: targetId,
-                        sourceHandle: 'right',
-                        targetHandle: 'left'
+                        sourceHandle: handles?.sourceHandle || 'right',
+                        targetHandle: handles?.targetHandle || 'left'
                     };
                     get().onConnect(connection);
                 },
