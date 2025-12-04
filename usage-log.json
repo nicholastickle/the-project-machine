@@ -9,8 +9,805 @@
       "timestamp": "2025-12-03T10:07:37.399Z",
       "model": "gpt-4o-mini-realtime-preview-2024-12-17",
       "duration": 75023
+    },
+    {
+      "timestamp": "2025-12-03T20:14:53.625Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:14:54.703Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:14:59.159Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:14:59.200Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:14:59.745Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:01.095Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:01.230Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:01.865Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:04.068Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:04.478Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:11.195Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:28.238Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:28.376Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:31.274Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:31.943Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:32.051Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:34.243Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:39.813Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:15:39.915Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:16:33.876Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:16:34.178Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:16:37.025Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:16:37.028Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:16:50.906Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:16:50.972Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 5646
+    },
+    {
+      "timestamp": "2025-12-03T20:18:28.698Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:29.457Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:30.476Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:30.483Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:31.232Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:31.234Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:31.469Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:31.712Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:32.683Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:32.688Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:33.203Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:33.678Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:34.077Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:34.980Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:35.162Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:35.273Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:36.739Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:37.961Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:38.024Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:38.040Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:38.725Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:39.704Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:40.162Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:40.864Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:50.814Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:50.817Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:50.875Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:51.502Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:51.861Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:52.378Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:52.380Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:52.828Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:18:54.107Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 8
+    },
+    {
+      "timestamp": "2025-12-03T20:18:54.762Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:19:04.047Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 9939
+    },
+    {
+      "timestamp": "2025-12-03T20:19:27.897Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:19:28.013Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 23147
+    },
+    {
+      "timestamp": "2025-12-03T20:19:56.860Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:19:56.862Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:20:00.826Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:20:00.870Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:20:00.871Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:20:00.872Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:20:01.172Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:20:01.286Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:20:01.652Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:20:01.820Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 39225
+    },
+    {
+      "timestamp": "2025-12-03T20:26:55.946Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:26:56.695Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:26:57.688Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:26:57.705Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:26:58.028Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:26:59.354Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:26:59.642Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:26:59.645Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:26:59.767Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:00.773Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:01.280Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:01.679Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:01.681Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:08.737Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:08.845Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:08.848Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:10.103Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:10.782Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:10.869Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:11.319Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:11.442Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:12.953Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:18.382Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:18.465Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:18.516Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:19.772Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 2253
+    },
+    {
+      "timestamp": "2025-12-03T20:27:20.812Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:24.353Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:25.191Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:33.863Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:34.393Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:27:34.396Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 467
+    },
+    {
+      "timestamp": "2025-12-03T20:27:51.903Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 11205
+    },
+    {
+      "timestamp": "2025-12-03T20:28:19.843Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:28:20.285Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:28:20.755Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:28:20.781Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:28:20.782Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:28:20.783Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 8024
+    },
+    {
+      "timestamp": "2025-12-03T20:28:31.105Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 19761
+    },
+    {
+      "timestamp": "2025-12-03T20:31:50.466Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:51.301Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:51.595Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:52.098Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:52.983Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:53.174Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:54.044Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:54.501Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:54.647Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:54.658Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:55.313Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:55.712Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:56.097Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:56.176Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:56.883Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:57.305Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:57.307Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:57.656Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:31:58.378Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:07.151Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:07.323Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:09.064Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:09.495Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:10.363Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:11.433Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:11.473Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:12.144Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:13.144Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:13.145Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:13.473Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:15.064Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:15.075Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:15.940Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:16.025Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:16.749Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:16.809Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:17.363Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T20:32:29.333Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 293
+    },
+    {
+      "timestamp": "2025-12-03T20:32:40.169Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 86
+    },
+    {
+      "timestamp": "2025-12-03T20:32:44.962Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 3052
+    },
+    {
+      "timestamp": "2025-12-03T20:32:50.812Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 11387
+    },
+    {
+      "timestamp": "2025-12-03T21:00:03.124Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 441671
+    },
+    {
+      "timestamp": "2025-12-03T21:08:36.107Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T21:11:33.698Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T21:13:11.754Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 88532
+    },
+    {
+      "timestamp": "2025-12-03T21:14:59.606Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T21:44:55.954Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 61164
+    },
+    {
+      "timestamp": "2025-12-03T21:46:05.745Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 86560
+    },
+    {
+      "timestamp": "2025-12-03T21:48:19.884Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 41559
+    },
+    {
+      "timestamp": "2025-12-03T21:52:57.229Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 30189
+    },
+    {
+      "timestamp": "2025-12-03T21:58:43.982Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-03T21:59:01.193Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 36607
+    },
+    {
+      "timestamp": "2025-12-03T22:00:52.731Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 27439
+    },
+    {
+      "timestamp": "2025-12-03T22:06:09.943Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 45687
+    },
+    {
+      "timestamp": "2025-12-03T22:07:05.645Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 74350
+    },
+    {
+      "timestamp": "2025-12-03T22:13:02.924Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 109122
+    },
+    {
+      "timestamp": "2025-12-03T22:15:00.616Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 46975
+    },
+    {
+      "timestamp": "2025-12-03T22:21:43.601Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 85195
+    },
+    {
+      "timestamp": "2025-12-03T22:28:37.193Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 138209
+    },
+    {
+      "timestamp": "2025-12-03T22:46:16.176Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 119693
+    },
+    {
+      "timestamp": "2025-12-03T23:01:30.718Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 101708
+    },
+    {
+      "timestamp": "2025-12-03T23:05:23.152Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 40936
+    },
+    {
+      "timestamp": "2025-12-03T23:08:22.547Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 15040
+    },
+    {
+      "timestamp": "2025-12-03T23:08:43.244Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 11225
+    },
+    {
+      "timestamp": "2025-12-03T23:09:21.959Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 51110
+    },
+    {
+      "timestamp": "2025-12-03T23:11:14.574Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 18395
+    },
+    {
+      "timestamp": "2025-12-03T23:12:06.302Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 20166
+    },
+    {
+      "timestamp": "2025-12-03T23:13:30.078Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 34350
+    },
+    {
+      "timestamp": "2025-12-03T23:14:15.294Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 22361
+    },
+    {
+      "timestamp": "2025-12-03T23:50:12.416Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 48030
+    },
+    {
+      "timestamp": "2025-12-03T23:55:16.725Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 47995
+    },
+    {
+      "timestamp": "2025-12-03T23:58:24.731Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 78861
+    },
+    {
+      "timestamp": "2025-12-04T00:32:35.502Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 86014
+    },
+    {
+      "timestamp": "2025-12-04T11:50:31.594Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 100342
+    },
+    {
+      "timestamp": "2025-12-04T14:53:49.323Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 134974
+    },
+    {
+      "timestamp": "2025-12-04T14:56:35.416Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 100528
     }
   ],
-  "totalSessions": 2,
+  "totalSessions": 190,
   "lastReset": "2025-12-03T10:06:28.860Z"
 }

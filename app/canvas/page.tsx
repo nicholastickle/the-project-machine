@@ -4,6 +4,7 @@ import Canvas from "@/components/canvas/canvas"
 import AIOrb from "@/components/ai-chat/ai-orb"
 import CanvasSidebar, { SidebarProvider } from "@/components/sidebar/canvas-sidebar"
 import { UsageDisplay } from "@/components/admin/usage-display"
+import { AIStatusIndicator } from "@/components/admin/ai-status-indicator"
 import { useRealtimeWebRTC } from "@/hooks/use-realtime-webrtc"
 import useStore from "@/stores/flow-store"
 import { useEffect, useRef, type RefObject } from "react"
@@ -127,7 +128,7 @@ export default function CanvasPage() {
         }
     }
 
-    const { connect, disconnect, isConnected, isSpeaking, isConnecting, isMuted, toggleMute } = useRealtimeWebRTC(
+    const { connect, disconnect, isConnected, isSpeaking, isConnecting, isMuted, toggleMute, currentActivity } = useRealtimeWebRTC(
         handleTasksGenerated,
         handleConnectTasks,
         handleClearCanvas,
@@ -152,7 +153,17 @@ export default function CanvasPage() {
                     onToggleMute={toggleMute}
                     hasTaskNodes={hasTaskNodes}
                 />
-                {process.env.NODE_ENV === 'development' && <UsageDisplay />}
+                {process.env.NODE_ENV === 'development' && (
+                    <>
+                        <UsageDisplay />
+                        <AIStatusIndicator 
+                            isConnected={isConnected}
+                            isConnecting={isConnecting}
+                            isSpeaking={isSpeaking}
+                            currentActivity={currentActivity}
+                        />
+                    </>
+                )}
             </div>
         </SidebarProvider>
     )

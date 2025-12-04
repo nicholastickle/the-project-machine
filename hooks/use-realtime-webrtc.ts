@@ -8,6 +8,7 @@ interface RealtimeWebRTCHook {
   isConnecting: boolean;
   isMuted: boolean;
   toggleMute: () => void;
+  currentActivity: string;
 }
 
 export function useRealtimeWebRTC(
@@ -20,6 +21,7 @@ export function useRealtimeWebRTC(
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [currentActivity, setCurrentActivity] = useState<string>('Idle');
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
@@ -105,15 +107,18 @@ export function useRealtimeWebRTC(
           session: {
             instructions: `You're PM, a British AI helping with project planning. Be quick, friendly, and get straight to business.
 
-When user describes a project, call create_tasks with 3-10 tasks (include estimatedHours for each), then ALWAYS respond verbally with something brief like "Sorted! Anything else?" to keep conversation flowing.
+CRITICAL RULES:
+1. NEVER create tasks unprompted - ONLY when user explicitly describes a project or asks for tasks
+2. Always greet first and wait for user to describe their project
+3. After calling ANY function (create_tasks, update_task, clear_canvas), you MUST respond with speech
 
-CRITICAL: After calling ANY function (create_tasks, update_task, clear_canvas), you MUST respond with speech. Never go silent after a function call. Always acknowledge it worked.
+When user describes a project, call create_tasks with 3-10 tasks (include estimatedHours for each), then respond verbally: "Sorted! Anything else?"
 
-For updates: "mark task 3 done" = call update_task then say "Done!". "change task 2 to 5 hours" = call update_task then confirm briefly.
+For updates: "mark task 3 done" = call update_task then say "Done!". "change task 2 to 5 hours" = call update_task then confirm.
 
 Clear board: call clear_canvas then say "Cleared!".
 
-Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Done!", "Right then!"`,
+Keep responses brief after functions. Use: "Brilliant!", "Sorted!", "Done!", "Right then!"`,
             turn_detection: {
               type: 'server_vad',
               threshold: 0.5,
@@ -205,6 +210,7 @@ Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Don
           if (message.type === 'session.updated') {
             setIsConnected(true);
             setIsConnecting(false);
+            setCurrentActivity('Session ready, requesting greeting');
             dc.send(JSON.stringify({
               type: 'response.create'
             }));
@@ -213,18 +219,22 @@ Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Don
           // Track speaking state
           if (message.type === 'response.audio.delta' || message.type === 'response.audio_transcript.delta') {
             setIsSpeaking(true);
+            setCurrentActivity('AI speaking');
           } else if (message.type === 'response.done') {
             setIsSpeaking(false);
+            setCurrentActivity('Listening');
           }
           
           // Handle conversation interruptions/errors
           if (message.type === 'error') {
             console.error('OpenAI error:', message);
+            setCurrentActivity(`Error: ${message.error?.message || 'Unknown'}`);
           }
           
           // If conversation gets truncated, trigger new response
           if (message.type === 'conversation.item.truncated') {
             console.log('Conversation truncated, requesting continuation');
+            setCurrentActivity('Recovering from interruption...');
             dc.send(JSON.stringify({ type: 'response.create' }));
           }
 
@@ -236,13 +246,17 @@ Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Don
             console.log('Function call:', name, args);
 
             if (name === 'create_tasks' && args.tasks) {
+              setCurrentActivity(`Creating ${args.tasks.length} tasks...`);
               onTasksGenerated(args.tasks);
             } else if (name === 'connect_tasks' && args.connections) {
+              setCurrentActivity(`Connecting ${args.connections.length} tasks...`);
               onConnectTasks(args.connections);
             } else if (name === 'update_task') {
+              setCurrentActivity(`Updating task ${args.taskIndex}...`);
               const { taskIndex, ...updates } = args;
               onUpdateTask(taskIndex, updates);
             } else if (name === 'clear_canvas') {
+              setCurrentActivity('Clearing canvas...');
               onClearCanvas();
             }
 
@@ -354,6 +368,7 @@ Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Don
     setIsConnected(false);
     setIsSpeaking(false);
     setIsMuted(false);
+    setCurrentActivity('Disconnected');
   }, []);
 
   return {
@@ -363,6 +378,7 @@ Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Don
     isSpeaking,
     isConnecting,
     isMuted,
+    currentActivity,
     toggleMute,
   };
 }

@@ -60,43 +60,43 @@ export function UsageDisplay() {
 
       {/* Stats panel */}
       {isVisible && stats && (
-        <div className="fixed bottom-[300px] right-4 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-2 border-indigo-200 dark:border-indigo-800 rounded-xl p-4 shadow-xl w-64">
-          <h3 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-            <Activity className="w-4 h-4 text-indigo-600" />
+        <div className="fixed bottom-[300px] right-4 z-50 bg-gray-900 backdrop-blur-md border-2 border-gray-700 rounded-xl p-4 shadow-2xl w-64">
+          <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+            <Activity className="w-4 h-4 text-indigo-400" />
             Usage Stats
           </h3>
           
           <div className="space-y-3 text-sm">
             <div className="flex items-center justify-between">
-              <span className="text-gray-600 flex items-center gap-1">
+              <span className="text-gray-300 flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" />
                 Today
               </span>
-              <span className="font-semibold text-gray-800">{stats.todaySessions}</span>
+              <span className="font-semibold text-white">{stats.todaySessions}</span>
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Total Sessions</span>
-              <span className="font-semibold text-gray-800">{stats.totalSessions}</span>
+              <span className="text-gray-300">Total Sessions</span>
+              <span className="font-semibold text-white">{stats.totalSessions}</span>
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-gray-600 flex items-center gap-1">
+              <span className="text-gray-300 flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 Total Time
               </span>
-              <span className="font-semibold text-gray-800">
+              <span className="font-semibold text-white">
                 {Math.floor(stats.totalDurationSeconds / 60)}m {stats.totalDurationSeconds % 60}s
               </span>
             </div>
           </div>
 
           {stats.recentSessions.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-gray-200">
-              <p className="text-xs text-gray-500 mb-2">Recent Sessions</p>
+            <div className="mt-3 pt-3 border-t border-gray-700">
+              <p className="text-xs text-gray-400 mb-2">Recent Sessions</p>
               <div className="space-y-1 max-h-24 overflow-y-auto">
                 {stats.recentSessions.slice(0, 5).map((session, i) => (
-                  <div key={i} className="text-xs text-gray-600 flex justify-between">
+                  <div key={i} className="text-xs text-gray-300 flex justify-between">
                     <span>{new Date(session.timestamp).toLocaleTimeString()}</span>
                     <span>{session.duration ? `${Math.round(session.duration / 1000)}s` : '•'}</span>
                   </div>
@@ -105,11 +105,11 @@ export function UsageDisplay() {
             </div>
           )}
 
-          <div className="mt-3 pt-3 border-t border-gray-200">
-            <p className="text-xs text-gray-500">
+          <div className="mt-3 pt-3 border-t border-gray-700">
+            <p className="text-xs text-gray-400">
               Model: gpt-4o-mini-realtime
             </p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-gray-500 mt-1">
               Ctrl+Shift+U to toggle
             </p>
           </div>
