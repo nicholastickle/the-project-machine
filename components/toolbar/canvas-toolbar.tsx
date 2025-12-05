@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Undo2, Redo2, Plus, RotateCcw } from "lucide-react"
+import { Undo2, Redo2, RotateCcw, ClipboardPlus } from "lucide-react"
 import {
     Tooltip,
     TooltipContent,
@@ -45,7 +45,7 @@ export default function CanvasToolbar() {
                             onClick={handleAddTask}
                             className="h-8 w-8 p-0 hover:bg-toolbar-accent hover:text-toolbar-foreground"
                         >
-                            <Plus className="h-4 w-4" />
+                            <ClipboardPlus className="h-12 w-12" />
                         </Button>
                     </TooltipTrigger>
                     <TooltipContent side="right">

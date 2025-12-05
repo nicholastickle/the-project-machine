@@ -55,13 +55,13 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                 <div className="flex flex-col h-full bg-background text-foreground rounded-2xl">
                     <div className="flex flex-col flex-[1]">
                         <DialogHeader className="p-6">
-                            <DialogTitle className="text-2xl font-bold text-center w-full">Task Book</DialogTitle>
+                            <DialogTitle className="text-2xl font-bold text-center w-full">Saved completed tasks</DialogTitle>
                         </DialogHeader>
                     </div>
                     <div className="flex flex-[11] flex-row">
                         <div className="flex flex-col flex-[3] border-r border-muted-foreground/30" >
                             <div className="flex flex-[0.5] justify-center items-center border-y border-muted-foreground/30">
-                                <p className="text-xl font-semibold ">Chapters</p>
+                                <p className="text-xl font-semibold ">Tasks</p>
                             </div>
                             <div className="flex flex-[11.5] p-4">
                                 <Accordion type="multiple" className="w-full">
