@@ -17,6 +17,9 @@ export function useRealtimeWebRTC(
   onClearCanvas: () => void,
   onUpdateTask: (taskIndex: number, updates: { status?: string; estimatedHours?: number; title?: string }) => void,
   onDeleteTask: (taskIndex: number) => void,
+  onBulkUpdateTasks: (taskIndexes: number[], updates: { status?: string; estimatedHours?: number; title?: string }) => void,
+  onBulkDeleteTasks: (taskIndexes: number[]) => void,
+  onUpdateAllTasks: (updates: { status?: string; estimatedHours?: number; title?: string }) => void,
   hasTaskNodes: boolean,
   taskCount: number
 ): RealtimeWebRTCHook {
@@ -111,7 +114,7 @@ export function useRealtimeWebRTC(
             instructions: `You're PM, a British AI helping with project planning. Be quick, friendly, and get straight to business.
 
 CRITICAL RULES:
-1. Always greet first and wait for user input
+1. Greet immediately when session starts, then wait for user input
 2. After calling ANY function, you MUST respond with speech to acknowledge it
 3. Follow the TASK CREATION RULES below carefully
 
@@ -128,18 +131,29 @@ ${hasTaskNodes
   : '- Canvas EMPTY: When user describes a project, call create_tasks IMMEDIATELY (no asking), then confirm: "Added [N] tasks! What needs tweaking?"'
 }
 
-WHEN TO CREATE TASKS (use your judgment):
-✅ CREATE when user says:
-- "I need to [project]" → auto-create
-- "Plan [project]" → auto-create  
-- "Create/add tasks for [project]" → auto-create
-- "Let\'s [action]" → auto-create
-- Direct project description as statement → auto-create
+WHEN TO CREATE vs DISCUSS:
 
-❌ DON\'T CREATE when user asks questions:
-- "What tasks would I need..." → just answer verbally
-- "How would you..." → just answer verbally
-- "Tell me about..." → just answer verbally
+✅ CREATE IMMEDIATELY (empty canvas only):
+- "I need to [project]" → call create_tasks
+- "Plan [project]" → call create_tasks
+- "Create/add tasks for [project]" → call create_tasks
+- Direct project description as statement → call create_tasks
+
+✅ ASK FIRST (canvas has tasks OR ambiguous intent):
+- "What about [new feature]?" → ask "Should I add tasks for [feature]?"
+- "I also need to [thing]" → ask "I\'ll add [N] tasks for [thing]. Sound good?"
+- Adding to existing project → always confirm first
+
+❌ DISCUSS ONLY (then offer to create):
+- "What tasks would I need for [project]?" → answer verbally
+- "How would you plan [project]?" → answer verbally  
+- "Tell me about [project]" → answer verbally
+→ After discussing tasks, ALWAYS end with: "Should I add these to the canvas?"
+
+DISCUSSION FOLLOW-UP RULE:
+If you describe/suggest tasks WITHOUT calling create_tasks, you MUST end your response with:
+"Want me to add these to the canvas?" or "Should I create these tasks?"
+This gives users control while being helpful.
 
 IMPORTANT: You know the canvas has ${taskCount} tasks but cannot see their titles or details. When users ask about specific tasks, respond helpfully: "You have ${taskCount} tasks on the canvas. Which task number should I update?" or "Got ${taskCount} tasks here - tell me the number and what to change!"
 
@@ -147,6 +161,9 @@ AVAILABLE FUNCTIONS:
 - create_tasks: Create 3-10 tasks with estimatedHours. Use immediately when canvas empty, ask first when canvas has tasks.
 - update_task(taskIndex, {status/estimatedHours/title}): "mark task 3 done", "change task 2 to 5 hours", "rename task 1 to Setup"
 - delete_task(taskIndex): "delete task 3", "remove the second task"
+- bulk_update_tasks(taskIndexes, {status/estimatedHours/title}): Update multiple tasks at once
+- bulk_delete_tasks(taskIndexes): Delete multiple tasks at once
+- update_all_tasks({status/estimatedHours/title}): Update every task on canvas
 - clear_canvas: "clear the board", "start over"
 
 TASK NUMBERS: Tasks are numbered 1, 2, 3, etc. in the order they appear on canvas (top to bottom, left to right). Users must tell you which task number to modify.
@@ -159,6 +176,8 @@ STATUS VALUES (use exactly these):
 - "Abandoned" - task was cancelled
 
 EXAMPLES:
+
+Single task operations:
 - "Mark task 1 as done" → update_task(1, {status: "Complete"}) then say "Done!"
 - "Start task 2" → update_task(2, {status: "On-going"}) then say "Started!"
 - "Task 3 is stuck" → update_task(3, {status: "Stuck"}) then say "Marked as stuck!"
@@ -166,12 +185,19 @@ EXAMPLES:
 - "Delete the second task" → delete_task(2) then say "Removed!"
 - "Rename task 1 to Setup database" → update_task(1, {title: "Setup database"}) then say "Renamed!"
 
-Keep confirmations brief: "Done!", "Sorted!", "Updated!", "Removed!"`,
+Bulk operations:
+- "Mark tasks 1, 2, and 3 complete" → bulk_update_tasks([1,2,3], {status: "Complete"}) then say "Marked 3 tasks complete!"
+- "Change tasks 2 to 5 to 10 hours" → bulk_update_tasks([2,3,4,5], {estimatedHours: 10}) then say "Updated 4 tasks to 10 hours!"
+- "Delete tasks 1 through 3" → bulk_delete_tasks([1,2,3]) then say "Deleted 3 tasks!"
+- "Complete all tasks" → update_all_tasks({status: "Complete"}) then say "All ${taskCount} tasks marked complete!"
+- "Set everything to 5 hours" → update_all_tasks({estimatedHours: 5}) then say "Set all ${taskCount} tasks to 5 hours!"
+
+Keep confirmations brief: "Done!", "Sorted!", "Updated [N] tasks!", "Removed!"`,
             turn_detection: {
               type: 'server_vad',
               threshold: 0.5,
               prefix_padding_ms: 300,
-              silence_duration_ms: 900,
+              silence_duration_ms: 1200,
             },
             input_audio_transcription: null,
             max_response_output_tokens: 1000,
@@ -250,6 +276,46 @@ Keep confirmations brief: "Done!", "Sorted!", "Updated!", "Removed!"`,
               },
               {
                 type: 'function',
+                name: 'bulk_update_tasks',
+                description: 'Update multiple tasks at once. Use when user says "mark tasks 1, 2, and 3 complete", "change tasks 2 to 5 to 10 hours", etc.',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    taskIndexes: { type: 'array', items: { type: 'number' }, description: 'Array of task numbers (1-based)' },
+                    status: { type: 'string', enum: ['Not started', 'On-going', 'Complete', 'Stuck', 'Abandoned'], description: 'New status for all tasks' },
+                    estimatedHours: { type: 'number', description: 'New time estimate for all tasks' },
+                    title: { type: 'string', description: 'New title for all tasks' }
+                  },
+                  required: ['taskIndexes']
+                }
+              },
+              {
+                type: 'function',
+                name: 'bulk_delete_tasks',
+                description: 'Delete multiple tasks at once. Use when user says "delete tasks 1 through 3", "remove tasks 2, 4, and 6", etc.',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    taskIndexes: { type: 'array', items: { type: 'number' }, description: 'Array of task numbers to delete (1-based)' }
+                  },
+                  required: ['taskIndexes']
+                }
+              },
+              {
+                type: 'function',
+                name: 'update_all_tasks',
+                description: 'Update every task on the canvas. Use when user says "complete all tasks", "set everything to 5 hours", etc.',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    status: { type: 'string', enum: ['Not started', 'On-going', 'Complete', 'Stuck', 'Abandoned'], description: 'New status for all tasks' },
+                    estimatedHours: { type: 'number', description: 'New time estimate for all tasks' },
+                    title: { type: 'string', description: 'New title for all tasks' }
+                  }
+                }
+              },
+              {
+                type: 'function',
                 name: 'clear_canvas',
                 description: 'Clear all tasks from the canvas',
                 parameters: {
@@ -266,11 +332,11 @@ Keep confirmations brief: "Done!", "Sorted!", "Updated!", "Removed!"`,
         try {
           const message = JSON.parse(event.data);
           
-          // When session is ready, mark as connected and immediately trigger AI greeting
+          // When session is ready, mark as connected and trigger AI greeting
           if (message.type === 'session.updated') {
             setIsConnected(true);
             setIsConnecting(false);
-            setCurrentActivity('Session ready, requesting greeting');
+            setCurrentActivity('Session ready, greeting user');
             dc.send(JSON.stringify({
               type: 'response.create'
             }));
@@ -318,6 +384,16 @@ Keep confirmations brief: "Done!", "Sorted!", "Updated!", "Removed!"`,
             } else if (name === 'delete_task') {
               setCurrentActivity(`Deleting task ${args.taskIndex}...`);
               onDeleteTask(args.taskIndex);
+            } else if (name === 'bulk_update_tasks') {
+              setCurrentActivity(`Bulk updating ${args.taskIndexes.length} tasks...`);
+              const { taskIndexes, ...updates } = args;
+              onBulkUpdateTasks(taskIndexes, updates);
+            } else if (name === 'bulk_delete_tasks') {
+              setCurrentActivity(`Bulk deleting ${args.taskIndexes.length} tasks...`);
+              onBulkDeleteTasks(args.taskIndexes);
+            } else if (name === 'update_all_tasks') {
+              setCurrentActivity('Updating all tasks...');
+              onUpdateAllTasks(args);
             } else if (name === 'clear_canvas') {
               setCurrentActivity('Clearing canvas...');
               onClearCanvas();
