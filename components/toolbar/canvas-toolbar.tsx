@@ -1,19 +1,18 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { useReactFlow } from "@xyflow/react"
-import { ZoomIn, ZoomOut, Maximize, Undo2, Redo2, Plus, RotateCcw } from "lucide-react"
+import { Undo2, Redo2, Plus, RotateCcw } from "lucide-react"
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
 } from "@/components/ui/tooltip"
 import useStore from "@/stores/flow-store"
 import { useSidebar } from "@/components/ui/sidebar"
 
 export default function CanvasToolbar() {
-    
+
     const undo = useStore((state) => state.undo)
     const redo = useStore((state) => state.redo)
     const addTaskNode = useStore((state) => state.addTaskNode)
@@ -22,7 +21,7 @@ export default function CanvasToolbar() {
     const history = useStore((state) => state.history)
     const { open, isMobile } = useSidebar()
 
-    const canUndo = historyIndex > 0
+    const canUndo = historyIndex > 0 && history.length > 1
     const canRedo = historyIndex < history.length - 1
 
     const handleAddTask = () => {
@@ -38,42 +37,6 @@ export default function CanvasToolbar() {
     return (
         <TooltipProvider>
             <div className={`absolute top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2 bg-toolbar-background/80 backdrop-blur-xl border-2 border-toolbar-border rounded-full p-2 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.3)] hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.4)] transition-all duration-300 ${!isMobile && open ? 'left-[275px]' : 'left-[55px]'}`}>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => undo()}
-                            disabled={!canUndo}
-                            className="h-8 w-8 p-0 hover:bg-toolbar-accent hover:text-toolbar-foreground disabled:opacity-30"
-                        >
-                            <Undo2 className="h-4 w-4" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                        <p>Undo (Ctrl+Z)</p>
-                    </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => redo()}
-                            disabled={!canRedo}
-                            className="h-8 w-8 p-0 hover:bg-toolbar-accent hover:text-toolbar-foreground disabled:opacity-30"
-                        >
-                            <Redo2 className="h-4 w-4" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                        <p>Redo (Ctrl+Y)</p>
-                    </TooltipContent>
-                </Tooltip>
-
-                <div className="h-px w-6 bg-toolbar-border my-1" />
-
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button
@@ -108,13 +71,49 @@ export default function CanvasToolbar() {
                     </Tooltip>
                 )}
 
-                <div className="h-px w-6 bg-toolbar-border my-1" />
+                <div className="h-px w-8 bg-toolbar-border my-1" />
 
-               
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => undo()}
+                            disabled={!canUndo}
+                            className="h-8 w-8 p-0 hover:bg-toolbar-accent hover:text-toolbar-foreground disabled:opacity-30"
+                        >
+                            <Undo2 className="h-4 w-4" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                        <p>Undo (Ctrl+Z)</p>
+                    </TooltipContent>
+                </Tooltip>
 
-                
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => redo()}
+                            disabled={!canRedo}
+                            className="h-8 w-8 p-0 hover:bg-toolbar-accent hover:text-toolbar-foreground disabled:opacity-30"
+                        >
+                            <Redo2 className="h-4 w-4" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                        <p>Redo (Ctrl+Y)</p>
+                    </TooltipContent>
+                </Tooltip>
 
-                
+
+
+
+
+
+
+
             </div>
         </TooltipProvider>
     )
