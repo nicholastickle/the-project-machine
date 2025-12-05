@@ -116,7 +116,7 @@
     --task-book-icon-border: 210 17% 6% / 0.15;
 
 
-    --edges: 244 58% 60%;
+     --edges: 240 10% 5%;
   }
 
   .dark {
@@ -225,7 +225,7 @@
     --task-book-icon-foreground: 240 4.8% 95.9%;
     --task-book-icon-border: 240 3.7% 15.9%;
 
-    --edges: 244 58% 60%;
+    --edges: 0 0% 98%;
   }
 }
 

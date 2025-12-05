@@ -102,7 +102,7 @@ export default function ExportButtons() {
                             size="sm"
                             variant="ghost"
                             onClick={exportAsMarkdown}
-                            className="h-9 gap-2 bg-toolbar-background border-2 border-toolbar-border hover:bg-toolbar-accent hover:text-toolbar-foreground shadow-xl hover:shadow-2xl transition-all"
+                            className="h-9 gap-2 bg-toolbar-background border border-toolbar-border text-toolbar-foreground hover:bg-toolbar-accent shadow-sm transition-all"
                         >
                             <FileText className="h-4 w-4" />
                             <span className="hidden sm:inline">Markdown</span>
@@ -119,7 +119,7 @@ export default function ExportButtons() {
                             size="sm"
                             variant="ghost"
                             onClick={exportAsCSV}
-                            className="h-9 gap-2 bg-toolbar-background border-2 border-toolbar-border hover:bg-toolbar-accent hover:text-toolbar-foreground shadow-xl hover:shadow-2xl transition-all"
+                            className="h-9 gap-2 bg-toolbar-background border border-toolbar-border text-toolbar-foreground hover:bg-toolbar-accent shadow-sm transition-all"
                         >
                             <Download className="h-4 w-4" />
                             <span className="hidden sm:inline">CSV</span>

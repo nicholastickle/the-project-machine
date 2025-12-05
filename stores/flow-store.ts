@@ -72,17 +72,17 @@ const useStore = create<AppState>()(
 
                     const newEdge = {
                         ...connection,
-                        type: isVertical ? 'step' : 'smoothstep',
+                        type: 'smoothstep',
                         markerEnd: {
                             type: 'arrowclosed',
-                            color: '#6366f1',
-                            width: 20,
-                            height: 20
+                            color: 'hsl(var(--edges))'
                         },
+
                         animated: true,
                         style: {
-                            stroke: '#6366f1',
-                            strokeWidth: 3,
+                            stroke: 'hsl(var(--edges))',
+                            strokeWidth: 2,
+                            animationDuration: '1s',
                         },
                     };
                     set({

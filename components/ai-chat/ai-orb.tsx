@@ -47,7 +47,7 @@ export default function AIOrb({
         return baseClass
     }, [state, className])
 
-    const containerClassName = `ai-orb-container shadow-[0_30px_70px_-15px_rgba(0,0,0,0.4)] ${!hasTaskNodes ? 'centered' : ''}`
+    const containerClassName = `ai-orb-container  ${!hasTaskNodes ? 'centered' : ''}`
 
     return (
         <div className={containerClassName}>
@@ -70,17 +70,17 @@ export default function AIOrb({
                 title={`AI Assistant (${state})`}
             />
             {!isConnected && !isConnecting && (
-                <div className="text-center whitespace-nowrap mt-4 bg-black/80 backdrop-blur-sm px-4 py-2 rounded-lg">
-                    <div className="text-base font-semibold text-white mb-1">
+                <div className="text-center whitespace-nowrap bg-transparent px-4 py-2 rounded-lg">
+                    <div className="text-toolbar-foreground mb-1 font-bold">
                         Click to start
                     </div>
-                    <div className="text-sm text-gray-200">
-                        Tell me what you&apos;re building
+                    <div className="text-toolbar-foreground">
+                        Tell me about your project
                     </div>
                 </div>
             )}
             {isConnecting && (
-                <div className="text-base font-medium text-white animate-pulse whitespace-nowrap mt-4 bg-black/80 backdrop-blur-sm px-4 py-2 rounded-lg">
+                <div className="text-toolbar-foreground mb-1 font-bold">
                     Connecting...
                 </div>
             )}
