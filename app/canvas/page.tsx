@@ -176,7 +176,7 @@ export default function CanvasPage() {
     return (
         <SidebarProvider defaultOpen={false}>
             <div className="fixed inset-0 h-screen w-screen overflow-hidden">
-                <Canvas onInit={setReactFlowInstance} />
+                <Canvas />
                 <ExportButtons />
                 <TaskBook />
                 <AIOrb
