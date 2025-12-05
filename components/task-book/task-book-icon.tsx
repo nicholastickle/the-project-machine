@@ -12,7 +12,7 @@ export default function TaskBookIcon({ size = 24, onClick, isOpen = false }: Tas
             className="cursor-pointer hover:opacity-60 transition-opacity"
             onClick={onClick}
         >
-            {isOpen ? <BookOpen size={size} className='text-task-book-icon-foreground' /> : <Book size={size} className='text-task-book-icon-foreground' />}
+            {isOpen ? <BookOpen size={size} className='text-task-book-icon-foreground' /> : <Book size={size} className='text-task-book-icon-foreground/70' />}
         </div>
     );
 }

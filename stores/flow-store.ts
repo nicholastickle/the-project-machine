@@ -14,8 +14,8 @@ const useStore = create<AppState>()(
             (set, get) => ({
                 nodes: initialNodes,
                 edges: initialEdges,
-                history: [],
-                historyIndex: -1,
+                history: [{ nodes: initialNodes, edges: initialEdges }],
+                historyIndex: 0,
 
                 saveHistory: () => {
                     const { nodes, edges, history, historyIndex } = get();
@@ -69,7 +69,7 @@ const useStore = create<AppState>()(
                 onConnect: (connection) => {
                     // Check if vertical connection (bottom to top)
                     const isVertical = connection.sourceHandle === 'bottom' && connection.targetHandle === 'top';
-                    
+
                     const newEdge = {
                         ...connection,
                         type: isVertical ? 'step' : 'smoothstep',
@@ -105,8 +105,6 @@ const useStore = create<AppState>()(
                     estimatedHours?: number;
                     timeSpent?: number;
                 }) => {
-                    get().saveHistory();
-                    
                     const nodes = get().nodes;
                     let position = nodeData?.position || { x: 200, y: 200 };
 
@@ -117,15 +115,15 @@ const useStore = create<AppState>()(
                         const COLUMN_SPACING = 500;
                         const START_X = 300;
                         const START_Y = 150;
-                        
+
                         // Calculate max cards per column based on viewport
                         const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1000;
                         const maxCardsPerColumn = Math.max(3, Math.floor((viewportHeight - 200) / CARD_VERTICAL_SPACING));
-                        
+
                         const taskNodes = nodes.filter(n => n.type === 'taskCardNode');
                         const columnIndex = Math.floor(taskNodes.length / maxCardsPerColumn);
                         const cardInColumn = taskNodes.length % maxCardsPerColumn;
-                        
+
                         position = {
                             x: START_X + (columnIndex * COLUMN_SPACING),
                             y: START_Y + (cardInColumn * CARD_VERTICAL_SPACING)
@@ -148,14 +146,13 @@ const useStore = create<AppState>()(
                         nodes: [...get().nodes, newNode]
                     });
 
+                    // Save history AFTER the change
+                    get().saveHistory();
+
                     return newNode.id;
                 },
 
                 updateNodeData: (nodeId: string, newData: Partial<{ title: string; status: string; timeSpent: number; estimatedHours: number }>, saveToHistory: boolean = true) => {
-                    // Only save history for user-initiated changes (not time tracking ticks)
-                    if (saveToHistory) {
-                        get().saveHistory();
-                    }
                     set({
                         nodes: get().nodes.map(node =>
                             node.id === nodeId
@@ -163,18 +160,23 @@ const useStore = create<AppState>()(
                                 : node
                         )
                     });
+
+                    // Only save history for user-initiated changes (not time tracking ticks)
+                    if (saveToHistory) {
+                        get().saveHistory();
+                    }
                 },
 
                 deleteNode: (nodeId: string) => {
-                    get().saveHistory();
                     set({
                         nodes: get().nodes.filter(node => node.id !== nodeId),
                         edges: get().edges.filter(edge => edge.source !== nodeId && edge.target !== nodeId)
                     });
+
+                    get().saveHistory();
                 },
 
                 connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => {
-                    get().saveHistory();
                     const connection = {
                         source: sourceId,
                         target: targetId,
@@ -182,14 +184,17 @@ const useStore = create<AppState>()(
                         targetHandle: handles?.targetHandle || 'left'
                     };
                     get().onConnect(connection);
+
+                    get().saveHistory();
                 },
 
                 resetCanvas: () => {
-                    get().saveHistory();
                     set({
                         nodes: initialNodes,
                         edges: initialEdges,
                     });
+
+                    get().saveHistory();
                 },
 
             }),
