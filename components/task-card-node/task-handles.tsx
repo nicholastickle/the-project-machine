@@ -22,13 +22,13 @@ export default function TaskHandles() {
             type="target" 
             position={Position.Top} 
             id="top" 
-            className='!w-6 !h-6 !border-none  !bg-task-card-handles-background !-top-[15px] hover:!cursor-pointer hover:!bg-indigo-100'
+            className='!w-6 !h-6 !border-none  !bg-task-card-handles-background !-top-[15px] hover:!cursor-pointer '
             />
             <Handle 
             type="source" 
             position={Position.Bottom} 
             id="bottom" 
-            className='!w-6 !h-6 !border-none  !bg-task-card-handles-background !-bottom-[15px] hover:!cursor-pointer hover:!bg-indigo-100'
+            className='!w-6 !h-6 !border-none  !bg-task-card-handles-background !-bottom-[15px] hover:!cursor-pointer'
             />
         </>
     );
