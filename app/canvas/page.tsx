@@ -26,6 +26,14 @@ export default function CanvasPage() {
 
     const setReactFlowInstance = (instance: ReactFlowInstance) => {
         reactFlowInstance.current = instance
+        // Smooth initial fitView on mount
+        setTimeout(() => {
+            instance.fitView({
+                padding: 0.2,
+                duration: 800,
+                maxZoom: 1
+            })
+        }, 100)
     }
 
     // Initialize history on mount
@@ -97,11 +105,11 @@ export default function CanvasPage() {
                         if (reactFlowInstance.current) {
                             reactFlowInstance.current.fitView({
                                 padding: 0.2,
-                                duration: 800,
+                                duration: 600,
                                 maxZoom: 1
                             })
                         }
-                    }, 800)
+                    }, 400)
                 }
             }, index * 2000) // 2 second delay between cards for better pacing
         })
@@ -176,7 +184,7 @@ export default function CanvasPage() {
     return (
         <SidebarProvider defaultOpen={false}>
             <div className="fixed inset-0 h-screen w-screen overflow-hidden">
-                <Canvas />
+                <Canvas onInit={setReactFlowInstance} />
                 <ExportButtons />
                 <TaskBook />
                 <AIOrb
