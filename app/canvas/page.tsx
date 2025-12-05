@@ -158,6 +158,52 @@ export default function CanvasPage() {
         }
     }
 
+    const handleBulkUpdateTasks = (taskIndexes: number[], updates: { status?: string; estimatedHours?: number; title?: string }) => {
+        const nodes = useStore.getState().nodes
+        const taskNodes = nodes.filter(n => n.type === 'taskCardNode')
+        
+        console.log(`[Voice] Bulk update ${taskIndexes.length} tasks:`, updates)
+        
+        taskIndexes.forEach(taskIndex => {
+            const targetNode = taskNodes[taskIndex - 1]
+            if (targetNode) {
+                console.log(`[Voice] Updating node ${targetNode.id}`)
+                useStore.getState().updateNodeData(targetNode.id, updates)
+            } else {
+                console.error(`[Voice] Task ${taskIndex} not found. Valid range: 1-${taskNodes.length}`)
+            }
+        })
+    }
+
+    const handleBulkDeleteTasks = (taskIndexes: number[]) => {
+        const nodes = useStore.getState().nodes
+        const taskNodes = nodes.filter(n => n.type === 'taskCardNode')
+        
+        console.log(`[Voice] Bulk delete ${taskIndexes.length} tasks`)
+        
+        taskIndexes.forEach(taskIndex => {
+            const targetNode = taskNodes[taskIndex - 1]
+            if (targetNode) {
+                console.log(`[Voice] Deleting node ${targetNode.id}`)
+                useStore.getState().deleteNode(targetNode.id)
+            } else {
+                console.error(`[Voice] Task ${taskIndex} not found. Valid range: 1-${taskNodes.length}`)
+            }
+        })
+    }
+
+    const handleUpdateAllTasks = (updates: { status?: string; estimatedHours?: number; title?: string }) => {
+        const nodes = useStore.getState().nodes
+        const taskNodes = nodes.filter(n => n.type === 'taskCardNode')
+        
+        console.log(`[Voice] Update all ${taskNodes.length} tasks:`, updates)
+        
+        taskNodes.forEach(node => {
+            console.log(`[Voice] Updating node ${node.id}`)
+            useStore.getState().updateNodeData(node.id, updates)
+        })
+    }
+
     const nodes = useStore((state) => state.nodes)
     const taskNodes = nodes.filter(n => n.type === 'taskCardNode')
     const hasTaskNodes = taskNodes.length > 0
@@ -169,6 +215,9 @@ export default function CanvasPage() {
         handleClearCanvas,
         handleUpdateTask,
         handleDeleteTask,
+        handleBulkUpdateTasks,
+        handleBulkDeleteTasks,
+        handleUpdateAllTasks,
         hasTaskNodes,
         taskCount
     )
