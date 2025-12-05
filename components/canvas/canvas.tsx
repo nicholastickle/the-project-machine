@@ -55,7 +55,8 @@ export default function Canvas() {
                 fitView
                 aria-label='Canvas Component'
                 proOptions={{ hideAttribution: true }}
-                connectionMode={ConnectionMode.Loose}
+                connectionMode={ConnectionMode.Strict}
+                connectionRadius={20}
                 minZoom={0.2}
                 maxZoom={2}
 

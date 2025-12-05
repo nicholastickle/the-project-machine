@@ -77,6 +77,7 @@ const useStore = create<AppState>()(
                             type: 'arrowclosed',
                             color: 'hsl(var(--edges))'
                         },
+
                         animated: true,
                         style: {
                             stroke: 'hsl(var(--edges))',

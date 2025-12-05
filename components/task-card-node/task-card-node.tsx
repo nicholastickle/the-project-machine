@@ -89,7 +89,7 @@ export default function TaskCard({ id, data }: TaskCardProps) {
             }}
         >
             <div className='flex flex-[3] flex-row'>
-                <div className='flex-[11] items-center flex px-4 text-md font-medium text-gray-800'>
+                <div className='flex-[11] items-center flex px-4 text-md font-medium text-task-card-foreground'>
                     <EditableTitle
                         nodeId={id}
                         title={data.title}
@@ -97,7 +97,7 @@ export default function TaskCard({ id, data }: TaskCardProps) {
                 </div>
                 <button
                     onClick={() => deleteNode(id)}
-                    className='flex items-center justify-center w-8 h-8 mr-2 mt-2 text-gray-600 hover:bg-red-500/20 hover:text-red-500 rounded-md transition-colors'
+                    className='flex items-center justify-center w-8 h-8 mr-2 mt-2 text-gray-600 hover:text-red-500 rounded-md transition-colors'
                     title="Delete task"
                 >
                     <X className='w-4 h-4' />
