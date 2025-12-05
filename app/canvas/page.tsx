@@ -11,6 +11,7 @@ import TaskBook from "@/components/task-book/task-book"
 
 
 import { UsageDisplay } from "@/components/admin/usage-display"
+import { AIStatusIndicator } from "@/components/admin/ai-status-indicator"
 import { useRealtimeWebRTC } from "@/hooks/use-realtime-webrtc"
 import useStore from "@/stores/flow-store"
 import { useEffect, useRef, type RefObject } from "react"
@@ -126,23 +127,51 @@ export default function CanvasPage() {
     const handleUpdateTask = (taskIndex: number, updates: { status?: string; estimatedHours?: number; title?: string }) => {
         const nodes = useStore.getState().nodes
         const taskNodes = nodes.filter(n => n.type === 'taskCardNode')
-
+        
+        console.log(`[Voice] Update task ${taskIndex}:`, updates)
+        console.log(`[Voice] Found ${taskNodes.length} task nodes`)
+        
         // Convert 1-based user index to 0-based array index
         const targetNode = taskNodes[taskIndex - 1]
         if (targetNode) {
+            console.log(`[Voice] Updating node ${targetNode.id}:`, updates)
             useStore.getState().updateNodeData(targetNode.id, updates)
+        } else {
+            console.error(`[Voice] Task ${taskIndex} not found. Valid range: 1-${taskNodes.length}`)
         }
     }
 
-    const { connect, disconnect, isConnected, isSpeaking, isConnecting, isMuted, toggleMute } = useRealtimeWebRTC(
+    const handleDeleteTask = (taskIndex: number) => {
+        const nodes = useStore.getState().nodes
+        const taskNodes = nodes.filter(n => n.type === 'taskCardNode')
+        
+        console.log(`[Voice] Delete task ${taskIndex}`)
+        console.log(`[Voice] Found ${taskNodes.length} task nodes`)
+        
+        // Convert 1-based user index to 0-based array index
+        const targetNode = taskNodes[taskIndex - 1]
+        if (targetNode) {
+            console.log(`[Voice] Deleting node ${targetNode.id}`)
+            useStore.getState().deleteNode(targetNode.id)
+        } else {
+            console.error(`[Voice] Task ${taskIndex} not found. Valid range: 1-${taskNodes.length}`)
+        }
+    }
+
+    const nodes = useStore((state) => state.nodes)
+    const taskNodes = nodes.filter(n => n.type === 'taskCardNode')
+    const hasTaskNodes = taskNodes.length > 0
+    const taskCount = taskNodes.length
+
+    const { connect, disconnect, isConnected, isSpeaking, isConnecting, isMuted, toggleMute, currentActivity } = useRealtimeWebRTC(
         handleTasksGenerated,
         handleConnectTasks,
         handleClearCanvas,
-        handleUpdateTask
+        handleUpdateTask,
+        handleDeleteTask,
+        hasTaskNodes,
+        taskCount
     )
-
-    const nodes = useStore((state) => state.nodes)
-    const hasTaskNodes = nodes.some(n => n.type === 'taskCardNode')
 
     return (
         <SidebarProvider defaultOpen={false}>
@@ -164,7 +193,17 @@ export default function CanvasPage() {
                 <CanvasSidebar />
                 <CanvasToolbar />
                 <CanvasSidebarTrigger />
-                {process.env.NODE_ENV === 'development' && <UsageDisplay />}
+                {process.env.NODE_ENV === 'development' && (
+                    <>
+                        <UsageDisplay />
+                        <AIStatusIndicator 
+                            isConnected={isConnected}
+                            isConnecting={isConnecting}
+                            isSpeaking={isSpeaking}
+                            currentActivity={currentActivity}
+                        />
+                    </>
+                )}
             </div>
         </SidebarProvider>
     )

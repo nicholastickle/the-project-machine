@@ -8,18 +8,23 @@ interface RealtimeWebRTCHook {
   isConnecting: boolean;
   isMuted: boolean;
   toggleMute: () => void;
+  currentActivity: string;
 }
 
 export function useRealtimeWebRTC(
   onTasksGenerated: (tasks: any[]) => void,
   onConnectTasks: (connections: { from: number; to: number }[]) => void,
   onClearCanvas: () => void,
-  onUpdateTask: (taskIndex: number, updates: { status?: string; estimatedHours?: number; title?: string }) => void
+  onUpdateTask: (taskIndex: number, updates: { status?: string; estimatedHours?: number; title?: string }) => void,
+  onDeleteTask: (taskIndex: number) => void,
+  hasTaskNodes: boolean,
+  taskCount: number
 ): RealtimeWebRTCHook {
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [currentActivity, setCurrentActivity] = useState<string>('Idle');
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
@@ -105,20 +110,68 @@ export function useRealtimeWebRTC(
           session: {
             instructions: `You're PM, a British AI helping with project planning. Be quick, friendly, and get straight to business.
 
-When user describes a project, call create_tasks with 3-10 tasks (include estimatedHours for each), then ALWAYS respond verbally with something brief like "Sorted! Anything else?" to keep conversation flowing.
+CRITICAL RULES:
+1. Always greet first and wait for user input
+2. After calling ANY function, you MUST respond with speech to acknowledge it
+3. Follow the TASK CREATION RULES below carefully
 
-CRITICAL: After calling ANY function (create_tasks, update_task, clear_canvas), you MUST respond with speech. Never go silent after a function call. Always acknowledge it worked.
+CANVAS STATE: ${taskCount > 0 ? `Canvas has ${taskCount} tasks` : 'Canvas is empty'}
 
-For updates: "mark task 3 done" = call update_task then say "Done!". "change task 2 to 5 hours" = call update_task then confirm briefly.
+GREETING: ${hasTaskNodes 
+  ? `Canvas has ${taskCount} tasks - say something brief like "Back to it! You've got ${taskCount} tasks. What needs updating?" or "Ready when you are!"`
+  : 'Empty canvas - say "Hi! Tell me about your project and I\'ll break it into tasks. Try: Design a bridge foundation, or Plan a residential development."'
+}
 
-Clear board: call clear_canvas then say "Cleared!".
+TASK CREATION RULES:
+${hasTaskNodes 
+  ? `- Canvas HAS ${taskCount} tasks: When user wants to add more, FIRST ask verbally: "I\'ll add [N] tasks for [thing]. Sound good?" Wait for confirmation, THEN call create_tasks.`
+  : '- Canvas EMPTY: When user describes a project, call create_tasks IMMEDIATELY (no asking), then confirm: "Added [N] tasks! What needs tweaking?"'
+}
 
-Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Done!", "Right then!"`,
+WHEN TO CREATE TASKS (use your judgment):
+✅ CREATE when user says:
+- "I need to [project]" → auto-create
+- "Plan [project]" → auto-create  
+- "Create/add tasks for [project]" → auto-create
+- "Let\'s [action]" → auto-create
+- Direct project description as statement → auto-create
+
+❌ DON\'T CREATE when user asks questions:
+- "What tasks would I need..." → just answer verbally
+- "How would you..." → just answer verbally
+- "Tell me about..." → just answer verbally
+
+IMPORTANT: You know the canvas has ${taskCount} tasks but cannot see their titles or details. When users ask about specific tasks, respond helpfully: "You have ${taskCount} tasks on the canvas. Which task number should I update?" or "Got ${taskCount} tasks here - tell me the number and what to change!"
+
+AVAILABLE FUNCTIONS:
+- create_tasks: Create 3-10 tasks with estimatedHours. Use immediately when canvas empty, ask first when canvas has tasks.
+- update_task(taskIndex, {status/estimatedHours/title}): "mark task 3 done", "change task 2 to 5 hours", "rename task 1 to Setup"
+- delete_task(taskIndex): "delete task 3", "remove the second task"
+- clear_canvas: "clear the board", "start over"
+
+TASK NUMBERS: Tasks are numbered 1, 2, 3, etc. in the order they appear on canvas (top to bottom, left to right). Users must tell you which task number to modify.
+
+STATUS VALUES (use exactly these):
+- "Not started" - task hasn't begun
+- "On-going" - task is in progress (NOT "In progress")
+- "Complete" - task is finished (NOT "Done")
+- "Stuck" - task is blocked
+- "Abandoned" - task was cancelled
+
+EXAMPLES:
+- "Mark task 1 as done" → update_task(1, {status: "Complete"}) then say "Done!"
+- "Start task 2" → update_task(2, {status: "On-going"}) then say "Started!"
+- "Task 3 is stuck" → update_task(3, {status: "Stuck"}) then say "Marked as stuck!"
+- "Change task 3 to 8 hours" → update_task(3, {estimatedHours: 8}) then say "Updated to 8 hours!"
+- "Delete the second task" → delete_task(2) then say "Removed!"
+- "Rename task 1 to Setup database" → update_task(1, {title: "Setup database"}) then say "Renamed!"
+
+Keep confirmations brief: "Done!", "Sorted!", "Updated!", "Removed!"`,
             turn_detection: {
               type: 'server_vad',
               threshold: 0.5,
               prefix_padding_ms: 300,
-              silence_duration_ms: 500,
+              silence_duration_ms: 900,
             },
             input_audio_transcription: null,
             max_response_output_tokens: 1000,
@@ -171,14 +224,26 @@ Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Don
               {
                 type: 'function',
                 name: 'update_task',
-                description: 'Update a task\'s status, time estimate, or title. Use when user says "mark as done", "change to X hours", "rename task", etc.',
+                description: 'Update a task\'s status, time estimate, or title. Use when user says "mark as done", "start task", "change to X hours", "rename task", etc.',
                 parameters: {
                   type: 'object',
                   properties: {
                     taskIndex: { type: 'number', description: 'Task number (1-based, as user would say it)' },
-                    status: { type: 'string', enum: ['Not started', 'In progress', 'Done'], description: 'New status' },
+                    status: { type: 'string', enum: ['Not started', 'On-going', 'Complete', 'Stuck', 'Abandoned'], description: 'New status - use exact values' },
                     estimatedHours: { type: 'number', description: 'New time estimate in hours' },
                     title: { type: 'string', description: 'New task title' }
+                  },
+                  required: ['taskIndex']
+                }
+              },
+              {
+                type: 'function',
+                name: 'delete_task',
+                description: 'Delete a specific task from the canvas. Use when user says "delete task 3", "remove the second task", etc.',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    taskIndex: { type: 'number', description: 'Task number to delete (1-based, as user would say it)' }
                   },
                   required: ['taskIndex']
                 }
@@ -205,6 +270,7 @@ Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Don
           if (message.type === 'session.updated') {
             setIsConnected(true);
             setIsConnecting(false);
+            setCurrentActivity('Session ready, requesting greeting');
             dc.send(JSON.stringify({
               type: 'response.create'
             }));
@@ -213,18 +279,22 @@ Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Don
           // Track speaking state
           if (message.type === 'response.audio.delta' || message.type === 'response.audio_transcript.delta') {
             setIsSpeaking(true);
+            setCurrentActivity('AI speaking');
           } else if (message.type === 'response.done') {
             setIsSpeaking(false);
+            setCurrentActivity('Listening');
           }
           
           // Handle conversation interruptions/errors
           if (message.type === 'error') {
             console.error('OpenAI error:', message);
+            setCurrentActivity(`Error: ${message.error?.message || 'Unknown'}`);
           }
           
           // If conversation gets truncated, trigger new response
           if (message.type === 'conversation.item.truncated') {
             console.log('Conversation truncated, requesting continuation');
+            setCurrentActivity('Recovering from interruption...');
             dc.send(JSON.stringify({ type: 'response.create' }));
           }
 
@@ -236,13 +306,20 @@ Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Don
             console.log('Function call:', name, args);
 
             if (name === 'create_tasks' && args.tasks) {
+              setCurrentActivity(`Creating ${args.tasks.length} tasks...`);
               onTasksGenerated(args.tasks);
             } else if (name === 'connect_tasks' && args.connections) {
+              setCurrentActivity(`Connecting ${args.connections.length} tasks...`);
               onConnectTasks(args.connections);
             } else if (name === 'update_task') {
+              setCurrentActivity(`Updating task ${args.taskIndex}...`);
               const { taskIndex, ...updates } = args;
               onUpdateTask(taskIndex, updates);
+            } else if (name === 'delete_task') {
+              setCurrentActivity(`Deleting task ${args.taskIndex}...`);
+              onDeleteTask(args.taskIndex);
             } else if (name === 'clear_canvas') {
+              setCurrentActivity('Clearing canvas...');
               onClearCanvas();
             }
 
@@ -354,6 +431,7 @@ Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Don
     setIsConnected(false);
     setIsSpeaking(false);
     setIsMuted(false);
+    setCurrentActivity('Disconnected');
   }, []);
 
   return {
@@ -363,6 +441,7 @@ Keep responses under 5 words after functions. Use: "Brilliant!", "Sorted!", "Don
     isSpeaking,
     isConnecting,
     isMuted,
+    currentActivity,
     toggleMute,
   };
 }
