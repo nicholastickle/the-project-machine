@@ -104,3 +104,4 @@ temp/
 # Logs
 logs
 *.log
+usage-log.json

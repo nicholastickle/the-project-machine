@@ -61,8 +61,23 @@
       "timestamp": "2025-12-04T17:59:14.213Z",
       "model": "gpt-4o-mini-realtime-preview-2024-12-17",
       "duration": 39462
+    },
+    {
+      "timestamp": "2025-12-04T23:29:15.578Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 96842
+    },
+    {
+      "timestamp": "2025-12-04T23:38:38.558Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 191943
+    },
+    {
+      "timestamp": "2025-12-04T23:44:38.617Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 378024
     }
   ],
-  "totalSessions": 13,
+  "totalSessions": 16,
   "lastReset": "2025-12-03T10:06:28.860Z"
 }
