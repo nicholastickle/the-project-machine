@@ -12,7 +12,7 @@ export default function TaskBook() {
     };
 
     return (
-        <div className={`absolute bottom-3 z-10 ${!isMobile && open ? 'left-[18rem]' : 'left-[20rem]'}`}>
+        <div className={`absolute bottom-3 z-10 ${!isMobile && open ? 'left-[30rem]' : 'left-[17rem]'} ${isMobile ? 'left-[8rem]' : ''}`}>
             <TaskBookDialog isOpen={isTaskBookOpen} onOpenChange={setIsTaskBookOpen}>
                 <div className="bg-task-book-icon-background border border-task-book-icon-border rounded-full p-3 shadow-sm">
                     <TaskBookIcon
@@ -25,3 +25,5 @@ export default function TaskBook() {
         </div>
     );
 }
+
+// ${!isMobile && open ? 'left-[275px]' : 'left-[55px]'}`
