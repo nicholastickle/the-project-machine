@@ -74,9 +74,6 @@ export default function AIOrb({
                     <div className="text-toolbar-foreground mb-1 font-bold">
                         Click to start
                     </div>
-                    <div className="text-toolbar-foreground">
-                        Tell me about your project
-                    </div>
                 </div>
             )}
             {isConnecting && (

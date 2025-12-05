@@ -100,8 +100,13 @@
     {
       "timestamp": "2025-12-05T12:10:25.175Z",
       "model": "gpt-4o-mini-realtime-preview-2024-12-17"
+    },
+    {
+      "timestamp": "2025-12-05T16:25:04.315Z",
+      "model": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "duration": 10612
     }
   ],
-  "totalSessions": 21,
+  "totalSessions": 22,
   "lastReset": "2025-12-03T10:06:28.860Z"
 }
