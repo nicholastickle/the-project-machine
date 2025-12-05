@@ -98,7 +98,7 @@ export default function ExportButtons() {
             <div className="absolute top-4 right-4 z-50 flex gap-2">
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Button
+                        {/* <Button
                             size="sm"
                             variant="ghost"
                             onClick={exportAsMarkdown}
@@ -106,7 +106,7 @@ export default function ExportButtons() {
                         >
                             <FileText className="h-4 w-4" />
                             <span className="hidden sm:inline">Markdown</span>
-                        </Button>
+                        </Button> */}
                     </TooltipTrigger>
                     <TooltipContent>
                         <p>Export as Markdown (.md)</p>
@@ -122,7 +122,7 @@ export default function ExportButtons() {
                             className="h-9 gap-2 bg-toolbar-background border border-toolbar-border text-toolbar-foreground hover:bg-toolbar-accent shadow-sm transition-all"
                         >
                             <Download className="h-4 w-4" />
-                            <span className="hidden sm:inline">CSV</span>
+                            <span className="hidden sm:inline">Excel Export</span>
                         </Button>
                     </TooltipTrigger>
                     <TooltipContent>
