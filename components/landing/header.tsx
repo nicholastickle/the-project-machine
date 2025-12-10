@@ -49,7 +49,7 @@ export default function Header() {
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
             <Link href="/" className="text-foreground text-xl font-semibold cursor-pointer">
-              Project Machine
+              Project Machine <span className="text-xs px-1 text-muted">V0.2</span>
             </Link>
           </div>
           <nav className="hidden md:flex items-center gap-2">
