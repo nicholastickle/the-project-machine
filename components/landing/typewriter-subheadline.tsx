@@ -9,11 +9,38 @@ export function TypewriterSubheadline() {
 
     const phrases = useMemo(() => [
         "We built this because planning sucks",
-        "Thoughts → Tasks. No bullshit.",
+        "But planning is important",
         "Built by people who hate meetings",
         "Because Jira makes you cry",
-        "Turn rambling into tasks..",
-        "From 'umm, so like...' to done",
+        "This is the tool they'll use on Mars",
+        "Humans are the most important appearance in the universe",
+        "AI will empower people rather than make them obsolete",
+        "We are inspired by becoming a space faring civilization",
+        "We set goals that we know we can't yet reach",
+        "We’ll push you to be better versions of yourselves",
+        "Be ethical in everything you do. Even when no one is looking",
+        "Design by consensus kills products",
+        "UIs of the future won't be fixed, but created as needed",
+        "Planning is guessing. Plan more often, not less",
+        "If you need a tutorial to understand it, its bad design",
+        "We don’t sell customer data to anyone",
+        "Limit the amount of details and make every detail count",
+        "Make your requirements less dumb. Your requirements are definitely dumb",
+        "Try very hard to delete the part or process",
+        "Wow you're still reading these?",
+        "Go on! Go build something great!",
+        "Using our tool of course!",
+        "Phew, tough crowd!",
+        "Okay its going to start repeating now...",
+        "We've reached the end of the array",
+        ".....",
+        "Wake up Neo...",
+        "The Matrix has you...",
+        "Follow the white rabbit.",
+        "Knock, knock, Neo.",
+        ".....",
+
+
     ], [])
 
     useEffect(() => {

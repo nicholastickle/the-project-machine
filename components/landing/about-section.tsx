@@ -19,7 +19,7 @@ export default function AboutSection() {
         {
             name: "Nicholas Tickle",
             title: "Co-Founder",
-            description: "Project manager, bridge designer, and web developer. 10 years experience in Civil Engineering.",
+            description: "Web developer. Ex bridge engineer, project manager, and contractor. 10 years experience in Civil Engineering.",
             image: "/images/founders/01-founder-1.jpeg",
             linkedIn: "https://www.linkedin.com/in/nicholastickle/",
             x: "https://x.com/TickleNicholas",
@@ -43,7 +43,7 @@ export default function AboutSection() {
                             Meet the Founders
                         </h2>
                         <p className="w-full max-w-[600px] text-center text-muted-foreground text-md md:text-lg font-medium leading-relaxed">
-                            We&apos;re passionate about how teams plan projects. We&apos;re on a mission to make project planning effortless.
+                            We&apos;re on a mission to make planning effortless. We think we have what it takes.
                         </p>
                     </div>
                 </div>
