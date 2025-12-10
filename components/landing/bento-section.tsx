@@ -1,22 +1,22 @@
 import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 import BentoCard from "@/components/landing/bento-card"
-import { TextCursor, Mic, Map } from "lucide-react"
+import { TextCursor, Map, BookOpenCheck } from "lucide-react"
 
 export default function BentoSection() {
   const cards = [
     {
-      title: "The Copilot for project planning",
-      description: "Create plans, ideate, make updates, set durations, store history.",
+      title: "The Copilot For Planning",
+      description: "Autogenerate plans, estimate durations, make updates, track progress.",
       icon: TextCursor,
     },
     {
-      title: "Voice-First",
-      description: "Describe your project naturally using your voice. No typing required.",
-      icon: Mic,
+      title: "Stored History",
+      description: "Store completed tasks to improve AI generation and future planning.",
+      icon: BookOpenCheck,
     },
     {
-      title: "Interactive Canvas",
-      description: "Drag, edit, and track your tasks on a beautiful visual workspace.",
+      title: "Canvas Planning",
+      description: "Drag, drop, edit, and track your tasks on a visual workspace.",
       icon: Map,
     },
 
@@ -33,7 +33,7 @@ export default function BentoSection() {
                 The Planning Machine
               </h2>
               <p className="w-full max-w-[600px] text-center text-muted-foreground text-md md:text-lg font-medium leading-relaxed">
-                We&apos;re redefining what project planning could be.
+                We&apos;re redefining what planning looks like.
               </p>
             </div>
           </div>

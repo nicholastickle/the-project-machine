@@ -492,14 +492,14 @@ export default function HeroSection() {
 
       <div className="relative z-10 space-y-6 md:space-y-9 lg:space-y-12 mb-7 md:mb-8 lg:mb-16 max-w-md md:max-w-[500px] lg:max-w-[588px] mt-28 md:mt-[120px] lg:mt-[160px] px-4">
         <AnimatedSectionWhileInView delay={0.2}>
-          <h1 className="text-6xl md:text-7xl font-bold tracking-tight">
+          <h1 className="text-6xl md:text-7xl font-bold">
             <span className="text-foreground ">
               All Projects Start Here
             </span>
           </h1>
 
           <p className="text-sm md:text-base lg:text-lg text-foreground max-w-xl max-w-lg mx-auto mt-10">
-            Just talk about your project. Watch your plan come to life.
+            The Copilot for Project Planning.
           </p>
 
 
