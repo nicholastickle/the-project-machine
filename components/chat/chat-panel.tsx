@@ -4,21 +4,31 @@ import { useState, useEffect, useRef } from 'react'
 import { useChatScript } from '@/hooks/use-chat-script'
 import { INITIAL_MESSAGE } from '@/components/chat/chat-script'
 import { Button } from '@/components/ui/button'
-import { Send, Check } from 'lucide-react'
+import { Textarea } from '@/components/ui/textarea'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Send, Check, Paperclip, X, MessageSquare } from 'lucide-react'
 
 interface ChatPanelProps {
   onConfirm?: () => void
+  onVisibilityChange?: (isVisible: boolean) => void
 }
 
-export default function ChatPanel({ onConfirm }: ChatPanelProps) {
+export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelProps) {
   const {
     messages,
     isCentered,
+    isVisible,
     sendInitialMessage,
     confirmPlan,
+    toggleVisibility,
     canSend,
     canConfirm,
   } = useChatScript()
+
+  // Notify parent when visibility changes
+  useEffect(() => {
+    onVisibilityChange?.(isVisible)
+  }, [isVisible, onVisibilityChange])
 
   // Typewriter effect state for the last AI message
   const [displayedMessages, setDisplayedMessages] = useState<typeof messages>([])
@@ -109,108 +119,236 @@ export default function ChatPanel({ onConfirm }: ChatPanelProps) {
     onConfirm?.()
   }
 
-  return (
-    <div
-      className={`
-        fixed z-50 transition-all duration-500 ease-in-out
-        ${isCentered 
-          ? 'bottom-12 left-1/2 -translate-x-1/2 w-[600px]' 
-          : 'top-0 right-0 h-screen w-[400px] border-l border-border'
-        }
-      `}
-    >
-      <div className={`
-        bg-background/95 backdrop-blur-sm rounded-lg shadow-2xl overflow-hidden
-        ${isCentered ? 'border border-border' : 'h-full rounded-none border-none'}
-      `}>
-        {/* Header */}
-        <div className="bg-accent/50 px-4 py-3 border-b border-border">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-sm font-medium">AI Assistant</span>
+  // Floating toggle button when chat is hidden
+  if (!isVisible) {
+    return (
+      <Button
+        onClick={toggleVisibility}
+        className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg"
+        size="icon"
+      >
+        <MessageSquare className="h-6 w-6" />
+      </Button>
+    )
+  }
+
+  // When centered, render as floating card
+  if (isCentered) {
+    return (
+      <div className="fixed bottom-12 left-1/2 -translate-x-1/2 w-[600px] z-50">
+        <div className="bg-background/95 backdrop-blur-sm rounded-lg shadow-2xl border border-border overflow-hidden flex flex-col">
+          {/* Header */}
+          <div className="bg-accent/50 px-4 py-3 border-b border-border flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-sm font-medium">Project Machine</span>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={toggleVisibility}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div 
+            ref={messagesContainerRef}
+            onScroll={handleScroll}
+            className="overflow-y-scroll p-4 space-y-4 max-h-[400px] flex-1 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'hsl(var(--border)) transparent'
+            }}
+          >
+            {displayedMessages.length === 0 ? (
+              <div className="text-sm text-muted-foreground text-center py-8">
+                Tell me about your project to get started
+              </div>
+            ) : (
+              displayedMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`
+                    flex
+                    ${msg.role === 'user' ? 'justify-end' : 'justify-start'}
+                    ${msg.role === 'user' ? 'animate-in fade-in slide-in-from-right-4 duration-[1500ms]' : ''}
+                  `}
+                >
+                  <div
+                    className={`
+                      max-w-[85%] rounded-lg p-3 text-sm
+                      ${msg.role === 'user'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-accent border border-border'
+                      }
+                      ${msg.hasRisk ? 'ring-2 ring-orange-500/50' : ''}
+                    `}
+                  >
+                    <div className="whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none">
+                      {msg.content.split('\n').map((line, i) => {
+                        const boldPattern = /\*\*(.+?)\*\*/g
+                        const parts = line.split(boldPattern)
+                        
+                        return (
+                          <p key={i} className={i > 0 ? 'mt-1' : ''}>
+                            {parts.map((part, j) => 
+                              j % 2 === 1 ? <strong key={j}>{part}</strong> : part
+                            )}
+                          </p>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input Area */}
+          <div className="p-4 border-t border-border bg-background flex-shrink-0">
+            {canSend && (
+              <div className="flex items-start gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="flex-shrink-0 mt-1"
+                  onClick={() => {
+                    alert('Soon you\'ll be able to attach additional context like:\n\n• Old project plans from Excel\n• Reference documents\n• Previous estimates\n• Client requirements\n\nThis will help me create a more accurate plan tailored to your needs!')
+                  }}
+                >
+                  <Paperclip className="h-4 w-4 text-muted-foreground" />
+                </Button>
+                <Textarea
+                  value={INITIAL_MESSAGE}
+                  readOnly
+                  className="flex-1 min-h-[80px] bg-muted cursor-not-allowed resize-none"
+                />
+                <div className="flex-shrink-0 mt-1">
+                  <Button
+                    onClick={sendInitialMessage}
+                    size="icon"
+                    className="rounded-full bg-blue-600 hover:bg-blue-700 animate-pulse"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+            
+            {canConfirm && (
+              <Button
+                onClick={handleConfirm}
+                className="w-full gap-2 bg-green-600 hover:bg-green-700"
+                size="lg"
+              >
+                <Check className="w-4 h-4" />
+                Confirm & Add to Canvas
+              </Button>
+            )}
+
+            {!canSend && !canConfirm && (
+              <div className="flex items-start gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="flex-shrink-0 mt-1"
+                  disabled
+                >
+                  <Paperclip className="h-4 w-4 text-muted-foreground" />
+                </Button>
+                <Textarea
+                  placeholder="Conversation in progress..."
+                  disabled
+                  className="flex-1 min-h-[80px] resize-none"
+                />
+                <Button
+                  size="icon"
+                  className="flex-shrink-0 mt-1"
+                  disabled
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
         </div>
+      </div>
+    )
+  }
 
-        {/* Messages - with visible scrollbar */}
+  // When docked, render as shadcn Sheet on the right side
+  return (
+    <Sheet open={isVisible} onOpenChange={toggleVisibility} modal={false}>
+      <SheetContent 
+        side="right" 
+        className="w-[400px] p-0 flex flex-col"
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
+        <SheetHeader className="bg-accent/50 px-4 py-3 border-b border-border flex-shrink-0">
+          <SheetTitle className="flex items-center gap-2 text-sm font-medium">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            Project Machine
+          </SheetTitle>
+        </SheetHeader>
+
+        {/* Messages */}
         <div 
           ref={messagesContainerRef}
           onScroll={handleScroll}
-          className={`
-            overflow-y-scroll p-4 space-y-4
-            ${isCentered ? 'max-h-[500px]' : 'h-[calc(100vh-180px)]'}
-            scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent
-          `}
+          className="overflow-y-scroll p-4 space-y-4 flex-1 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
           style={{
             scrollbarWidth: 'thin',
             scrollbarColor: 'hsl(var(--border)) transparent'
           }}
         >
-          {displayedMessages.length === 0 ? (
-            // Initial state: show pre-filled message
-            <div className="space-y-4">
-              <div className="text-sm text-muted-foreground text-center mb-4">
-                Start by telling me about your project
-              </div>
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-                <p className="text-sm whitespace-pre-wrap">{INITIAL_MESSAGE}</p>
-              </div>
-            </div>
-          ) : (
-            // Show conversation messages
-            displayedMessages.map((msg) => (
+          {displayedMessages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`
+                flex
+                ${msg.role === 'user' ? 'justify-end' : 'justify-start'}
+                ${msg.role === 'user' ? 'animate-in fade-in slide-in-from-right-4 duration-[1500ms]' : ''}
+              `}
+            >
               <div
-                key={msg.id}
                 className={`
-                  flex
-                  ${msg.role === 'user' ? 'justify-end' : 'justify-start'}
-                  ${msg.role === 'user' ? 'animate-in fade-in slide-in-from-right-4 duration-700' : ''}
+                  max-w-[85%] rounded-lg p-3 text-sm
+                  ${msg.role === 'user'
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-accent border border-border'
+                  }
+                  ${msg.hasRisk ? 'ring-2 ring-orange-500/50' : ''}
                 `}
               >
-                <div
-                  className={`
-                    max-w-[85%] rounded-lg p-3 text-sm
-                    ${msg.role === 'user'
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-accent border border-border'
-                    }
-                    ${msg.hasRisk ? 'ring-2 ring-orange-500/50' : ''}
-                  `}
-                >
-                  <div className="whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none">
-                    {msg.content.split('\n').map((line, i) => {
-                      // Bold text: **text**
-                      const boldPattern = /\*\*(.+?)\*\*/g
-                      const parts = line.split(boldPattern)
-                      
-                      return (
-                        <p key={i} className={i > 0 ? 'mt-1' : ''}>
-                          {parts.map((part, j) => 
-                            j % 2 === 1 ? <strong key={j}>{part}</strong> : part
-                          )}
-                        </p>
-                      )
-                    })}
-                  </div>
+                <div className="whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none">
+                  {msg.content.split('\n').map((line, i) => {
+                    const boldPattern = /\*\*(.+?)\*\*/g
+                    const parts = line.split(boldPattern)
+                    
+                    return (
+                      <p key={i} className={i > 0 ? 'mt-1' : ''}>
+                        {parts.map((part, j) => 
+                          j % 2 === 1 ? <strong key={j}>{part}</strong> : part
+                        )}
+                      </p>
+                    )
+                  })}
                 </div>
               </div>
-            ))
-          )}
+            </div>
+          ))}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Footer with action buttons */}
-        <div className="p-4 border-t border-border bg-background">
-          {canSend && (
-            <Button
-              onClick={sendInitialMessage}
-              className="w-full gap-2"
-              size="lg"
-            >
-              <Send className="w-4 h-4" />
-              Send
-            </Button>
-          )}
-          
+        {/* Input Area */}
+        <div className="p-4 border-t border-border bg-background flex-shrink-0">
           {canConfirm && (
             <Button
               onClick={handleConfirm}
@@ -222,16 +360,32 @@ export default function ChatPanel({ onConfirm }: ChatPanelProps) {
             </Button>
           )}
 
-          {!canSend && !canConfirm && (
-            <div className="text-xs text-muted-foreground text-center py-2">
-              {isCentered 
-                ? 'AI is thinking...' 
-                : 'Tasks added to canvas. You can continue editing.'
-              }
+          {!canConfirm && (
+            <div className="flex items-start gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="flex-shrink-0 mt-1"
+                disabled
+              >
+                <Paperclip className="h-4 w-4 text-muted-foreground" />
+              </Button>
+              <Textarea
+                placeholder="Conversation in progress..."
+                disabled
+                className="flex-1 min-h-[80px] resize-none"
+              />
+              <Button
+                size="icon"
+                className="flex-shrink-0 mt-1"
+                disabled
+              >
+                <Send className="h-4 w-4" />
+              </Button>
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   )
 }

@@ -10,7 +10,11 @@ import {
 } from "@/components/ui/tooltip"
 import useStore from "@/stores/flow-store"
 
-export default function ExportButtons() {
+interface ExportButtonsProps {
+  isChatVisible?: boolean
+}
+
+export default function ExportButtons({ isChatVisible = true }: ExportButtonsProps) {
     const resetCanvas = useStore((state) => state.resetCanvas)
 
     const exportToExcel = () => {
@@ -33,7 +37,11 @@ export default function ExportButtons() {
 
     return (
         <TooltipProvider>
-            <div className="absolute top-4 right-[420px] z-50 flex gap-2">
+            <div 
+                className={`absolute top-4 z-50 flex gap-2 transition-all duration-500 ${
+                    isChatVisible ? 'right-[420px]' : 'right-4'
+                }`}
+            >
                 {/* Excel Export */}
                 <Tooltip>
                     <TooltipTrigger asChild>
