@@ -33,7 +33,7 @@
     --accent: 240 2% 50%;
     --accent-foreground: 240 2% 96%;
 
-    --border: 240 100% 100% / 0.08;
+    --border: 210 17% 6% / 0.5;
     --border-light: 210 17% 6% / 0.1;
     --border-dark: 210 17% 6% / 0.15;
 
@@ -146,8 +146,8 @@
     --accent-foreground: 0 0% 90%;
 
     --border: 0 0% 80%;
-    --border-light: 0 0% 70%;
-    --border-dark: 0 0% 15%;
+    --border-light: 0 0% 24.3%;
+    --border-dark: 0 0% 30%;
 
     --ring: 25 95% 49%;
 

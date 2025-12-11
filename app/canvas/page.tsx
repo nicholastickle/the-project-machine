@@ -20,14 +20,8 @@ export default function CanvasPage() {
 
     const setReactFlowInstance = (instance: ReactFlowInstance) => {
         reactFlowInstance.current = instance
-        // Smooth initial fitView on mount
-        setTimeout(() => {
-            instance.fitView({
-                padding: 0.2,
-                duration: 800,
-                maxZoom: 1
-            })
-        }, 100)
+        // Center on logo without animation
+        instance.setCenter(600, 300, { zoom: 0.8 })
     }
 
     // Initialize history on mount
