@@ -10,7 +10,12 @@ import {
 } from "@/components/ui/tooltip"
 import useStore from "@/stores/flow-store"
 
-export default function ExportButtons() {
+interface ExportButtonsProps {
+  isChatVisible?: boolean
+  hasNodes?: boolean
+}
+
+export default function ExportButtons({ isChatVisible = true, hasNodes = false }: ExportButtonsProps) {
     const resetCanvas = useStore((state) => state.resetCanvas)
 
     const exportToExcel = () => {
@@ -33,51 +38,59 @@ export default function ExportButtons() {
 
     return (
         <TooltipProvider>
-            <div className="absolute top-4 right-[420px] z-50 flex gap-2">
-                {/* Excel Export */}
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={exportToExcel}
-                            className="bg-background/95 backdrop-blur-sm hover:bg-accent"
-                        >
-                            <FileSpreadsheet className="h-4 w-4" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Export to Excel</p>
-                    </TooltipContent>
-                </Tooltip>
+            <div 
+                className={`absolute top-4 z-50 flex gap-2 transition-all duration-500 ${
+                    isChatVisible ? 'right-[420px]' : 'right-4'
+                }`}
+            >
+                {/* Excel Export - only show when there are tasks */}
+                {hasNodes && (
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="outline"
+                                onClick={exportToExcel}
+                                className="bg-background/95 backdrop-blur-sm hover:bg-accent gap-2"
+                            >
+                                <FileSpreadsheet className="h-4 w-4" />
+                                <span>Export to Excel</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Export to Excel</p>
+                        </TooltipContent>
+                    </Tooltip>
+                )}
 
-                {/* Timesheet Export */}
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={exportTimesheet}
-                            className="bg-background/95 backdrop-blur-sm hover:bg-accent"
-                        >
-                            <Clock className="h-4 w-4" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Export Timesheet</p>
-                    </TooltipContent>
-                </Tooltip>
+                {/* Timesheet Export - only show when there are tasks */}
+                {hasNodes && (
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="outline"
+                                onClick={exportTimesheet}
+                                className="bg-background/95 backdrop-blur-sm hover:bg-accent gap-2"
+                            >
+                                <Clock className="h-4 w-4" />
+                                <span>Timesheet Export</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Export Timesheet</p>
+                        </TooltipContent>
+                    </Tooltip>
+                )}
 
-                {/* Reset Demo */}
+                {/* Reset Demo - always visible */}
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button
                             variant="outline"
-                            size="icon"
                             onClick={handleResetDemo}
-                            className="bg-background/95 backdrop-blur-sm hover:bg-destructive hover:text-destructive-foreground"
+                            className="bg-background/95 backdrop-blur-sm hover:bg-destructive hover:text-destructive-foreground gap-2"
                         >
                             <RotateCcw className="h-4 w-4" />
+                            <span>Reset Demo</span>
                         </Button>
                     </TooltipTrigger>
                     <TooltipContent>
