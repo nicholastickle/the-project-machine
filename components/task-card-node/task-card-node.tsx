@@ -1,8 +1,10 @@
 import { Play, Pause, X } from 'lucide-react';
 import TaskHandles from '@/components/task-card-node/task-handles';
 import EditableTitle from '@/components/task-card-node/editable-title';
+import EditableDescription from '@/components/task-card-node/editable-description';
 import EditableEstimate from '@/components/task-card-node/editable-estimate';
 import SelectStatus from '@/components/task-card-node/status-options';
+import SubtaskTable from '@/components/task-card-node/subtask-table';
 import { useState, useEffect, useRef } from 'react';
 import useStore from '@/stores/flow-store';
 
@@ -13,6 +15,7 @@ interface TaskCardProps {
         status: string;
         timeSpent?: number;
         estimatedHours?: number;
+        description?: string;
     };
 }
 
@@ -60,7 +63,7 @@ export default function TaskCard({ id, data }: TaskCardProps) {
     const statusColorClass = (() => {
         switch (data.status) {
             case 'Not started':
-                return 'bg-task-card-background-accent';
+                return 'bg-task-card-background';
             case 'On-going':
                 return 'bg-task-card-on-going/20';
             case 'Stuck':
@@ -70,7 +73,7 @@ export default function TaskCard({ id, data }: TaskCardProps) {
             case 'Abandoned':
                 return 'bg-task-card-abandoned/20';
             default:
-                return 'bg-task-card-background-accent';
+                return 'bg-task-card-background';
         }
     })();
 
@@ -81,74 +84,68 @@ export default function TaskCard({ id, data }: TaskCardProps) {
 
     return (
         <div
-            className="w-[700px] h-[400px] border-2 border-task-card-border border-red-500 bg-task-card-background flex flex-col rounded-xl shadow-lg"
+            className={`w-[700px] h-[550px] border-2 border-task-card-border bg-task-card-background flex flex-col rounded-xl shadow-lg`}
             style={{
                 animationDelay,
                 animationFillMode: 'both',
                 animation: 'card-entrance 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
             }}
         >
-            <div className='flex flex-[1.5] flex-row border border-red-500'>
-                <div className='flex-[11] items-center flex px-4 text-md font-medium text-task-card-foreground border border-red-500'>
-                    <EditableTitle
-                        nodeId={id}
-                        title={data.title}
-                    />
-                </div>
-                <button
-                    onClick={() => deleteNode(id)}
-                    className='flex items-center justify-center w-8 h-8 mr-2 mt-2 text-gray-600 hover:text-red-500 rounded-md transition-colors border border-red-500'
-                    title="Delete task"
-                >
-                    <X className='w-4 h-4' />
-                </button>
-            </div>
-
-
-
-
-            <div className='flex flex-[2.5] flex-row'>
-                <div className='flex flex-[9] border border-red-500'>
-                    <p>Description</p>
-                </div>
-                <div className='flex flex-[3] border border-red-500'>
-                    <SelectStatus nodeId={id} status={data.status} />
-                </div>
-            </div>
-
-
-
-
-
-            <div className={`flex flex-[8] flex-row ${statusColorClass} rounded-3xl mx-1 items-center justify-center border border-red-500`}>
-                <EditableEstimate nodeId={id} estimatedHours={data.estimatedHours} backgroundColor={statusColorClass} />
-            </div>
-
-
-
-
-            <div className="flex flex-[0.5] flex-row border border-red-500">
-                <div className='flex flex-[6] items-center px-4 text-sm border border-red-500'>
-                    
-                </div>
-                <div className='flex flex-[6] flex-row items-center justify-end gap-2 px-2 border border-red-500'>
-                    <div className='text-md text-task-card-foreground border border-red-500'>
-                        {isTracking
-                            ? `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
-                            : hours > 0
-                                ? `${hours}h ${minutes}m ${seconds}s`
-                                : `${hours}h ${minutes}m ${seconds}s`
-                        }
+            <div className={`${statusColorClass} h-full flex flex-col rounded-xl `}>
+                <div className='flex flex-[2] flex-row  '>
+                    <div className='flex-[11] items-center flex px-4 py-2 text-3xl font-medium text-task-card-foreground overflow-y-auto'>
+                        <EditableTitle
+                            nodeId={id}
+                            title={data.title}
+                        />
                     </div>
                     <button
-                        onClick={() => setIsTracking(!isTracking)}
-                        className='flex items-center justify-center p-2 text-task-card-foreground hover:bg-task-card-accent rounded-md transition-colors cursor-pointer border border-red-500'
+                        onClick={() => deleteNode(id)}
+                        className='flex items-center justify-center w-8 h-8 m-2 text-gray-600 hover:text-red-500 rounded-md transition-colors'
+                        title="Delete task"
                     >
-                        {isTracking ? <Pause className='w-4 h-4' /> : <Play className='w-4 h-4' />}
+                        <X className='w-4 h-4' />
                     </button>
                 </div>
+
+
+
+
+                <div className='flex flex-[1] flex-row'>
+                    <div className='flex flex-[9] px-4 text-md font-medium text-task-card-foreground overflow-y-auto'>
+                        <EditableDescription
+                            nodeId={id}
+                            description={data.description}
+                        />
+                    </div>
+                    <div className='flex flex-[3] items-center justify-center p-2'>
+                        <div className='bg-task-card-background-accent border border-task-card-border rounded-full px-4 py-2 w-32 text-center'>
+                            <SelectStatus nodeId={id} status={data.status} />
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+                <div className="flex flex-[7] flex-row rounded-3xl mx-1 items-center justify-center p-2">
+                    <SubtaskTable nodeId={id} />
+                </div>
+
+
+
+
+                <div className="flex flex-[1] flex-row ">
+                    <div className='flex flex-[2] p-1 pl-4'>
+                        <p>+ Add subtask</p>
+                    </div>
+                    <div className='flex flex-[10] flex-row'>
+
+                    </div>
+                </div>
+                <TaskHandles />
             </div>
-            <TaskHandles />
         </div>
     );
 }

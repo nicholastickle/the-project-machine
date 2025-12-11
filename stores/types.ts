@@ -18,11 +18,11 @@ export type AppState = {
   onConnect: OnConnect;
   setNodes: (nodes: AppNode[]) => void;
   setEdges: (edges: Edge[]) => void;
-  addTaskNode: (nodeData?: { title?: string; position?: { x: number; y: number }; status?: string; estimatedHours?: number; timeSpent?: number }) => string;
+  addTaskNode: (nodeData?: { title?: string; position?: { x: number; y: number }; status?: string; estimatedHours?: number; timeSpent?: number; description?: string }) => string;
   deleteNode: (nodeId: string) => void;
   connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => void;
   resetCanvas: () => void;
-  updateNodeData: (id: string, data: Partial<{ title: string; status: string; timeSpent: number; estimatedHours: number }>, saveToHistory?: boolean) => void;
+  updateNodeData: (id: string, data: Partial<{ title: string; status: string; timeSpent: number; estimatedHours: number; description: string }>, saveToHistory?: boolean) => void;
   saveHistory: () => void;
   undo: () => void;
   redo: () => void;

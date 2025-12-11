@@ -86,12 +86,12 @@ export default function EditableTitle({ nodeId, title }: EditableTitleProps) {
                 onBlur={handleBlur}
                 onClick={handleInputClick}
                 className={`
-          w-full bg-transparent border border-task-card-border-accent 
-          placeholder:text-task-card-placeholder p-1
+          w-full bg-transparent 
+          placeholder:text-task-card-placeholder border-none outline-none overflow-hidden
           
         `}
                 placeholder="Enter task..."
-                maxLength={30}
+                maxLength={70}
                 autoComplete="off"
                 spellCheck={true}
             />
@@ -102,7 +102,7 @@ export default function EditableTitle({ nodeId, title }: EditableTitleProps) {
         <p
             onClick={handleParagraphClick}
             className={`
-            cursor-text w-full
+            cursor-text w-full overflow-hidden break-words
         `}
 
         >

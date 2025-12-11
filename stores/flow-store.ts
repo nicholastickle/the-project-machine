@@ -104,6 +104,7 @@ const useStore = create<AppState>()(
                     status?: string;
                     estimatedHours?: number;
                     timeSpent?: number;
+                    description?: string;
                 }) => {
                     const nodes = get().nodes;
                     let position = nodeData?.position || { x: 200, y: 200 };
@@ -139,6 +140,7 @@ const useStore = create<AppState>()(
                             status: nodeData?.status ?? 'Not started',
                             estimatedHours: nodeData?.estimatedHours,
                             timeSpent: nodeData?.timeSpent ?? 0,
+                            description: nodeData?.description ?? "",
                         },
                     };
 
@@ -152,7 +154,7 @@ const useStore = create<AppState>()(
                     return newNode.id;
                 },
 
-                updateNodeData: (nodeId: string, newData: Partial<{ title: string; status: string; timeSpent: number; estimatedHours: number }>, saveToHistory: boolean = true) => {
+                updateNodeData: (nodeId: string, newData: Partial<{ title: string; status: string; timeSpent: number; estimatedHours: number; description: string }>, saveToHistory: boolean = true) => {
                     set({
                         nodes: get().nodes.map(node =>
                             node.id === nodeId

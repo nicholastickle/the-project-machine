@@ -26,7 +26,7 @@ export default function SelectStatus({ nodeId, status }: SelectStatusProps) {
 
     return (
         <Select value={status} onValueChange={handleStatusChange}>
-            <CustomSelectTrigger className=" flex border-none p-0 focus:ring-0 focus:ring-offset-0 mr-10 bg-task-card-status-options-background">
+            <CustomSelectTrigger className=" flex border-none p-0 focus:ring-0 focus:ring-offset-0 mr-10 bg-transparent">
                 <SelectValue placeholder="Select a status" />
             </CustomSelectTrigger>
             <SelectContent side="bottom" className=" bg-task-card-status-options-background text-task-card-status-options-foreground border border-task-card-status-options-border rounded-lg shadow-md">

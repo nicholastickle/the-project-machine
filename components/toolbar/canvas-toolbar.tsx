@@ -36,7 +36,7 @@ export default function CanvasToolbar() {
 
     return (
         <TooltipProvider>
-            <div className={`absolute top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2 bg-toolbar-background border border-toolbar-border rounded-full px-1 py-2 shadow-sm ${!isMobile && open ? 'left-[275px]' : 'left-[55px]'}`}>
+            <div className={`absolute top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2 bg-toolbar-background border border-toolbar-border rounded-full px-1 py-2 shadow-sm ${!isMobile && open ? 'left-[263px]' : 'left-[7px] md:left-[55px]'} ${isMobile && !open ? 'left-[0px]' : ''}`}>
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button
@@ -53,23 +53,6 @@ export default function CanvasToolbar() {
                     </TooltipContent>
                 </Tooltip>
 
-                {process.env.NODE_ENV === 'development' && (
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={handleReset}
-                                className="h-8 w-8 p-0 hover:bg-toolbar-accent hover:text-toolbar-foreground"
-                            >
-                                <RotateCcw className="h-4 w-4" />
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="right">
-                            <p>Reset Canvas</p>
-                        </TooltipContent>
-                    </Tooltip>
-                )}
 
                 <div className="h-px w-8 bg-toolbar-border my-1" />
 
