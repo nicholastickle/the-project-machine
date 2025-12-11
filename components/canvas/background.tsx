@@ -6,7 +6,7 @@ export default function CanvasBackground() {
     return (
         <Background
             variant={BackgroundVariant.Lines}
-            gap={20}
+            gap={40}
             lineWidth={0.247}
             color="hsl(var(--border-dark))"
             aria-label='Canvas Background'
