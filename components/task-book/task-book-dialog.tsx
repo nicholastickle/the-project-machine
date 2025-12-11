@@ -16,9 +16,9 @@ import {
 import { Button } from "@/components/ui/button"
 
 import { Archive, Edit, Play } from "lucide-react"
-import { mockSections, type Task } from './mock-data'
 import { useState, useEffect } from 'react'
 import useTaskbookStore from '@/stores/taskbook-store'
+import { SavedTask } from '@/stores/types'
 
 interface TaskBookDialogProps {
     children: React.ReactNode;
@@ -27,7 +27,7 @@ interface TaskBookDialogProps {
 }
 
 export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskBookDialogProps) {
-    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [selectedTask, setSelectedTask] = useState<SavedTask | null>(null);
     const savedTasks = useTaskbookStore((state) => state.savedTasks);
 
     // Use only saved tasks from the taskbook store (which includes seed data)
@@ -39,8 +39,8 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
         }
     }, [isOpen]);
 
-    const handleTaskClick = (task: Task | typeof savedTasks[0]) => {
-        setSelectedTask(task as Task);
+    const handleTaskClick = (task: SavedTask) => {
+        setSelectedTask(task);
     };
 
     const handleEdit = () => {
