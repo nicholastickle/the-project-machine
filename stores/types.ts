@@ -8,6 +8,23 @@ import {
 
 export type AppNode = Node;
 
+export type SavedTask = {
+  id: string;
+  title: string;
+  description?: string;
+  status: string;
+  estimatedHours?: number;
+  timeSpent: number;
+  savedAt: string;
+  lastUpdated: string;
+  lastUsed?: string;
+  subtasks?: Array<{
+    name: string;
+    estimated: string;
+    timeSpent: string;
+  }>;
+};
+
 export type AppState = {
   nodes: AppNode[];
   edges: Edge[];

@@ -15,6 +15,7 @@ import type { ReactFlowInstance } from "@xyflow/react"
 export default function CanvasPage() {
     const reactFlowInstance = useRef<ReactFlowInstance | null>(null)
     const [isChatVisible, setIsChatVisible] = useState(true)
+    const [isChatDocked, setIsChatDocked] = useState(false)
     const undo = useStore((state) => state.undo)
     const redo = useStore((state) => state.redo)
     const addTaskNode = useStore((state) => state.addTaskNode)
@@ -75,14 +76,14 @@ export default function CanvasPage() {
             setTimeout(() => {
                 addTaskNode(task)
                 
-                // Fit view after last task is added
-                if (index === scriptedTasks.length - 1) {
+                // Zoom out to fit all tasks after the first few are added
+                if (index === 2) {
                     setTimeout(() => {
                         if (reactFlowInstance.current) {
                             reactFlowInstance.current.fitView({
-                                padding: 0.2,
-                                duration: 800,
-                                maxZoom: 1,
+                                padding: 0.3,
+                                duration: 1000,
+                                maxZoom: 0.8,
                             })
                         }
                     }, 200)
@@ -91,20 +92,10 @@ export default function CanvasPage() {
         })
     }
 
-    // Handle chat visibility changes - adjust canvas viewport
-    const handleChatVisibilityChange = (isVisible: boolean) => {
+    // Handle chat visibility changes
+    const handleChatVisibilityChange = (isVisible: boolean, isDocked: boolean) => {
         setIsChatVisible(isVisible)
-        
-        // Adjust canvas viewport when chat opens/closes
-        setTimeout(() => {
-            if (reactFlowInstance.current) {
-                reactFlowInstance.current.fitView({
-                    padding: 0.2,
-                    duration: 500,
-                    maxZoom: 1,
-                })
-            }
-        }, 300) // Wait for animation to start
+        setIsChatDocked(isDocked)
     }
 
     return (
@@ -115,7 +106,7 @@ export default function CanvasPage() {
                     onConfirm={handleChatConfirm} 
                     onVisibilityChange={handleChatVisibilityChange}
                 />
-                <ExportButtons isChatVisible={isChatVisible} hasNodes={nodes.filter(n => n.type === 'taskCardNode').length > 0} />
+                <ExportButtons isChatDocked={isChatDocked} hasNodes={nodes.filter(n => n.type === 'taskCardNode').length > 0} />
                 <TaskBook />
                 <CanvasSidebar />
                 <CanvasToolbar />

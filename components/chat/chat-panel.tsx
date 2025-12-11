@@ -10,7 +10,7 @@ import { Send, Check, Paperclip, X, MessageSquare } from 'lucide-react'
 
 interface ChatPanelProps {
   onConfirm?: () => void
-  onVisibilityChange?: (isVisible: boolean) => void
+  onVisibilityChange?: (isVisible: boolean, isDocked: boolean) => void
 }
 
 export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelProps) {
@@ -27,8 +27,8 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
 
   // Notify parent when visibility changes
   useEffect(() => {
-    onVisibilityChange?.(isVisible)
-  }, [isVisible, onVisibilityChange])
+    onVisibilityChange?.(isVisible, !isCentered)
+  }, [isVisible, isCentered, onVisibilityChange])
 
   // Typewriter effect state for the last AI message
   const [displayedMessages, setDisplayedMessages] = useState<typeof messages>([])
@@ -137,40 +137,18 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
     return (
       <div className="fixed bottom-12 left-1/2 -translate-x-1/2 w-[600px] z-50">
         <div className="bg-background/95 backdrop-blur-sm rounded-lg shadow-2xl border border-border overflow-hidden flex flex-col">
-          {/* Header */}
-          <div className="bg-accent/50 px-4 py-3 border-b border-border flex-shrink-0">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-sm font-medium">Project Machine</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6"
-                onClick={toggleVisibility}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Messages */}
-          <div 
-            ref={messagesContainerRef}
-            onScroll={handleScroll}
-            className="overflow-y-scroll p-4 space-y-4 max-h-[400px] flex-1 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
-            style={{
-              scrollbarWidth: 'thin',
-              scrollbarColor: 'hsl(var(--border)) transparent'
-            }}
-          >
-            {displayedMessages.length === 0 ? (
-              <div className="text-sm text-muted-foreground text-center py-8">
-                Tell me about your project to get started
-              </div>
-            ) : (
-              displayedMessages.map((msg) => (
+          {/* Messages - only show if there are messages */}
+          {displayedMessages.length > 0 && (
+            <div 
+              ref={messagesContainerRef}
+              onScroll={handleScroll}
+              className="overflow-y-scroll p-4 space-y-4 max-h-[400px] flex-1 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+              style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: 'hsl(var(--border)) transparent'
+              }}
+            >
+              {displayedMessages.map((msg) => (
                 <div
                   key={msg.id}
                   className={`
@@ -205,13 +183,13 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
                     </div>
                   </div>
                 </div>
-              ))
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
 
           {/* Input Area */}
-          <div className="p-4 border-t border-border bg-background flex-shrink-0">
+          <div className={`p-4 bg-background flex-shrink-0 ${displayedMessages.length > 0 ? 'border-t border-border' : ''}`}>
             {canSend && (
               <div className="flex items-start gap-2">
                 <Button
