@@ -8,11 +8,30 @@ import {
 
 export type AppNode = Node;
 
+export type SavedTask = {
+  id: string;
+  title: string;
+  description?: string;
+  status: string;
+  estimatedHours?: number;
+  timeSpent: number;
+  savedAt: string;
+  lastUpdated: string;
+  lastUsed?: string;
+  subtasks?: Array<{
+    name: string;
+    estimated: string;
+    timeSpent: string;
+  }>;
+};
+
 export type AppState = {
   nodes: AppNode[];
   edges: Edge[];
   history: { nodes: AppNode[]; edges: Edge[] }[];
   historyIndex: number;
+  savedTasks: SavedTask[];
+  hasNewTask: boolean;
   onNodesChange: OnNodesChange<AppNode>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
@@ -26,4 +45,6 @@ export type AppState = {
   saveHistory: () => void;
   undo: () => void;
   redo: () => void;
+  addSavedTask: (task: Omit<SavedTask, 'id' | 'savedAt' | 'lastUpdated'>) => void;
+  clearNewTaskIndicator: () => void;
 };
