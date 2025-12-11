@@ -91,7 +91,7 @@ export default function EditableSubtaskTitle({ nodeId, subtaskId, title, isCompl
                 onClick={handleInputClick}
                 className="w-full bg-transparent border-none outline-none text-md resize-none"
                 placeholder="Enter subtask..."
-                maxLength={50}
+                maxLength={200}
                 autoComplete="off"
                 spellCheck={true}
                 rows={1}

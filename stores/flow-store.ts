@@ -211,17 +211,26 @@ const useStore = create<AppState>()(
                     };
 
                     set({
-                        nodes: get().nodes.map(node =>
-                            node.id === nodeId
-                                ? {
+                        nodes: get().nodes.map(node => {
+                            if (node.id === nodeId) {
+                                const updatedSubtasks = [...((node.data.subtasks as any[]) || []), newSubtask];
+
+                                // Calculate totals from subtasks
+                                const totalEstimated = updatedSubtasks.reduce((sum: number, subtask: any) => sum + (subtask.estimatedDuration || 0), 0);
+                                const totalTimeSpent = updatedSubtasks.reduce((sum: number, subtask: any) => sum + (subtask.timeSpent || 0), 0);
+
+                                return {
                                     ...node,
                                     data: {
                                         ...node.data,
-                                        subtasks: [...((node.data.subtasks as any[]) || []), newSubtask]
+                                        subtasks: updatedSubtasks,
+                                        estimatedHours: totalEstimated,
+                                        timeSpent: totalTimeSpent
                                     }
-                                }
-                                : node
-                        )
+                                };
+                            }
+                            return node;
+                        })
                     });
 
                     get().saveHistory();
@@ -229,21 +238,30 @@ const useStore = create<AppState>()(
 
                 updateSubtask: (nodeId: string, subtaskId: string, data: Partial<{ id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }>) => {
                     set({
-                        nodes: get().nodes.map(node =>
-                            node.id === nodeId
-                                ? {
+                        nodes: get().nodes.map(node => {
+                            if (node.id === nodeId) {
+                                const updatedSubtasks = ((node.data.subtasks as any[]) || []).map((subtask: any) =>
+                                    subtask.id === subtaskId
+                                        ? { ...subtask, ...data }
+                                        : subtask
+                                );
+
+                                // Calculate totals from subtasks
+                                const totalEstimated = updatedSubtasks.reduce((sum: number, subtask: any) => sum + (subtask.estimatedDuration || 0), 0);
+                                const totalTimeSpent = updatedSubtasks.reduce((sum: number, subtask: any) => sum + (subtask.timeSpent || 0), 0);
+
+                                return {
                                     ...node,
                                     data: {
                                         ...node.data,
-                                        subtasks: ((node.data.subtasks as any[]) || []).map((subtask: any) =>
-                                            subtask.id === subtaskId
-                                                ? { ...subtask, ...data }
-                                                : subtask
-                                        )
+                                        subtasks: updatedSubtasks,
+                                        estimatedHours: totalEstimated,
+                                        timeSpent: totalTimeSpent
                                     }
-                                }
-                                : node
-                        )
+                                };
+                            }
+                            return node;
+                        })
                     });
 
                     get().saveHistory();
@@ -251,17 +269,26 @@ const useStore = create<AppState>()(
 
                 deleteSubtask: (nodeId: string, subtaskId: string) => {
                     set({
-                        nodes: get().nodes.map(node =>
-                            node.id === nodeId
-                                ? {
+                        nodes: get().nodes.map(node => {
+                            if (node.id === nodeId) {
+                                const updatedSubtasks = ((node.data.subtasks as any[]) || []).filter((subtask: any) => subtask.id !== subtaskId);
+
+                                // Calculate totals from remaining subtasks
+                                const totalEstimated = updatedSubtasks.reduce((sum: number, subtask: any) => sum + (subtask.estimatedDuration || 0), 0);
+                                const totalTimeSpent = updatedSubtasks.reduce((sum: number, subtask: any) => sum + (subtask.timeSpent || 0), 0);
+
+                                return {
                                     ...node,
                                     data: {
                                         ...node.data,
-                                        subtasks: ((node.data.subtasks as any[]) || []).filter((subtask: any) => subtask.id !== subtaskId)
+                                        subtasks: updatedSubtasks,
+                                        estimatedHours: totalEstimated,
+                                        timeSpent: totalTimeSpent
                                     }
-                                }
-                                : node
-                        )
+                                };
+                            }
+                            return node;
+                        })
                     });
 
                     get().saveHistory();

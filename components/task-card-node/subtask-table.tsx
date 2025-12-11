@@ -10,7 +10,7 @@ import {
 import EditableSubtaskCheckbox from './editable-subtask-checkbox';
 import EditableSubtaskTitle from './editable-subtask-title';
 import EditableSubtaskDuration from './editable-subtask-duration';
-import EditableSubtaskTimeSpent from './editable-subtask-time-spent';
+import SubtaskTimer from './subtask-timer';
 import SubtaskDeleteButton from './subtask-delete-button';
 import useStore from '@/stores/flow-store';
 
@@ -25,6 +25,15 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
     const totalTimeSpent = subtasks.reduce((sum, subtask) => sum + subtask.timeSpent, 0);
     const addSubtask = useStore((state) => state.addSubtask);
 
+    // Format seconds to h:m:s for totals
+    const formatTotalTime = (seconds: number) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+
+        return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+    };
+
     // Don't render table if no subtasks
     if (subtasks.length === 0) {
         return null;
@@ -34,17 +43,17 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
         <Table>
             <TableHeader>
                 <TableRow className="hover:bg-transparent border-task-card-border">
-                    <TableHead className="w-[40px]"></TableHead>
+                    <TableHead className="w-[30px]"></TableHead>
                     <TableHead className="w-auto">Subtasks</TableHead>
                     <TableHead className="text-center w-[100px]">Duration Est.</TableHead>
-                    <TableHead className="text-center w-[100px]">Time Spent</TableHead>
-                    <TableHead className="w-[40px]"></TableHead>
+                    <TableHead className="text-center w-[160px]">Time Spent</TableHead>
+                    <TableHead className="w-[30px]"></TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
                 {subtasks.map((subtask) => (
                     <TableRow key={subtask.id} className="hover:bg-transparent border-task-card-border">
-                        <TableCell className="w-[40px]">
+                        <TableCell className="w-[30px]">
                             <EditableSubtaskCheckbox
                                 nodeId={nodeId}
                                 subtaskId={subtask.id}
@@ -66,14 +75,14 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
                                 duration={subtask.estimatedDuration}
                             />
                         </TableCell>
-                        <TableCell className="text-center w-[100px]">
-                            <EditableSubtaskTimeSpent
+                        <TableCell className="text-center w-[160px]">
+                            <SubtaskTimer
                                 nodeId={nodeId}
                                 subtaskId={subtask.id}
                                 timeSpent={subtask.timeSpent}
                             />
                         </TableCell>
-                        <TableCell className="w-[40px]">
+                        <TableCell className="w-[30px]">
                             <SubtaskDeleteButton
                                 nodeId={nodeId}
                                 subtaskId={subtask.id}
@@ -84,7 +93,7 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
             </TableBody>
             <TableFooter className="bg-transparent border-task-card-border">
                 <TableRow className="hover:bg-transparent border-task-card-border">
-                    <TableCell className="w-[40px]"></TableCell>
+                    <TableCell className="w-[30px]"></TableCell>
                     <TableCell className="font-medium w-auto">
                         <button
                             onClick={() => addSubtask(nodeId)}
@@ -94,8 +103,8 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
                         </button>
                     </TableCell>
                     <TableCell className="text-center font-medium w-[100px]">{totalEstimated} h</TableCell>
-                    <TableCell className="text-center font-medium w-[100px]">{totalTimeSpent} h</TableCell>
-                    <TableCell className="w-[40px]"></TableCell>
+                    <TableCell className="text-center font-medium w-[160px]">{formatTotalTime(totalTimeSpent)}</TableCell>
+                    <TableCell className="w-[30px]"></TableCell>
                 </TableRow>
             </TableFooter>
         </Table>

@@ -21,6 +21,9 @@ import TaskCard from '@/components/task-card-node/task-card-node';
 import LogoNode from '@/components/logo/logo-node';
 import InstructionNode from '@/components/instruction-node/instruction-node';
 
+const nodeTypes = { taskCardNode: TaskCard, canvasLogo: LogoNode, instructionNode: InstructionNode };
+const panOnDrag = [1, 2];
+
 const selector = (state: AppState) => ({
     nodes: state.nodes,
     edges: state.edges,
@@ -28,10 +31,6 @@ const selector = (state: AppState) => ({
     onEdgesChange: state.onEdgesChange,
     onConnect: state.onConnect,
 });
-
-
-const nodeTypes = { taskCardNode: TaskCard, canvasLogo: LogoNode, instructionNode: InstructionNode };
-const panOnDrag = [1, 2];
 
 interface CanvasProps {
     onInit?: (instance: ReactFlowInstance) => void;
