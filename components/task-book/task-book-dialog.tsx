@@ -145,12 +145,6 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                         <p className="text-sm font-semibold mb-2">Description</p>
                                         <p className="mb-4 text-sm">{selectedTask.description || "No description available"}</p>
                                         
-                                        {'totalDuration' in selectedTask && (
-                                            <p className="mb-3 text-sm">
-                                                <span className="font-semibold">Total Duration:</span> {selectedTask.totalDuration}
-                                            </p>
-                                        )}
-                                        
                                         {selectedTask.estimatedHours && (
                                             <p className="mb-3 text-sm">
                                                 <span className="font-semibold">Estimated Hours:</span> {selectedTask.estimatedHours}h
