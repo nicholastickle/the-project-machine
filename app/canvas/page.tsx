@@ -16,6 +16,7 @@ import type { ReactFlowInstance } from "@xyflow/react"
 export default function CanvasPage() {
     const reactFlowInstance = useRef<ReactFlowInstance | null>(null)
     const [isChatVisible, setIsChatVisible] = useState(true)
+    const [isChatDocked, setIsChatDocked] = useState(false)
     const undo = useStore((state) => state.undo)
     const redo = useStore((state) => state.redo)
     const addTaskNode = useStore((state) => state.addTaskNode)
@@ -67,9 +68,9 @@ export default function CanvasPage() {
                     setTimeout(() => {
                         if (reactFlowInstance.current) {
                             reactFlowInstance.current.fitView({
-                                padding: 0.2,
-                                duration: 800,
-                                maxZoom: 1,
+                                padding: 0.3,
+                                duration: 1000,
+                                maxZoom: 0.8,
                             })
                         }
                     }, 200)
@@ -79,9 +80,9 @@ export default function CanvasPage() {
     }
 
     // Handle chat visibility changes
-    const handleChatVisibilityChange = (isVisible: boolean) => {
+    const handleChatVisibilityChange = (isVisible: boolean, isDocked: boolean) => {
         setIsChatVisible(isVisible)
-        // Removed automatic fitView to prevent annoying auto-focus behavior
+        setIsChatDocked(isDocked)
     }
 
     return (

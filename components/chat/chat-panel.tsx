@@ -10,7 +10,7 @@ import { Send, Check, Paperclip, X, MessageSquare } from 'lucide-react'
 
 interface ChatPanelProps {
   onConfirm?: () => void
-  onVisibilityChange?: (isVisible: boolean) => void
+  onVisibilityChange?: (isVisible: boolean, isDocked: boolean) => void
 }
 
 export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelProps) {
@@ -27,8 +27,8 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
 
   // Notify parent when visibility changes
   useEffect(() => {
-    onVisibilityChange?.(isVisible)
-  }, [isVisible, onVisibilityChange])
+    onVisibilityChange?.(isVisible, !isCentered)
+  }, [isVisible, isCentered, onVisibilityChange])
 
   // Typewriter effect state for the last AI message
   const [displayedMessages, setDisplayedMessages] = useState<typeof messages>([])

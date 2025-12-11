@@ -1,14 +1,21 @@
 import { useState } from 'react';
 import TaskBookIcon from './task-book-icon';
 import TaskBookDialog from './task-book-dialog';
+import useTaskbookStore from '@/stores/taskbook-store';
 
 import { useSidebar } from "@/components/ui/sidebar"
 
 export default function TaskBook() {
     const [isTaskBookOpen, setIsTaskBookOpen] = useState(false);
     const { open, isMobile } = useSidebar()
+    const hasNewTask = useTaskbookStore((state) => state.hasNewTask);
+    const clearNewTaskIndicator = useTaskbookStore((state) => state.clearNewTaskIndicator);
+
     const handleIconClick = () => {
         setIsTaskBookOpen(true);
+        if (hasNewTask) {
+            clearNewTaskIndicator();
+        }
     };
 
     return (
@@ -19,6 +26,7 @@ export default function TaskBook() {
                         isOpen={isTaskBookOpen}
                         onClick={handleIconClick}
                         size={60}
+                        hasNewTask={hasNewTask}
                     />
                 </div>
             </TaskBookDialog>
