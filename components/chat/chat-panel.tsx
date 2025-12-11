@@ -61,6 +61,19 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
     }
   }, [messages])
 
+  // Complete typewriter instantly when conversation can be confirmed (but allow some typing first)
+  useEffect(() => {
+    if (canConfirm && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1]
+      const lastDisplayed = displayedMessages[displayedMessages.length - 1]
+      
+      if (lastMessage.role === 'ai' && lastDisplayed && lastDisplayed.content.length > 10) {
+        // Only complete instantly if we've typed at least 10 characters
+        setDisplayedMessages(messages) // Show complete content instantly
+      }
+    }
+  }, [canConfirm, messages, displayedMessages])
+
   // Typewriter animation for AI messages only
   useEffect(() => {
     if (displayedMessages.length === 0) return
@@ -86,7 +99,7 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
           return updated
         })
         setCurrentTypingIndex(currentLength + 1)
-      }, 30) // Slowed down from 20ms to 30ms per character
+      }, 15) // Sped up from 30ms to 15ms per character for faster typing
 
       return () => clearTimeout(timer)
     }
@@ -170,17 +183,6 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
           </div>
         )}
 
-        {canConfirm && (
-          <Button
-            onClick={handleConfirm}
-            className="w-full gap-2 bg-green-600 hover:bg-green-700"
-            size="lg"
-          >
-            <Check className="w-4 h-4" />
-            Confirm & Add to Canvas
-          </Button>
-        )}
-
         {!canSend && !canConfirm && (
           <div className="flex items-start gap-2">
             <Button
@@ -247,7 +249,7 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
             >
               <div
                 className={`
-                  max-w-[90%] rounded-lg p-2  text-chat-panel-foreground
+                  max-w-[95%] rounded-lg p-2  text-chat-panel-foreground
                   ${msg.role === 'user'
                     ? 'bg-chat-panel-accent text-sm border border-chat-panel-border'
                     : 'bg-chat-panel-background text-xs leading-5'
@@ -272,46 +274,48 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
               </div>
             </div>
           ))}
+
+          {/* Confirm button appears after AI finishes typing */}
+          {canConfirm && displayedMessages.length > 0 && (
+            <div className="flex justify-center mt-4">
+              <Button
+                onClick={handleConfirm}
+                className="gap-2 bg-primary/80 hover:bg-primary"
+                size="lg"
+              >
+                <Check className="w-4 h-4" />
+                Confirm & Add to Canvas
+              </Button>
+            </div>
+          )}
+
           <div ref={messagesEndRef} />
         </div>
 
         {/* Input Area */}
-        <div className="p-4 border-t border-border bg-background flex-shrink-0">
-          {canConfirm && (
+        <div className="p-4 border-t border-chat-panel-border bg-chat-panel-background flex-shrink-0">
+          <div className="flex items-center justify-center gap-2 bg-chat-panel-accent rounded-full p-2">
             <Button
-              onClick={handleConfirm}
-              className="w-full gap-2 bg-green-600 hover:bg-green-700"
-              size="lg"
+              variant="ghost"
+              size="icon"
+    
+              disabled
             >
-              <Check className="w-4 h-4" />
-              Confirm & Add to Canvas
+              <Paperclip className="h-8 w-8 text-chat-panel-foreground" />
             </Button>
-          )}
-
-          {!canConfirm && (
-            <div className="flex items-start gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="flex-shrink-0 mt-1"
-                disabled
-              >
-                <Paperclip className="h-4 w-4 text-muted-foreground" />
-              </Button>
-              <Textarea
-                placeholder="Conversation in progress..."
-                disabled
-                className="flex-1 min-h-[80px] resize-none"
-              />
-              <Button
-                size="icon"
-                className="flex-shrink-0 mt-1"
-                disabled
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
+            <Textarea
+              placeholder="Conversation in progress..."
+              disabled
+              className="flex-1 min-h-[30px] resize-none border-none bg-transparent"
+            />
+            <Button
+              size="icon"
+              className="flex-shrink-0 mt-1 bg-chat-panel-accent rounded-full"
+              disabled
+            >
+              <Send className="h-8 w-8 text-chat-panel-foreground" />
+            </Button>
+          </div>
         </div>
       </SheetContent>
     </Sheet>

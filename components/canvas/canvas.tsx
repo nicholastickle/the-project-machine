@@ -62,7 +62,7 @@ export default function Canvas({ onInit }: CanvasProps) {
                 proOptions={{ hideAttribution: true }}
                 connectionMode={ConnectionMode.Strict}
                 connectionRadius={20}
-                minZoom={0.2}
+                minZoom={0.1}
                 maxZoom={2}
                 zoomOnDoubleClick={false}
 

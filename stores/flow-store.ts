@@ -110,25 +110,18 @@ const useStore = create<AppState>()(
                     const nodes = get().nodes;
                     let position = nodeData?.position || { x: 200, y: 200 };
 
-                    // Vertical column layout with dynamic viewport calculation
+                    // Horizontal layout - cards placed side by side
                     if (!nodeData?.position) {
-                        const CARD_HEIGHT = 280;
-                        const CARD_VERTICAL_SPACING = 360; // Spacing to fit arrow clearly
-                        const COLUMN_SPACING = 500;
-                        const START_X = 300;
-                        const START_Y = 150;
-
-                        // Calculate max cards per column based on viewport
-                        const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1000;
-                        const maxCardsPerColumn = Math.max(3, Math.floor((viewportHeight - 200) / CARD_VERTICAL_SPACING));
+                        const HORIZONTAL_SPACING = 700; // Space between cards horizontally
+                        const START_X = -500;
+                        const START_Y = 200;
 
                         const taskNodes = nodes.filter(n => n.type === 'taskCardNode');
-                        const columnIndex = Math.floor(taskNodes.length / maxCardsPerColumn);
-                        const cardInColumn = taskNodes.length % maxCardsPerColumn;
+                        const cardIndex = taskNodes.length;
 
                         position = {
-                            x: START_X + (columnIndex * COLUMN_SPACING),
-                            y: START_Y + (cardInColumn * CARD_VERTICAL_SPACING)
+                            x: START_X + (cardIndex * HORIZONTAL_SPACING),
+                            y: START_Y
                         };
                     }
 
