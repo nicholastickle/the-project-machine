@@ -36,6 +36,9 @@ export function useChatScript(): UseChatScriptReturn {
     const userMessage = CHAT_SCRIPT[0]
     setMessages([userMessage])
     setCurrentStep(1)
+    
+    // Move to sidebar immediately after first user message
+    setIsCentered(false)
   }, [currentStep])
 
   // Auto-play next message (handles both AI and user messages in sequence)
@@ -43,7 +46,9 @@ export function useChatScript(): UseChatScriptReturn {
     if (currentStep === 0 || currentStep >= CHAT_SCRIPT.length) return
 
     const nextMessage = CHAT_SCRIPT[currentStep]
-    const delay = nextMessage.delay || (nextMessage.role === 'user' ? 800 : 1000)
+    // Increased delays: user messages wait longer (simulate reading/thinking time)
+    // AI messages also wait longer before appearing
+    const delay = nextMessage.delay || (nextMessage.role === 'user' ? 2000 : 2500)
     
     const timer = setTimeout(() => {
       setMessages(prev => [...prev, nextMessage])
