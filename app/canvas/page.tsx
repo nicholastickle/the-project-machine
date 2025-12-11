@@ -92,7 +92,7 @@ export default function CanvasPage() {
                     onConfirm={handleChatConfirm}
                     onVisibilityChange={handleChatVisibilityChange}
                 />
-                <ExportButtons isChatVisible={isChatVisible} hasNodes={nodes.filter(n => n.type === 'taskCardNode').length > 0} />
+                <ExportButtons isChatVisible={isChatVisible} />
                 <TaskBook />
                 <CanvasSidebar />
                 <CanvasToolbar />

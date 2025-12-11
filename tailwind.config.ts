@@ -104,6 +104,18 @@ const config = {
 					'accent-foreground': 'hsl(var(--chat-panel-accent-foreground))',
 					border: 'hsl(var(--chat-panel-border))'
 				},
+				'task-book': {
+					DEFAULT: 'hsl(var(--task-book))',
+					background: 'hsl(var(--task-book-background))',
+					foreground: 'hsl(var(--task-book-foreground))',
+					accent: 'hsl(var(--task-book-accent))',
+					'accent-foreground': 'hsl(var(--task-book-accent-foreground))',
+					border: 'hsl(var(--task-book-border))',
+					icon: 'hsl(var(--task-book-icon))',
+					'icon-background': 'hsl(var(--task-book-icon-background))',
+					'icon-foreground': 'hsl(var(--task-book-icon-foreground))',
+					'icon-border': 'hsl(var(--task-book-icon-border))'
+				},
 				control: {
 					DEFAULT: 'hsl(var(--control))',
 					background: 'hsl(var(--control-background))',
@@ -146,12 +158,6 @@ const config = {
 					'status-options-foreground': 'hsl(var(--task-card-status-options-foreground))',
 					'status-options-border': 'hsl(var(--task-card-status-options-border))',
 					'status-options-accent': 'hsl(var(--task-card-status-options-accent))'
-				},
-				'task-book': {
-					icon: 'hsl(var(--task-book-icon))',
-					'icon-background': 'hsl(var(--task-book-icon-background))',
-					'icon-foreground': 'hsl(var(--task-book-icon-foreground))',
-					'icon-border': 'hsl(var(--task-book-icon-border))'
 				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',

@@ -3,19 +3,18 @@
 import { FileSpreadsheet, Clock, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
 } from "@/components/ui/tooltip"
 import useStore from "@/stores/flow-store"
 
 interface ExportButtonsProps {
-  isChatVisible?: boolean
-  hasNodes?: boolean
+    isChatVisible?: boolean
 }
 
-export default function ExportButtons({ isChatVisible = true, hasNodes = false }: ExportButtonsProps) {
+export default function ExportButtons({ isChatVisible = true }: ExportButtonsProps) {
     const resetCanvas = useStore((state) => state.resetCanvas)
 
     const exportToExcel = () => {
@@ -38,48 +37,43 @@ export default function ExportButtons({ isChatVisible = true, hasNodes = false }
 
     return (
         <TooltipProvider>
-            <div 
-                className={`absolute top-4 z-50 flex gap-2 transition-all duration-500 ${
-                    isChatVisible ? 'right-[420px]' : 'right-4'
-                }`}
+            <div
+                className={`absolute top-2 z-50 flex gap-2 transition-all duration-500 ${isChatVisible ? 'right-[370px]' : 'right-4'
+                    }`}
             >
-                {/* Excel Export - only show when there are tasks */}
-                {hasNodes && (
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="outline"
-                                onClick={exportToExcel}
-                                className="bg-background/95 backdrop-blur-sm hover:bg-accent gap-2"
-                            >
-                                <FileSpreadsheet className="h-4 w-4" />
-                                <span>Export to Excel</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Export to Excel</p>
-                        </TooltipContent>
-                    </Tooltip>
-                )}
+                {/* Excel Export - always visible */}
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            variant="outline"
+                            onClick={exportToExcel}
+                            className="bg-background/95 backdrop-blur-sm hover:bg-accent gap-2"
+                        >
+                            <FileSpreadsheet className="h-4 w-4" />
+                            <span>Export to Excel</span>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Export to Excel</p>
+                    </TooltipContent>
+                </Tooltip>
 
-                {/* Timesheet Export - only show when there are tasks */}
-                {hasNodes && (
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="outline"
-                                onClick={exportTimesheet}
-                                className="bg-background/95 backdrop-blur-sm hover:bg-accent gap-2"
-                            >
-                                <Clock className="h-4 w-4" />
-                                <span>Timesheet Export</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Export Timesheet</p>
-                        </TooltipContent>
-                    </Tooltip>
-                )}
+                {/* Timesheet Export - always visible */}
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            variant="outline"
+                            onClick={exportTimesheet}
+                            className="bg-background/95 backdrop-blur-sm hover:bg-accent gap-2"
+                        >
+                            <Clock className="h-4 w-4" />
+                            <span>Timesheet Export</span>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Export Timesheet</p>
+                    </TooltipContent>
+                </Tooltip>
 
                 {/* Reset Demo - always visible */}
                 <Tooltip>

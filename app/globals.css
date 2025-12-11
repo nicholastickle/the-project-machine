@@ -77,6 +77,16 @@
     --chat-panel-accent-foreground: 240 5.9% 10%;
     --chat-panel-border: 210 17% 6% / 0.15;
 
+    --task-book: 0 0% 97%;
+    --task-book-background: 0 0% 97%;
+    --task-book-foreground: 240 5.3% 26.1%;
+    --task-book-accent: 240 4.8% 94%;
+    --task-book-accent-foreground: 240 5.9% 10%;
+    --task-book-border: 210 17% 6% / 0.15;
+    --task-book-icon-background: 0 0% 97%;
+    --task-book-icon-foreground: 240 5.3% 50%;
+    --task-book-icon-border: 210 17% 6% / 0.15;
+
     --control: 0 0% 97%;
     --control-background: 0 0% 97%;
     --control-foreground: 240 5.3% 26.1%;
@@ -109,21 +119,20 @@
     --task-card-status-options-accent: 240 4.8% 94%;
     --task-card-status-options-border: 210 17% 6% / 0.15;
 
-
     --task-card-not-started: 240 4.8% 94%;
     --task-card-on-going: 45 99.2% 48.6%;
     --task-card-stuck: 0 68.5% 49.8%;
     --task-card-complete: 135 59.2% 41.4%;
     --task-card-abandoned: 256 100% 24.3%;
-
     --task-card-handles-background: 240 4.8% 85%;
 
-    --task-book-icon-background: 0 0% 97%;
-    --task-book-icon-foreground: 240 5.3% 50%;
-    --task-book-icon-border: 210 17% 6% / 0.15;
-
-
     --edges: 240 10% 5%;
+
+    --canvas-buttons-background: 0 0% 97%;
+    --canvas-buttons-foreground: 240 5.3% 26.1%;
+    --canvas-buttons-border: 210 17% 6% / 0.15;
+    --canvas-buttons-accent: 240 4.8% 94%;
+    --canvas-buttons-accent-foreground: 240 5.9% 10%;
   }
 
   .dark {
@@ -196,6 +205,16 @@
     --chat-panel-accent-foreground: 240 4.8% 95.9%;
     --chat-panel-border: 0 0% 15%;
 
+    --task-book: 240 5.9% 10%;
+    --task-book-background: 240 5.9% 10%;
+    --task-book-foreground: 240 4.8% 95.9%;
+    --task-book-accent: 240 3.7% 16%;
+    --task-book-accent-foreground: 240 4.8% 95.9%;
+    --task-book-border: 0 0% 15%;
+    --task-book-icon-background: 240 5.9% 10%;
+    --task-book-icon-foreground: 240 4.8% 95.9%;
+    --task-book-icon-border: 240 3.7% 15.9%;
+
     --control: 240 5.9% 10%;
     --control-background: 240 5.9% 10%;
     --control-foreground: 240 4.8% 95.9%;
@@ -235,11 +254,14 @@
 
     --task-card-handles-background: 240 4.8% 95.9% / 0.1;
 
-    --task-book-icon-background: 240 5.9% 10%;
-    --task-book-icon-foreground: 240 4.8% 95.9%;
-    --task-book-icon-border: 240 3.7% 15.9%;
-
     --edges: 0 0% 98%;
+
+    --canvas-buttons-background: 240 5.9% 10%;
+    --canvas-buttons-foreground: 240 4.8% 95.9%;
+    --canvas-buttons-border: 0 0% 15%;
+    --canvas-buttons-accent: 240 3.7% 16%;
+    --canvas-buttons-accent-foreground: 240 4.8% 95.9%;
+
   }
 }
 
