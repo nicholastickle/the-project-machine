@@ -51,20 +51,21 @@ export default function CanvasPage() {
 
     // Handle confirmation from chat - add scripted tasks to canvas
     const handleChatConfirm = () => {
-        // Sprint 2: Add 12 pre-defined tasks when user confirms
+        // Sprint 2: Add 13 pre-defined bridge design tasks when user confirms
         const scriptedTasks = [
-            { title: 'Site Investigation & Geotech Update', status: 'Not started', estimatedHours: 80 },
-            { title: 'Geotechnical Engineering Report', status: 'Not started', estimatedHours: 40 },
-            { title: 'Load Analysis & Modeling', status: 'Not started', estimatedHours: 60 },
-            { title: 'Foundation Type Selection', status: 'Not started', estimatedHours: 32 },
-            { title: 'Foundation Capacity Analysis', status: 'Not started', estimatedHours: 56 },
-            { title: 'Structural Foundation Design', status: 'Not started', estimatedHours: 72 },
-            { title: 'Finite Element Modeling', status: 'Not started', estimatedHours: 64 },
-            { title: 'Seismic Design & Detailing', status: 'Not started', estimatedHours: 48 },
-            { title: 'Code Compliance Review', status: 'Not started', estimatedHours: 40 },
-            { title: 'Construction Drawings', status: 'Not started', estimatedHours: 96 },
-            { title: 'Technical Specifications', status: 'Not started', estimatedHours: 56 },
-            { title: 'Environmental & Permit Documentation', status: 'Not started', estimatedHours: 40 },
+            { title: 'General Research', status: 'Not started', estimatedHours: 114.4 },
+            { title: 'Initial sizing and bridge element determination', status: 'Not started', estimatedHours: 33.6 },
+            { title: 'Calculation of loads', status: 'Not started', estimatedHours: 20.8 },
+            { title: 'Check in with reviewer', status: 'Not started', estimatedHours: 9.6 },
+            { title: 'Structural analysis', status: 'Not started', estimatedHours: 80 },
+            { title: 'Section designs', status: 'Not started', estimatedHours: 212 },
+            { title: 'Final geometry checks', status: 'Not started', estimatedHours: 28 },
+            { title: 'Miscellaneous items', status: 'Not started', estimatedHours: 50.4 },
+            { title: 'Sketches for draftspersons and BIM modellers', status: 'Not started', estimatedHours: 64 },
+            { title: 'Detailed review from the reviewer', status: 'Not started', estimatedHours: 96 },
+            { title: 'Design adjustments after review', status: 'Not started', estimatedHours: 104 },
+            { title: 'Bill of quantities and specs', status: 'Not started', estimatedHours: 40 },
+            { title: 'Calculation reports', status: 'Not started', estimatedHours: 80 },
         ]
 
         scriptedTasks.forEach((task) => {
