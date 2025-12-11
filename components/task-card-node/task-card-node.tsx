@@ -16,6 +16,7 @@ interface TaskCardProps {
         timeSpent?: number;
         estimatedHours?: number;
         description?: string;
+        subtasks?: { id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }[];
     };
 }
 
@@ -23,6 +24,7 @@ interface TaskCardProps {
 export default function TaskCard({ id, data }: TaskCardProps) {
     const deleteNode = useStore((state) => state.deleteNode);
     const updateNodeData = useStore((state) => state.updateNodeData);
+    const addSubtask = useStore((state) => state.addSubtask);
     const [isTracking, setIsTracking] = useState(false);
     const [currentTime, setCurrentTime] = useState(data.timeSpent || 0);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -84,7 +86,7 @@ export default function TaskCard({ id, data }: TaskCardProps) {
 
     return (
         <div
-            className={`w-[700px] h-[550px] border-2 border-task-card-border bg-task-card-background flex flex-col rounded-xl shadow-lg`}
+            className={`w-[600px] min-h-[200px] border-2 border-task-card-border bg-task-card-background flex flex-col rounded-xl shadow-lg`}
             style={{
                 animationDelay,
                 animationFillMode: 'both',
@@ -92,8 +94,8 @@ export default function TaskCard({ id, data }: TaskCardProps) {
             }}
         >
             <div className={`${statusColorClass} h-full flex flex-col rounded-xl `}>
-                <div className='flex flex-[2] flex-row  '>
-                    <div className='flex-[11] items-center flex px-4 py-2 text-3xl font-medium text-task-card-foreground overflow-y-auto'>
+                <div className='flex flex-row  '>
+                    <div className='flex-[11] items-center flex px-4 py-5 text-3xl font-medium text-task-card-foreground overflow-y-auto'>
                         <EditableTitle
                             nodeId={id}
                             title={data.title}
@@ -111,14 +113,14 @@ export default function TaskCard({ id, data }: TaskCardProps) {
 
 
 
-                <div className='flex flex-[1] flex-row'>
-                    <div className='flex flex-[9] px-4 text-md font-medium text-task-card-foreground overflow-y-auto'>
+                <div className='flex flex-row'>
+                    <div className='flex flex-[8] px-4 text-md font-medium text-task-card-foreground overflow-y-auto'>
                         <EditableDescription
                             nodeId={id}
                             description={data.description}
                         />
                     </div>
-                    <div className='flex flex-[3] items-center justify-center p-2'>
+                    <div className='flex flex-[4] items-center justify-center p-2'>
                         <div className='bg-task-card-background-accent border border-task-card-border rounded-full px-4 py-2 w-32 text-center'>
                             <SelectStatus nodeId={id} status={data.status} />
                         </div>
@@ -129,16 +131,23 @@ export default function TaskCard({ id, data }: TaskCardProps) {
 
 
 
-                <div className="flex flex-[7] flex-row rounded-3xl mx-1 items-center justify-center p-2">
-                    <SubtaskTable nodeId={id} />
+                <div className="flex flex-row rounded-3xl mx-1 items-center justify-center p-2">
+                    <SubtaskTable nodeId={id} subtasks={data.subtasks || []} />
                 </div>
 
 
 
 
-                <div className="flex flex-[1] flex-row ">
-                    <div className='flex flex-[2] p-1 pl-4'>
-                        <p>+ Add subtask</p>
+                <div className="flex flex-row ">
+                    <div className='flex flex-[3] p-3 pl-6'>
+                        {(!data.subtasks || data.subtasks.length === 0) && (
+                            <button
+                                onClick={() => addSubtask(id)}
+                                className="text-task-card-foreground hover:text-blue-600 transition-colors cursor-pointer"
+                            >
+                                + Add subtask
+                            </button>
+                        )}
                     </div>
                     <div className='flex flex-[10] flex-row'>
 

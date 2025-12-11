@@ -17,6 +17,9 @@ export default function EditableDescription({ nodeId, description = "" }: Editab
     useEffect(() => {
         if (isEditing && textareaRef.current) {
             textareaRef.current.focus();
+            // Set initial height
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
         }
     }, [isEditing]);
 
@@ -60,6 +63,12 @@ export default function EditableDescription({ nodeId, description = "" }: Editab
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setEditValue(e.target.value);
+
+        // Auto-resize the textarea
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+        }
     };
 
     const handleInputClick = (e: React.MouseEvent<HTMLTextAreaElement>) => {
@@ -73,8 +82,8 @@ export default function EditableDescription({ nodeId, description = "" }: Editab
 
     if (isEditing) {
         return (
-            <div className="w-full h-full flex flex-col">
-                <span className="text-sm font-medium underline text-task-card-placeholder mb-1">Description:</span>
+            <div className="w-full flex flex-col p-1">
+                <span className="text-md font-medium underline text-muted-foreground mb-1">Description:</span>
                 <textarea
                     ref={textareaRef}
                     value={editValue}
@@ -82,11 +91,13 @@ export default function EditableDescription({ nodeId, description = "" }: Editab
                     onKeyDown={handleKeyDown}
                     onBlur={handleBlur}
                     onClick={handleInputClick}
-                    className="flex-1 w-full bg-transparent text-sm placeholder:text-task-card-placeholder text-muted-foreground resize-none border-none outline-none"
+                    className="w-full bg-transparent text-md placeholder:text-muted-foreground text-muted-foreground resize-none border-none outline-none"
                     placeholder="Enter description..."
-                    maxLength={150}
+                    maxLength={1000}
                     autoComplete="off"
                     spellCheck={true}
+                    rows={1}
+                    style={{ minHeight: 'auto', height: 'auto' }}
                 />
             </div>
         );
@@ -95,10 +106,10 @@ export default function EditableDescription({ nodeId, description = "" }: Editab
     return (
         <div
             onClick={handleParagraphClick}
-            className="cursor-text w-full h-full text-sm text-muted-foreground overflow-hidden break-words flex flex-col"
+            className="cursor-text w-full h-full text-md text-muted-foreground overflow-hidden break-words flex flex-col p-1"
         >
             <span className="font-medium underline mb-1 ">Description:</span>
-            <div className="flex-1">
+            <div>
                 {description
                     ? description
                     : <span >Enter description...</span>
@@ -107,3 +118,5 @@ export default function EditableDescription({ nodeId, description = "" }: Editab
         </div>
     );
 }
+
+

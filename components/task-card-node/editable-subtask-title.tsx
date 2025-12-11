@@ -1,18 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
 import useStore from '@/stores/flow-store';
 
-interface EditableTitleProps {
-    nodeId: string
-    title: string
+interface EditableSubtaskTitleProps {
+    nodeId: string;
+    subtaskId: string;
+    title: string;
+    isCompleted: boolean;
 }
 
-export default function EditableTitle({ nodeId, title }: EditableTitleProps) {
-
+export default function EditableSubtaskTitle({ nodeId, subtaskId, title, isCompleted }: EditableSubtaskTitleProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState(title);
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
-    const updateNodeData = useStore((state) => state.updateNodeData);
+    const updateSubtask = useStore((state) => state.updateSubtask);
 
     useEffect(() => {
         if (isEditing && inputRef.current) {
@@ -36,12 +37,9 @@ export default function EditableTitle({ nodeId, title }: EditableTitleProps) {
 
     const handleSave = () => {
         const trimmedValue = editValue.trim();
-
-        updateNodeData(nodeId, { title: trimmedValue });
-
+        updateSubtask(nodeId, subtaskId, { title: trimmedValue });
         setIsEditing(false);
     };
-
 
     const handleCancel = () => {
         setEditValue(title);
@@ -56,7 +54,6 @@ export default function EditableTitle({ nodeId, title }: EditableTitleProps) {
             e.preventDefault();
             handleCancel();
         }
-
         e.stopPropagation();
     };
 
@@ -78,7 +75,7 @@ export default function EditableTitle({ nodeId, title }: EditableTitleProps) {
         e.stopPropagation();
     };
 
-    const handleParagraphClick = (e: React.MouseEvent<HTMLParagraphElement>) => {
+    const handleSpanClick = (e: React.MouseEvent<HTMLSpanElement>) => {
         e.stopPropagation();
         handleTitleClick();
     };
@@ -92,13 +89,9 @@ export default function EditableTitle({ nodeId, title }: EditableTitleProps) {
                 onKeyDown={handleKeyDown}
                 onBlur={handleBlur}
                 onClick={handleInputClick}
-                className={`
-          w-full bg-transparent resize-none
-          placeholder:text-task-card-placeholder border-none outline-none
-          
-        `}
-                placeholder="Enter task..."
-                maxLength={200}
+                className="w-full bg-transparent border-none outline-none text-md resize-none"
+                placeholder="Enter subtask..."
+                maxLength={50}
                 autoComplete="off"
                 spellCheck={true}
                 rows={1}
@@ -108,17 +101,12 @@ export default function EditableTitle({ nodeId, title }: EditableTitleProps) {
     }
 
     return (
-        <p
-            onClick={handleParagraphClick}
-            className={`
-            cursor-text w-full overflow-hidden break-words
-        `}
-
+        <span
+            onClick={handleSpanClick}
+            className={`cursor-text w-full text-md ${isCompleted && title ? 'line-through text-muted-foreground' : ''
+                }`}
         >
-            {title
-                ? title
-                : <span className="placeholder:text-task-card-placeholder text-task-card-placeholder">Enter task...</span>
-            }
-        </p>
+            {title || <span className="text-muted-foreground">Enter subtask...</span>}
+        </span>
     );
 }

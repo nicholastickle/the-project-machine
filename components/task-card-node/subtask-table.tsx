@@ -7,63 +7,95 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
+import EditableSubtaskCheckbox from './editable-subtask-checkbox';
+import EditableSubtaskTitle from './editable-subtask-title';
+import EditableSubtaskDuration from './editable-subtask-duration';
+import EditableSubtaskTimeSpent from './editable-subtask-time-spent';
+import SubtaskDeleteButton from './subtask-delete-button';
+import useStore from '@/stores/flow-store';
 
 interface SubtaskTableProps {
     nodeId: string;
+    subtasks: { id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }[];
 }
 
-export default function SubtaskTable({ nodeId }: SubtaskTableProps) {
+export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
+    // Calculate totals
+    const totalEstimated = subtasks.reduce((sum, subtask) => sum + subtask.estimatedDuration, 0);
+    const totalTimeSpent = subtasks.reduce((sum, subtask) => sum + subtask.timeSpent, 0);
+    const addSubtask = useStore((state) => state.addSubtask);
+
+    // Don't render table if no subtasks
+    if (subtasks.length === 0) {
+        return null;
+    }
+
     return (
         <Table>
             <TableHeader>
                 <TableRow className="hover:bg-transparent border-task-card-border">
-                    <TableHead className="w-[50px]"></TableHead>
-                    <TableHead>Subtasks</TableHead>
-                    <TableHead className="text-center">Duration Est.</TableHead>
-                    <TableHead className="text-center">Time Spent</TableHead>
+                    <TableHead className="w-[40px]"></TableHead>
+                    <TableHead className="w-auto">Subtasks</TableHead>
+                    <TableHead className="text-center w-[100px]">Duration Est.</TableHead>
+                    <TableHead className="text-center w-[100px]">Time Spent</TableHead>
+                    <TableHead className="w-[40px]"></TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                <TableRow className="hover:bg-transparent border-task-card-border">
-                    <TableCell>
-                        <Checkbox />
-                    </TableCell>
-                    <TableCell>Research requirements</TableCell>
-                    <TableCell className="text-center">2h</TableCell>
-                    <TableCell className="text-center">1.5h</TableCell>
-                </TableRow>
-                <TableRow className="hover:bg-transparent border-task-card-border">
-                    <TableCell>
-                        <Checkbox />
-                    </TableCell>
-                    <TableCell>Design mockups</TableCell>
-                    <TableCell className="text-center">4h</TableCell>
-                    <TableCell className="text-center">3h</TableCell>
-                </TableRow>
-                <TableRow className="hover:bg-transparent border-task-card-border">
-                    <TableCell>
-                        <Checkbox checked />
-                    </TableCell>
-                    <TableCell>Implementation</TableCell>
-                    <TableCell className="text-center">6h</TableCell>
-                    <TableCell className="text-center">5.5h</TableCell>
-                </TableRow>
-                <TableRow className="hover:bg-transparent border-task-card-border">
-                    <TableCell>
-                        <Checkbox />
-                    </TableCell>
-                    <TableCell>Testing</TableCell>
-                    <TableCell className="text-center">2h</TableCell>
-                    <TableCell className="text-center">0h</TableCell>
-                </TableRow>
+                {subtasks.map((subtask) => (
+                    <TableRow key={subtask.id} className="hover:bg-transparent border-task-card-border">
+                        <TableCell className="w-[40px]">
+                            <EditableSubtaskCheckbox
+                                nodeId={nodeId}
+                                subtaskId={subtask.id}
+                                isCompleted={subtask.isCompleted}
+                            />
+                        </TableCell>
+                        <TableCell className="w-auto">
+                            <EditableSubtaskTitle
+                                nodeId={nodeId}
+                                subtaskId={subtask.id}
+                                title={subtask.title}
+                                isCompleted={subtask.isCompleted}
+                            />
+                        </TableCell>
+                        <TableCell className="text-center w-[100px]">
+                            <EditableSubtaskDuration
+                                nodeId={nodeId}
+                                subtaskId={subtask.id}
+                                duration={subtask.estimatedDuration}
+                            />
+                        </TableCell>
+                        <TableCell className="text-center w-[100px]">
+                            <EditableSubtaskTimeSpent
+                                nodeId={nodeId}
+                                subtaskId={subtask.id}
+                                timeSpent={subtask.timeSpent}
+                            />
+                        </TableCell>
+                        <TableCell className="w-[40px]">
+                            <SubtaskDeleteButton
+                                nodeId={nodeId}
+                                subtaskId={subtask.id}
+                            />
+                        </TableCell>
+                    </TableRow>
+                ))}
             </TableBody>
-            <TableFooter className="bg-transparen border-task-card-border">
-                <TableRow className="hover:bg-transparent border-task-card-border ">
-                    <TableCell></TableCell>
-                    <TableCell className="font-medium"></TableCell>
-                    <TableCell className="text-center font-medium">14h</TableCell>
-                    <TableCell className="text-center font-medium">10h</TableCell>
+            <TableFooter className="bg-transparent border-task-card-border">
+                <TableRow className="hover:bg-transparent border-task-card-border">
+                    <TableCell className="w-[40px]"></TableCell>
+                    <TableCell className="font-medium w-auto">
+                        <button
+                            onClick={() => addSubtask(nodeId)}
+                            className="text-task-card-foreground hover:text-blue-600 transition-colors cursor-pointer border border-task-card-border rounded-full px-3 py-1"
+                        >
+                            + Add subtask
+                        </button>
+                    </TableCell>
+                    <TableCell className="text-center font-medium w-[100px]">{totalEstimated} h</TableCell>
+                    <TableCell className="text-center font-medium w-[100px]">{totalTimeSpent} h</TableCell>
+                    <TableCell className="w-[40px]"></TableCell>
                 </TableRow>
             </TableFooter>
         </Table>

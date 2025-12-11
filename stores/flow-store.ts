@@ -105,6 +105,7 @@ const useStore = create<AppState>()(
                     estimatedHours?: number;
                     timeSpent?: number;
                     description?: string;
+                    subtasks?: { id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }[];
                 }) => {
                     const nodes = get().nodes;
                     let position = nodeData?.position || { x: 200, y: 200 };
@@ -141,6 +142,7 @@ const useStore = create<AppState>()(
                             estimatedHours: nodeData?.estimatedHours,
                             timeSpent: nodeData?.timeSpent ?? 0,
                             description: nodeData?.description ?? "",
+                            subtasks: nodeData?.subtasks ?? [],
                         },
                     };
 
@@ -154,7 +156,7 @@ const useStore = create<AppState>()(
                     return newNode.id;
                 },
 
-                updateNodeData: (nodeId: string, newData: Partial<{ title: string; status: string; timeSpent: number; estimatedHours: number; description: string }>, saveToHistory: boolean = true) => {
+                updateNodeData: (nodeId: string, newData: Partial<{ title: string; status: string; timeSpent: number; estimatedHours: number; description: string; subtasks: { id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }[] }>, saveToHistory: boolean = true) => {
                     set({
                         nodes: get().nodes.map(node =>
                             node.id === nodeId
@@ -194,6 +196,72 @@ const useStore = create<AppState>()(
                     set({
                         nodes: initialNodes,
                         edges: initialEdges,
+                    });
+
+                    get().saveHistory();
+                },
+
+                addSubtask: (nodeId: string) => {
+                    const newSubtask = {
+                        id: uuidv4(),
+                        title: "",
+                        isCompleted: false,
+                        estimatedDuration: 0,
+                        timeSpent: 0
+                    };
+
+                    set({
+                        nodes: get().nodes.map(node =>
+                            node.id === nodeId
+                                ? {
+                                    ...node,
+                                    data: {
+                                        ...node.data,
+                                        subtasks: [...((node.data.subtasks as any[]) || []), newSubtask]
+                                    }
+                                }
+                                : node
+                        )
+                    });
+
+                    get().saveHistory();
+                },
+
+                updateSubtask: (nodeId: string, subtaskId: string, data: Partial<{ id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }>) => {
+                    set({
+                        nodes: get().nodes.map(node =>
+                            node.id === nodeId
+                                ? {
+                                    ...node,
+                                    data: {
+                                        ...node.data,
+                                        subtasks: ((node.data.subtasks as any[]) || []).map((subtask: any) =>
+                                            subtask.id === subtaskId
+                                                ? { ...subtask, ...data }
+                                                : subtask
+                                        )
+                                    }
+                                }
+                                : node
+                        )
+                    });
+
+                    get().saveHistory();
+                },
+
+                deleteSubtask: (nodeId: string, subtaskId: string) => {
+                    set({
+                        nodes: get().nodes.map(node =>
+                            node.id === nodeId
+                                ? {
+                                    ...node,
+                                    data: {
+                                        ...node.data,
+                                        subtasks: ((node.data.subtasks as any[]) || []).filter((subtask: any) => subtask.id !== subtaskId)
+                                    }
+                                }
+                                : node
+                        )
                     });
 
                     get().saveHistory();
