@@ -74,7 +74,7 @@ export default function CanvasPage() {
         scriptedTasks.forEach((task, index) => {
             setTimeout(() => {
                 addTaskNode(task)
-                
+
                 // Fit view after last task is added
                 if (index === scriptedTasks.length - 1) {
                     setTimeout(() => {
@@ -91,28 +91,18 @@ export default function CanvasPage() {
         })
     }
 
-    // Handle chat visibility changes - adjust canvas viewport
+    // Handle chat visibility changes
     const handleChatVisibilityChange = (isVisible: boolean) => {
         setIsChatVisible(isVisible)
-        
-        // Adjust canvas viewport when chat opens/closes
-        setTimeout(() => {
-            if (reactFlowInstance.current) {
-                reactFlowInstance.current.fitView({
-                    padding: 0.2,
-                    duration: 500,
-                    maxZoom: 1,
-                })
-            }
-        }, 300) // Wait for animation to start
+        // Removed automatic fitView to prevent annoying auto-focus behavior
     }
 
     return (
         <SidebarProvider defaultOpen={false}>
             <div className="fixed inset-0 h-screen w-screen overflow-hidden">
                 <Canvas onInit={setReactFlowInstance} />
-                <ChatPanel 
-                    onConfirm={handleChatConfirm} 
+                <ChatPanel
+                    onConfirm={handleChatConfirm}
                     onVisibilityChange={handleChatVisibilityChange}
                 />
                 <ExportButtons isChatVisible={isChatVisible} hasNodes={nodes.filter(n => n.type === 'taskCardNode').length > 0} />

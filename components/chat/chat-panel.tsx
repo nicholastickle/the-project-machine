@@ -102,10 +102,10 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
   // Detect user scrolling
   const handleScroll = () => {
     if (!messagesContainerRef.current) return
-    
+
     const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current
     const isAtBottom = scrollHeight - scrollTop - clientHeight < 50
-    
+
     // If user scrolls up, disable auto-scroll
     if (!isAtBottom) {
       setIsUserScrolling(true)
@@ -135,177 +135,105 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
   // When centered, render as floating card
   if (isCentered) {
     return (
-      <div className="fixed bottom-12 left-1/2 -translate-x-1/2 w-[600px] z-50">
-        <div className="bg-background/95 backdrop-blur-sm rounded-lg shadow-2xl border border-border overflow-hidden flex flex-col">
-          {/* Header */}
-          <div className="bg-accent/50 px-4 py-3 border-b border-border flex-shrink-0">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-sm font-medium">Project Machine</span>
-              </div>
+      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 w-[500px] z-10 bg-chat-panel-background rounded-full border border-chat-panel-border flex flex-col">
+
+        {/* Input Area */}
+
+        {canSend && (
+          <div className="flex items-start items-center">
+            <div className="flex items-center justify-center">
               <Button
                 variant="ghost"
-                size="icon"
-                className="h-6 w-6"
-                onClick={toggleVisibility}
+                size="lg"
+                className=" p-3 ml-3 hover:bg-chat-panel-accent rounded-full"
+                onClick={() => {
+                  alert('Soon you\'ll be able to attach additional context like:\n\n• Old project plans from Excel\n• Reference documents\n• Previous estimates\n• Client requirements\n\nThis will help me create a more accurate plan tailored to your needs!')
+                }}
               >
-                <X className="h-4 w-4" />
+                <Paperclip className="h-8 w-8 text-chat-panel-foreground" />
+              </Button>
+            </div>
+            <Textarea
+              value={INITIAL_MESSAGE}
+              readOnly
+              className="flex-1 min-h-[80px] bg-chat-panel-background border-none cursor-not-allowed resize-none"
+            />
+            <div className="">
+              <Button
+                onClick={sendInitialMessage}
+                size="icon"
+                className="rounded-full bg-orange-600 hover:bg-orange-700 animate-pulse mr-4"
+              >
+                <Send className="h-4 w-4" />
               </Button>
             </div>
           </div>
+        )}
 
-          {/* Messages */}
-          <div 
-            ref={messagesContainerRef}
-            onScroll={handleScroll}
-            className="overflow-y-scroll p-4 space-y-4 max-h-[400px] flex-1 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
-            style={{
-              scrollbarWidth: 'thin',
-              scrollbarColor: 'hsl(var(--border)) transparent'
-            }}
+        {canConfirm && (
+          <Button
+            onClick={handleConfirm}
+            className="w-full gap-2 bg-green-600 hover:bg-green-700"
+            size="lg"
           >
-            {displayedMessages.length === 0 ? (
-              <div className="text-sm text-muted-foreground text-center py-8">
-                Tell me about your project to get started
-              </div>
-            ) : (
-              displayedMessages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`
-                    flex
-                    ${msg.role === 'user' ? 'justify-end' : 'justify-start'}
-                    ${msg.role === 'user' ? 'animate-in fade-in slide-in-from-right-4 duration-[1500ms]' : ''}
-                  `}
-                >
-                  <div
-                    className={`
-                      max-w-[85%] rounded-lg p-3 text-sm
-                      ${msg.role === 'user'
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-accent border border-border'
-                      }
-                      ${msg.hasRisk ? 'ring-2 ring-orange-500/50' : ''}
-                    `}
-                  >
-                    <div className="whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none">
-                      {msg.content.split('\n').map((line, i) => {
-                        const boldPattern = /\*\*(.+?)\*\*/g
-                        const parts = line.split(boldPattern)
-                        
-                        return (
-                          <p key={i} className={i > 0 ? 'mt-1' : ''}>
-                            {parts.map((part, j) => 
-                              j % 2 === 1 ? <strong key={j}>{part}</strong> : part
-                            )}
-                          </p>
-                        )
-                      })}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+            <Check className="w-4 h-4" />
+            Confirm & Add to Canvas
+          </Button>
+        )}
 
-          {/* Input Area */}
-          <div className="p-4 border-t border-border bg-background flex-shrink-0">
-            {canSend && (
-              <div className="flex items-start gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="flex-shrink-0 mt-1"
-                  onClick={() => {
-                    alert('Soon you\'ll be able to attach additional context like:\n\n• Old project plans from Excel\n• Reference documents\n• Previous estimates\n• Client requirements\n\nThis will help me create a more accurate plan tailored to your needs!')
-                  }}
-                >
-                  <Paperclip className="h-4 w-4 text-muted-foreground" />
-                </Button>
-                <Textarea
-                  value={INITIAL_MESSAGE}
-                  readOnly
-                  className="flex-1 min-h-[80px] bg-muted cursor-not-allowed resize-none"
-                />
-                <div className="flex-shrink-0 mt-1">
-                  <Button
-                    onClick={sendInitialMessage}
-                    size="icon"
-                    className="rounded-full bg-blue-600 hover:bg-blue-700 animate-pulse"
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
-            
-            {canConfirm && (
-              <Button
-                onClick={handleConfirm}
-                className="w-full gap-2 bg-green-600 hover:bg-green-700"
-                size="lg"
-              >
-                <Check className="w-4 h-4" />
-                Confirm & Add to Canvas
-              </Button>
-            )}
-
-            {!canSend && !canConfirm && (
-              <div className="flex items-start gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="flex-shrink-0 mt-1"
-                  disabled
-                >
-                  <Paperclip className="h-4 w-4 text-muted-foreground" />
-                </Button>
-                <Textarea
-                  placeholder="Conversation in progress..."
-                  disabled
-                  className="flex-1 min-h-[80px] resize-none"
-                />
-                <Button
-                  size="icon"
-                  className="flex-shrink-0 mt-1"
-                  disabled
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
+        {!canSend && !canConfirm && (
+          <div className="flex items-start gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="flex-shrink-0 mt-1"
+              disabled
+            >
+              <Paperclip className="h-4 w-4 text-muted-foreground" />
+            </Button>
+            <Textarea
+              placeholder="Conversation in progress..."
+              disabled
+              className="flex-1 min-h-[80px] resize-none"
+            />
+            <Button
+              size="icon"
+              className="flex-shrink-0 mt-1"
+              disabled
+            >
+              <Send className="h-4 w-4" />
+            </Button>
           </div>
-        </div>
+        )}
       </div>
+
+
     )
   }
 
   // When docked, render as shadcn Sheet on the right side
   return (
     <Sheet open={isVisible} onOpenChange={toggleVisibility} modal={false}>
-      <SheetContent 
-        side="right" 
-        className="w-[400px] p-0 flex flex-col"
+      <SheetContent
+        side="right"
+        className="w-[350px] p-0 flex flex-col border border-chat-panel-border bg-chat-panel-background"
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <SheetHeader className="bg-accent/50 px-4 py-3 border-b border-border flex-shrink-0">
-          <SheetTitle className="flex items-center gap-2 text-sm font-medium">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            Project Machine
+        <SheetHeader className="bg-chat-panel-background px-3 py-2">
+          <SheetTitle className="flex items-center justify-center text-sm font-medium">
+            Chat
           </SheetTitle>
         </SheetHeader>
 
         {/* Messages */}
-        <div 
+        <div
           ref={messagesContainerRef}
           onScroll={handleScroll}
-          className="overflow-y-scroll p-4 space-y-4 flex-1 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+          className="overflow-y-scroll p-2 space-y-2 flex-1 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
           style={{
             scrollbarWidth: 'thin',
-            scrollbarColor: 'hsl(var(--border)) transparent'
+            scrollbarColor: 'hsl(var(--chat-panel-accent)) transparent'
           }}
         >
           {displayedMessages.map((msg) => (
@@ -319,22 +247,22 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
             >
               <div
                 className={`
-                  max-w-[85%] rounded-lg p-3 text-sm
+                  max-w-[90%] rounded-lg p-2  text-chat-panel-foreground
                   ${msg.role === 'user'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-accent border border-border'
+                    ? 'bg-chat-panel-accent text-sm border border-chat-panel-border'
+                    : 'bg-chat-panel-background text-xs leading-5'
                   }
-                  ${msg.hasRisk ? 'ring-2 ring-orange-500/50' : ''}
+                  
                 `}
               >
                 <div className="whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none">
                   {msg.content.split('\n').map((line, i) => {
                     const boldPattern = /\*\*(.+?)\*\*/g
                     const parts = line.split(boldPattern)
-                    
+
                     return (
                       <p key={i} className={i > 0 ? 'mt-1' : ''}>
-                        {parts.map((part, j) => 
+                        {parts.map((part, j) =>
                           j % 2 === 1 ? <strong key={j}>{part}</strong> : part
                         )}
                       </p>

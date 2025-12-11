@@ -70,6 +70,13 @@
     --toolbar-accent-foreground: 240 5.9% 10%;
     --toolbar-border: 210 17% 6% / 0.15;
 
+    --chat-panel: 0 0% 97%;
+    --chat-panel-background: 0 0% 97%;
+    --chat-panel-foreground: 240 5.3% 26.1%;
+    --chat-panel-accent: 240 4.8% 94%;
+    --chat-panel-accent-foreground: 240 5.9% 10%;
+    --chat-panel-border: 210 17% 6% / 0.15;
+
     --control: 0 0% 97%;
     --control-background: 0 0% 97%;
     --control-foreground: 240 5.3% 26.1%;
@@ -116,7 +123,7 @@
     --task-book-icon-border: 210 17% 6% / 0.15;
 
 
-     --edges: 240 10% 5%;
+    --edges: 240 10% 5%;
   }
 
   .dark {
@@ -181,6 +188,13 @@
     --toolbar-accent: 240 3.7% 16%;
     --toolbar-accent-foreground: 240 4.8% 95.9%;
     --toolbar-border: 0 0% 15%;
+
+    --chat-panel: 240 5.9% 10%;
+    --chat-panel-background: 240 5.9% 10%;
+    --chat-panel-foreground: 240 4.8% 95.9%;
+    --chat-panel-accent: 240 3.7% 16%;
+    --chat-panel-accent-foreground: 240 4.8% 95.9%;
+    --chat-panel-border: 0 0% 15%;
 
     --control: 240 5.9% 10%;
     --control-background: 240 5.9% 10%;
