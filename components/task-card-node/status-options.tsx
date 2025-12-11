@@ -11,6 +11,7 @@ import {
 import CustomSelectTrigger from "@/components/task-card-node/custom-select-trigger";
 import SaveTaskDialog from "@/components/task-card-node/save-task-dialog";
 import useStore from "@/stores/flow-store";
+import useTaskbookStore from "@/stores/taskbook-store";
 import { useState } from "react";
 
 interface SelectStatusProps {
@@ -23,7 +24,7 @@ export default function SelectStatus({ nodeId, status }: SelectStatusProps) {
     const [pendingStatus, setPendingStatus] = useState<string | null>(null);
 
     const updateNodeData = useStore((state) => state.updateNodeData);
-    const addSavedTask = useStore((state) => state.addSavedTask);
+    const addSavedTask = useTaskbookStore((state) => state.addSavedTask);
     const nodes = useStore((state) => state.nodes);
 
     const handleStatusChange = (newStatus: string) => {

@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import TaskBookIcon from './task-book-icon';
 import TaskBookDialog from './task-book-dialog';
-import useStore from '@/stores/flow-store';
+import useTaskbookStore from '@/stores/taskbook-store';
 
 import { useSidebar } from "@/components/ui/sidebar"
 
 export default function TaskBook() {
     const [isTaskBookOpen, setIsTaskBookOpen] = useState(false);
     const { open, isMobile } = useSidebar()
-    const hasNewTask = useStore((state) => state.hasNewTask);
-    const clearNewTaskIndicator = useStore((state) => state.clearNewTaskIndicator);
+    const hasNewTask = useTaskbookStore((state) => state.hasNewTask);
+    const clearNewTaskIndicator = useTaskbookStore((state) => state.clearNewTaskIndicator);
 
     const handleIconClick = () => {
         setIsTaskBookOpen(true);

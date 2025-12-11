@@ -11,11 +11,11 @@ import {
 import useStore from "@/stores/flow-store"
 
 interface ExportButtonsProps {
-  isChatVisible?: boolean
+  isChatDocked?: boolean
   hasNodes?: boolean
 }
 
-export default function ExportButtons({ isChatVisible = true, hasNodes = false }: ExportButtonsProps) {
+export default function ExportButtons({ isChatDocked = false, hasNodes = false }: ExportButtonsProps) {
     const resetCanvas = useStore((state) => state.resetCanvas)
 
     const exportToExcel = () => {
@@ -40,46 +40,44 @@ export default function ExportButtons({ isChatVisible = true, hasNodes = false }
         <TooltipProvider>
             <div 
                 className={`absolute top-4 z-50 flex gap-2 transition-all duration-500 ${
-                    isChatVisible ? 'right-[420px]' : 'right-4'
+                    isChatDocked ? 'right-[420px]' : 'right-4'
                 }`}
             >
-                {/* Excel Export - only show when there are tasks */}
-                {hasNodes && (
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="outline"
-                                onClick={exportToExcel}
-                                className="bg-background/95 backdrop-blur-sm hover:bg-accent gap-2"
-                            >
-                                <FileSpreadsheet className="h-4 w-4" />
-                                <span>Export to Excel</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Export to Excel</p>
-                        </TooltipContent>
-                    </Tooltip>
-                )}
+                {/* Excel Export - always visible, disabled when no tasks */}
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            variant="outline"
+                            onClick={exportToExcel}
+                            disabled={!hasNodes}
+                            className="bg-background/95 backdrop-blur-sm hover:bg-accent gap-2"
+                        >
+                            <FileSpreadsheet className="h-4 w-4" />
+                            <span>Export to Excel</span>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Export to Excel</p>
+                    </TooltipContent>
+                </Tooltip>
 
-                {/* Timesheet Export - only show when there are tasks */}
-                {hasNodes && (
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="outline"
-                                onClick={exportTimesheet}
-                                className="bg-background/95 backdrop-blur-sm hover:bg-accent gap-2"
-                            >
-                                <Clock className="h-4 w-4" />
-                                <span>Timesheet Export</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Export Timesheet</p>
-                        </TooltipContent>
-                    </Tooltip>
-                )}
+                {/* Timesheet Export - always visible, disabled when no tasks */}
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            variant="outline"
+                            onClick={exportTimesheet}
+                            disabled={!hasNodes}
+                            className="bg-background/95 backdrop-blur-sm hover:bg-accent gap-2"
+                        >
+                            <Clock className="h-4 w-4" />
+                            <span>Timesheet Export</span>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Export Timesheet</p>
+                    </TooltipContent>
+                </Tooltip>
 
                 {/* Reset Demo - always visible */}
                 <Tooltip>

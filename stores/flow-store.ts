@@ -16,8 +16,6 @@ const useStore = create<AppState>()(
                 edges: initialEdges,
                 history: [{ nodes: initialNodes, edges: initialEdges }],
                 historyIndex: 0,
-                savedTasks: [],
-                hasNewTask: false,
 
                 saveHistory: () => {
                     const { nodes, edges, history, historyIndex } = get();
@@ -199,24 +197,6 @@ const useStore = create<AppState>()(
                     get().saveHistory();
                 },
 
-                addSavedTask: (task) => {
-                    const now = new Date().toLocaleString();
-                    const newTask = {
-                        ...task,
-                        id: `saved-${uuidv4()}`,
-                        savedAt: now,
-                        lastUpdated: now,
-                    };
-                    set({
-                        savedTasks: [...get().savedTasks, newTask],
-                        hasNewTask: true,
-                    });
-                },
-
-                clearNewTaskIndicator: () => {
-                    set({ hasNewTask: false });
-                },
-
             }),
             {
                 name: 'canvas-storage',
@@ -224,8 +204,6 @@ const useStore = create<AppState>()(
                     // Only persist certain parts of state. Not the functions or history.
                     nodes: state.nodes,
                     edges: state.edges,
-                    savedTasks: state.savedTasks,
-                    hasNewTask: state.hasNewTask,
                 }),
                 version: 1, // Version for migrations
             }

@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button"
 import { Archive, Edit, Play } from "lucide-react"
 import { mockSections, type Task } from './mock-data'
 import { useState, useEffect } from 'react'
-import useStore from '@/stores/flow-store'
+import useTaskbookStore from '@/stores/taskbook-store'
 
 interface TaskBookDialogProps {
     children: React.ReactNode;
@@ -28,13 +28,10 @@ interface TaskBookDialogProps {
 
 export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskBookDialogProps) {
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-    const savedTasks = useStore((state) => state.savedTasks);
+    const savedTasks = useTaskbookStore((state) => state.savedTasks);
 
-    // Combine mock tasks with saved tasks from store
-    const allTasks = [
-        ...mockSections.flatMap(section => section.tasks),
-        ...savedTasks
-    ];
+    // Use only saved tasks from the taskbook store (which includes seed data)
+    const allTasks = savedTasks;
 
     useEffect(() => {
         if (isOpen) {
@@ -73,26 +70,26 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                         </DialogHeader>
                     </div>
                     <div className="flex flex-[11] flex-row">
-                        <div className="flex flex-col flex-[3] border-r border-muted-foreground/30" >
-                            <div className="flex flex-[0.5] justify-center items-center border-y border-muted-foreground/30">
-                                <p className="text-xl font-semibold ">Tasks</p>
+                        <div className="flex flex-col flex-[3] border-r border-border" >
+                            <div className="flex flex-[0.5] justify-center items-center border-b border-border py-3">
+                                <p className="text-base font-semibold">Tasks</p>
                             </div>
                             <div className="flex flex-[11.5] p-4 overflow-y-auto">
                                 <div className="w-full space-y-1">
                                     {allTasks.map((task) => (
                                         <div
                                             key={task.id}
-                                            className={`p-2 rounded cursor-pointer flex items-center gap-3 text-xs hover:bg-muted/50 ${
-                                                selectedTask?.id === task.id ? 'bg-muted' : ''
+                                            className={`p-2 cursor-pointer flex items-center gap-3 text-sm ${
+                                                selectedTask?.id === task.id ? 'font-semibold' : ''
                                             }`}
                                             onClick={() => handleTaskClick(task)}
                                         >
                                             <span className="text-lg">•</span>
-                                            <div className="font-medium">{task.title}</div>
+                                            <div>{task.title}</div>
                                         </div>
                                     ))}
                                     {allTasks.length === 0 && (
-                                        <div className="text-center text-muted-foreground py-8">
+                                        <div className="text-center text-muted-foreground py-8 text-sm">
                                             No saved tasks yet
                                         </div>
                                     )}
@@ -101,42 +98,41 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                         </div>
                         <div className="flex flex-col flex-[9]">
 
-                            <div className="flex flex-row flex-[1.5] border-y border-muted-foreground/30" >
+                            <div className="flex flex-row flex-[1.5] border-b border-border" >
 
 
-                                <div className="flex flex-[5] items-center p-2 text-lg font-semibold">
-                                    <h2>{selectedTask ? selectedTask.title : "No task selected"}</h2>
+                                <div className="flex flex-[5] items-center px-4 py-3">
+                                    <h2 className="text-base font-semibold">{selectedTask ? selectedTask.title : "No task selected"}</h2>
                                 </div>
-                                <div className="flex flex-[3] justify-center items-center gap-2">
+                                <div className="flex flex-[3] justify-center items-center gap-2 border-l border-border px-3">
                                     <Button 
                                         variant="outline" 
-                                        className="flex items-center gap-2 hover:bg-background hover:text-foreground"
+                                        size="sm"
                                         onClick={handleEdit}
                                         disabled={!selectedTask}
                                     >
-                                        <Edit size={16} />
+                                        <Edit size={14} className="mr-1" />
                                         Edit
                                     </Button>
                                     <Button 
                                         variant="outline" 
-                                        className="flex items-center gap-2 hover:bg-background hover:text-foreground"
+                                        size="sm"
                                         onClick={handleUse}
                                         disabled={!selectedTask}
                                     >
-                                        <Play size={16} />
+                                        <Play size={14} className="mr-1" />
                                         Use
                                     </Button>
                                 </div>
-                                <div className="flex flex-col flex-[3]">
+                                <div className="flex flex-col flex-[3] border-l border-border">
 
-                                    <div className="flex flex-col flex-[6] p-1 text-xs items-center">
-
-                                        <p>Last updated:</p>
-                                        <p> {selectedTask ? selectedTask.lastUpdated : "-"}</p>
+                                    <div className="flex flex-col flex-1 justify-center items-center border-b border-border px-2 py-1">
+                                        <p className="text-xs text-muted-foreground">Last updated</p>
+                                        <p className="text-xs">{selectedTask ? selectedTask.lastUpdated : "-"}</p>
                                     </div>
-                                    <div className="flex flex-col flex-[6] p-1 text-xs items-center">
-                                        <p>Last used:</p>
-                                        <p> {selectedTask ? selectedTask.lastUsed || "-" : "-"}</p>
+                                    <div className="flex flex-col flex-1 justify-center items-center px-2 py-1">
+                                        <p className="text-xs text-muted-foreground">Last used</p>
+                                        <p className="text-xs">{selectedTask ? selectedTask.lastUsed || "-" : "-"}</p>
                                     </div>
 
                                 </div>
@@ -146,70 +142,72 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                             <div className="flex flex-col flex-[9] p-4 overflow-y-auto">
                                 {selectedTask ? (
                                     <>
-                                        <p className="text-lg font-semibold mb-2">Description:</p>
+                                        <p className="text-sm font-semibold mb-2">Description</p>
                                         <p className="mb-4 text-sm">{selectedTask.description || "No description available"}</p>
                                         
                                         {'totalDuration' in selectedTask && (
-                                            <p className="mb-4 text-sm">
+                                            <p className="mb-3 text-sm">
                                                 <span className="font-semibold">Total Duration:</span> {selectedTask.totalDuration}
                                             </p>
                                         )}
                                         
                                         {selectedTask.estimatedHours && (
-                                            <p className="mb-4 text-sm">
+                                            <p className="mb-3 text-sm">
                                                 <span className="font-semibold">Estimated Hours:</span> {selectedTask.estimatedHours}h
                                             </p>
                                         )}
                                         
                                         {selectedTask.timeSpent !== undefined && (
-                                            <p className="mb-4 text-sm">
+                                            <p className="mb-3 text-sm">
                                                 <span className="font-semibold">Time Spent:</span> {selectedTask.timeSpent}h
                                             </p>
                                         )}
                                         
                                         {selectedTask.subtasks && selectedTask.subtasks.length > 0 && (
                                             <>
-                                                <p className="text-lg font-semibold mb-3 mt-4">Subtasks:</p>
-                                                <Table>
-                                                    <TableHeader>
-                                                        <TableRow>
-                                                            <TableHead>Subtask</TableHead>
-                                                            <TableHead>Estimated Duration</TableHead>
-                                                            <TableHead>Time Spent</TableHead>
-                                                        </TableRow>
-                                                    </TableHeader>
-                                                    <TableBody>
-                                                        {selectedTask.subtasks.map((subtask, index) => (
-                                                            <TableRow key={index}>
-                                                                <TableCell className="font-medium">{subtask.name}</TableCell>
-                                                                <TableCell>{subtask.estimated}</TableCell>
-                                                                <TableCell>{subtask.timeSpent}</TableCell>
+                                                <p className="text-sm font-semibold mb-2 mt-3">Subtasks</p>
+                                                <div className="border border-border rounded-md max-h-[300px] overflow-y-auto">
+                                                    <Table>
+                                                        <TableHeader className="sticky top-0 bg-background">
+                                                            <TableRow>
+                                                                <TableHead className="text-xs">Subtask</TableHead>
+                                                                <TableHead className="text-xs">Estimated Duration</TableHead>
+                                                                <TableHead className="text-xs">Time Spent</TableHead>
                                                             </TableRow>
-                                                        ))}
-                                                    </TableBody>
-                                                </Table>
+                                                        </TableHeader>
+                                                        <TableBody>
+                                                            {selectedTask.subtasks.map((subtask, index) => (
+                                                                <TableRow key={index}>
+                                                                    <TableCell className="text-xs">{subtask.name}</TableCell>
+                                                                    <TableCell className="text-xs">{subtask.estimated}</TableCell>
+                                                                    <TableCell className="text-xs">{subtask.timeSpent}</TableCell>
+                                                                </TableRow>
+                                                            ))}
+                                                        </TableBody>
+                                                    </Table>
+                                                </div>
                                             </>
                                         )}
                                     </>
                                 ) : (
                                     <div className="flex items-center justify-center h-full text-muted-foreground">
-                                        <p>Select a task to view details</p>
+                                        <p className="text-sm">Select a task to view details</p>
                                     </div>
                                 )}
                             </div>
-                            <div className="flex flex-row flex-[0.5] ">
+                            <div className="flex flex-row flex-[0.5] border-t border-border">
 
-                                <div className="flex flex-[9] ">
+                                <div className="flex flex-[9]">
 
                                 </div>
-                                <div className="flex flex-[3] justify-center items-center mb-3">
+                                <div className="flex flex-[3] justify-center items-center py-3">
                                     <Button 
                                         variant="outline" 
-                                        className="flex items-center gap-2 hover:bg-background hover:text-foreground"
+                                        size="sm"
                                         onClick={handleArchive}
                                         disabled={!selectedTask}
                                     >
-                                        <Archive size={16} />
+                                        <Archive size={14} className="mr-1" />
                                         Archive
                                     </Button>
                                 </div>

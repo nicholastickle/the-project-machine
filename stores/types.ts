@@ -30,8 +30,6 @@ export type AppState = {
   edges: Edge[];
   history: { nodes: AppNode[]; edges: Edge[] }[];
   historyIndex: number;
-  savedTasks: SavedTask[];
-  hasNewTask: boolean;
   onNodesChange: OnNodesChange<AppNode>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
@@ -45,6 +43,4 @@ export type AppState = {
   saveHistory: () => void;
   undo: () => void;
   redo: () => void;
-  addSavedTask: (task: Omit<SavedTask, 'id' | 'savedAt' | 'lastUpdated'>) => void;
-  clearNewTaskIndicator: () => void;
 };

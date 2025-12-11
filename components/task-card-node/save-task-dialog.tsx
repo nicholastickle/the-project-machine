@@ -28,30 +28,36 @@ export default function SaveTaskDialog({ isOpen, onOpenChange, onConfirm, taskTi
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle>Store this task for future use?</DialogTitle>
-                    <DialogDescription>
-                        This helps improve future planning.
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="py-4">
-                    <p className="text-sm text-muted-foreground">
-                        Task: <span className="font-medium text-foreground">{taskTitle || "Untitled Task"}</span>
-                    </p>
+                <div className="flex flex-col gap-6 py-2">
+                    {/* Row 1: Question */}
+                    <div className="text-center">
+                        <DialogTitle className="text-lg font-semibold">Store this task for future use?</DialogTitle>
+                    </div>
+                    
+                    {/* Row 2: Subtext */}
+                    <div className="text-center">
+                        <DialogDescription className="text-sm text-muted-foreground">
+                            This helps improve future planning.
+                        </DialogDescription>
+                    </div>
+                    
+                    {/* Row 3: Buttons */}
+                    <div className="flex gap-3 justify-center">
+                        <Button
+                            variant="outline"
+                            onClick={handleNo}
+                            className="min-w-[100px]"
+                        >
+                            No
+                        </Button>
+                        <Button
+                            onClick={handleYes}
+                            className="min-w-[100px]"
+                        >
+                            Yes (recommended)
+                        </Button>
+                    </div>
                 </div>
-                <DialogFooter className="flex-row gap-2 sm:justify-end">
-                    <Button
-                        variant="outline"
-                        onClick={handleNo}
-                    >
-                        No
-                    </Button>
-                    <Button
-                        onClick={handleYes}
-                    >
-                        Yes
-                    </Button>
-                </DialogFooter>
             </DialogContent>
         </Dialog>
     );
