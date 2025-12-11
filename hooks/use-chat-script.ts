@@ -6,8 +6,10 @@ interface UseChatScriptReturn {
   currentStep: number
   isComplete: boolean
   isCentered: boolean
+  isVisible: boolean
   sendInitialMessage: () => void
   confirmPlan: () => void
+  toggleVisibility: () => void
   canSend: boolean
   canConfirm: boolean
 }
@@ -17,6 +19,7 @@ export function useChatScript(): UseChatScriptReturn {
   const [currentStep, setCurrentStep] = useState(0)
   const [isComplete, setIsComplete] = useState(false)
   const [isCentered, setIsCentered] = useState(true)
+  const [isVisible, setIsVisible] = useState(true)
 
   // Check if we can show Send button (step 0, no messages yet)
   const canSend = currentStep === 0 && messages.length === 0
@@ -66,13 +69,20 @@ export function useChatScript(): UseChatScriptReturn {
     setIsCentered(false)
   }, [canConfirm])
 
+  // Toggle chat visibility
+  const toggleVisibility = useCallback(() => {
+    setIsVisible(prev => !prev)
+  }, [])
+
   return {
     messages,
     currentStep,
     isComplete,
     isCentered,
+    isVisible,
     sendInitialMessage,
     confirmPlan,
+    toggleVisibility,
     canSend,
     canConfirm,
   }

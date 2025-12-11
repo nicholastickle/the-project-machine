@@ -9,11 +9,12 @@ import CanvasSidebarTrigger from "@/components/sidebar/sidebar-trigger"
 import ExportButtons from "@/components/export/export-buttons"
 import TaskBook from "@/components/task-book/task-book"
 import useStore from "@/stores/flow-store"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import type { ReactFlowInstance } from "@xyflow/react"
 
 export default function CanvasPage() {
     const reactFlowInstance = useRef<ReactFlowInstance | null>(null)
+    const [isChatVisible, setIsChatVisible] = useState(true)
     const undo = useStore((state) => state.undo)
     const redo = useStore((state) => state.redo)
     const addTaskNode = useStore((state) => state.addTaskNode)
@@ -74,28 +75,52 @@ export default function CanvasPage() {
             { title: 'Calculation reports', status: 'Not started', estimatedHours: 80 },
         ]
 
-        scriptedTasks.forEach((task) => {
-            addTaskNode(task)
+        // Add tasks sequentially with animation (one at a time)
+        scriptedTasks.forEach((task, index) => {
+            setTimeout(() => {
+                addTaskNode(task)
+                
+                // Fit view after last task is added
+                if (index === scriptedTasks.length - 1) {
+                    setTimeout(() => {
+                        if (reactFlowInstance.current) {
+                            reactFlowInstance.current.fitView({
+                                padding: 0.2,
+                                duration: 800,
+                                maxZoom: 1,
+                            })
+                        }
+                    }, 200)
+                }
+            }, index * 400) // 400ms delay between each task
         })
+    }
 
-        // Fit view to show all tasks
+    // Handle chat visibility changes - adjust canvas viewport
+    const handleChatVisibilityChange = (isVisible: boolean) => {
+        setIsChatVisible(isVisible)
+        
+        // Adjust canvas viewport when chat opens/closes
         setTimeout(() => {
             if (reactFlowInstance.current) {
                 reactFlowInstance.current.fitView({
                     padding: 0.2,
-                    duration: 800,
+                    duration: 500,
                     maxZoom: 1,
                 })
             }
-        }, 100)
+        }, 300) // Wait for animation to start
     }
 
     return (
         <SidebarProvider defaultOpen={false}>
             <div className="fixed inset-0 h-screen w-screen overflow-hidden">
                 <Canvas onInit={setReactFlowInstance} />
-                <ChatPanel onConfirm={handleChatConfirm} />
-                <ExportButtons />
+                <ChatPanel 
+                    onConfirm={handleChatConfirm} 
+                    onVisibilityChange={handleChatVisibilityChange}
+                />
+                <ExportButtons isChatVisible={isChatVisible} />
                 <TaskBook />
                 <CanvasSidebar />
                 <CanvasToolbar />
