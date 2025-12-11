@@ -19,6 +19,7 @@ import CanvasBackground from '@/components/canvas/background';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
 import TaskCard from '@/components/task-card-node/task-card-node';
 import LogoNode from '@/components/logo/logo-node';
+import InstructionNode from '@/components/instruction-node/instruction-node';
 
 const selector = (state: AppState) => ({
     nodes: state.nodes,
@@ -29,7 +30,7 @@ const selector = (state: AppState) => ({
 });
 
 
-const nodeTypes = { taskCardNode: TaskCard, canvasLogo: LogoNode };
+const nodeTypes = { taskCardNode: TaskCard, canvasLogo: LogoNode, instructionNode: InstructionNode };
 const panOnDrag = [1, 2];
 
 interface CanvasProps {
@@ -64,6 +65,7 @@ export default function Canvas({ onInit }: CanvasProps) {
                 connectionRadius={20}
                 minZoom={0.2}
                 maxZoom={2}
+                zoomOnDoubleClick={false}
 
             >
                 <CanvasBackground />
