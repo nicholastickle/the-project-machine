@@ -18,6 +18,7 @@ export default function CanvasPage() {
     const undo = useStore((state) => state.undo)
     const redo = useStore((state) => state.redo)
     const addTaskNode = useStore((state) => state.addTaskNode)
+    const nodes = useStore((state) => state.nodes)
 
     const setReactFlowInstance = (instance: ReactFlowInstance) => {
         reactFlowInstance.current = instance
@@ -120,7 +121,7 @@ export default function CanvasPage() {
                     onConfirm={handleChatConfirm} 
                     onVisibilityChange={handleChatVisibilityChange}
                 />
-                <ExportButtons isChatVisible={isChatVisible} />
+                <ExportButtons isChatVisible={isChatVisible} hasNodes={nodes.filter(n => n.type === 'taskCardNode').length > 0} />
                 <TaskBook />
                 <CanvasSidebar />
                 <CanvasToolbar />
