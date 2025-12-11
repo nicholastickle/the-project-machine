@@ -42,10 +42,10 @@ export default function SelectStatus({ nodeId, status }: SelectStatusProps) {
         const node = nodes.find(n => n.id === nodeId);
         if (node) {
             addSavedTask({
-                title: node.data.title || "Untitled Task",
+                title: String(node.data.title || "Untitled Task"),
                 status: "Complete",
-                estimatedHours: node.data.estimatedHours,
-                timeSpent: node.data.timeSpent || 0,
+                estimatedHours: typeof node.data.estimatedHours === 'number' ? node.data.estimatedHours : undefined,
+                timeSpent: Number(node.data.timeSpent || 0),
                 subtasks: [], // Sprint 2: Empty for now
             });
         }
@@ -76,7 +76,7 @@ export default function SelectStatus({ nodeId, status }: SelectStatusProps) {
                 isOpen={showSaveDialog}
                 onOpenChange={handleDialogOpenChange}
                 onConfirm={handleSaveConfirm}
-                taskTitle={currentNode?.data.title || ""}
+                taskTitle={String(currentNode?.data.title || "")}
             />
             <Select value={status} onValueChange={handleStatusChange}>
                 <CustomSelectTrigger className=" flex border-none p-0 focus:ring-0 focus:ring-offset-0 mr-10 bg-task-card-status-options-background">
