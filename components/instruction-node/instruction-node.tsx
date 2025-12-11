@@ -29,9 +29,9 @@ function InstructionNode({ id, data }: InstructionNodeProps) {
                 <ul className="space-y-1 list-disc list-inside">
                     <li>Prompt the AI to get started</li>
                     <li>Chat with AI to come up with a detailed plan</li>
-                    <li>Manually adjust tasks, track times, track progress</li>
-                    <li>Complete tasks to save their data to help with future planning</li>
-                    <li>The more you plan, the better it gets!</li>
+                    <li>Manually adjust tasks, record time, change statuses</li>
+                    <li>Change the status of the task to &quot;completed&quot; for task saving</li>
+                    <li>The more tasks you complete, the more data AI has to improve plans</li>
 
                 </ul>
             </div>
