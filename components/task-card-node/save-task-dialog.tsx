@@ -44,7 +44,7 @@ export default function SaveTaskDialog({ isOpen, onOpenChange, onConfirm, taskTi
                         <Button
                             variant="outline"
                             onClick={handleNo}
-                            className="min-w-[100px] border border-task-card-status-dialog-border text-task-card-status-dialog-foreground hover:bg-task-card-status-dialog-accent hover:text-task-card-status-dialog-foreground"
+                            className="min-w-[100px] border border-task-card-status-dialog-border text-task-card-status-dialog-foreground bg-task-card-status-dialog-background hover:bg-task-card-status-dialog-accent hover:text-task-card-status-dialog-foreground"
                         >
                             No
                         </Button>

@@ -186,6 +186,10 @@ const useStore = create<AppState>()(
                 },
 
                 resetCanvas: () => {
+                    // Clear persisted data from localStorage
+                    localStorage.removeItem('canvas-storage');
+                    localStorage.removeItem('taskbook-storage');
+
                     set({
                         nodes: initialNodes,
                         edges: initialEdges,

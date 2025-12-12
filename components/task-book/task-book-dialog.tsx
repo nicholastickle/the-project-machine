@@ -65,17 +65,17 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
             </DialogTrigger>
 
 
-            <DialogContent className="border-none p-0 max-w-4xl w-full h-[90vh] focus:outline-none">
-                <div className="flex flex-col h-full bg-background text-foreground rounded-2xl">
+            <DialogContent className="border-none p-0 max-w-4xl w-full h-[90vh] focus:outline-none outline-none rounded-2xl">
+                <div className="flex flex-col h-full bg-task-book-background text-task-book-foreground border border-task-book-border rounded-2xl">
                     <div className="flex flex-col flex-[1]">
                         <DialogHeader className="p-6">
                             <DialogTitle className="text-2xl font-bold text-center w-full">Saved completed tasks</DialogTitle>
                         </DialogHeader>
                     </div>
                     <div className="flex flex-[11] flex-row">
-                        <div className="flex flex-col flex-[3] border-r border-border" >
-                            <div className="flex flex-[0.5] justify-center items-center border-b border-border py-3">
-                                <p className="text-base font-semibold">Tasks</p>
+                        <div className="flex flex-col flex-[3] border-r border-task-book-border" >
+                            <div className="flex flex-[0.5] justify-center items-center border-y border-task-book-border py-3">
+                                <p className="text-task-book-foreground font-semibold">Tasks</p>
                             </div>
                             <div className="flex flex-[11.5] p-4 overflow-y-auto">
                                 <div className="w-full space-y-1">
@@ -86,7 +86,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                                 }`}
                                             onClick={() => handleTaskClick(task)}
                                         >
-                                            <span className="text-lg">•</span>
+                                            <span className="text-md text-task-book-foreground">•</span>
                                             <div>{task.title}</div>
                                         </div>
                                     ))}
@@ -100,18 +100,19 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                         </div>
                         <div className="flex flex-col flex-[9]">
 
-                            <div className="flex flex-row flex-[1.5] border-b border-border" >
+                            <div className="flex flex-row flex-[1.5] border-y border-task-book-border" >
 
 
                                 <div className="flex flex-[5] items-center px-4 py-3">
-                                    <h2 className="text-base font-semibold">{selectedTask ? selectedTask.title : "No task selected"}</h2>
+                                    <h2 className="text-task-book-foreground font-semibold">{selectedTask ? selectedTask.title : "No task selected"}</h2>
                                 </div>
-                                <div className="flex flex-[3] justify-center items-center gap-2 border-l border-border px-3">
+                                <div className="flex flex-[3] justify-center items-center gap-2 px-2">
                                     <Button
                                         variant="outline"
                                         size="sm"
                                         onClick={handleEdit}
                                         disabled={!selectedTask}
+                                        className="bg-task-book-background text-task-book-foreground hover:bg-task-book-accent hover:text-task-book-accent-foreground border-task-book-border"
                                     >
                                         <Edit size={14} className="mr-1" />
                                         Edit
@@ -121,20 +122,21 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                         size="sm"
                                         onClick={handleUse}
                                         disabled={!selectedTask}
+                                        className="bg-task-book-background text-task-book-foreground hover:bg-task-book-accent hover:text-task-book-accent-foreground border-task-book-border"
                                     >
                                         <Play size={14} className="mr-1" />
                                         Use
                                     </Button>
                                 </div>
-                                <div className="flex flex-col flex-[3] border-l border-border">
+                                <div className="flex flex-col flex-[3]">
 
-                                    <div className="flex flex-col flex-1 justify-center items-center border-b border-border px-2 py-1">
+                                    <div className="flex flex-col flex-1 justify-center items-center px-2 py-1">
                                         <p className="text-xs text-muted-foreground">Last updated</p>
-                                        <p className="text-xs">{selectedTask ? selectedTask.lastUpdated : "-"}</p>
+                                        <p className="text-xs text-task-book-foreground">{selectedTask ? selectedTask.lastUpdated : "-"}</p>
                                     </div>
                                     <div className="flex flex-col flex-1 justify-center items-center px-2 py-1">
                                         <p className="text-xs text-muted-foreground">Last used</p>
-                                        <p className="text-xs">{selectedTask ? selectedTask.lastUsed || "-" : "-"}</p>
+                                        <p className="text-xs text-task-book-foreground">{selectedTask ? selectedTask.lastUsed || "-" : "-"}</p>
                                     </div>
 
                                 </div>
@@ -174,7 +176,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                         {selectedTask.subtasks && selectedTask.subtasks.length > 0 && (
                                             <>
                                                 <p className="text-sm font-semibold mb-2 mt-3">Subtasks</p>
-                                                <div className="border border-border rounded-md">
+                                                <div className="border border-task-book-border rounded-md">
                                                     <Table>
                                                         <TableHeader>
                                                             <TableRow className="hover:bg-transparent border-task-card-border">
@@ -230,7 +232,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                     </div>
                                 )}
                             </div>
-                            <div className="flex flex-row flex-[0.5] border-t border-border">
+                            <div className="flex flex-row flex-[0.5] border-t border-task-book-border">
 
                                 <div className="flex flex-[9]">
 

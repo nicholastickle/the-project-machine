@@ -246,12 +246,12 @@
     --task-card-accent: 240 3.7% 16%;
     --task-card-accent-foreground: 240 4.8% 95.9%;
 
-    --task-card-status-options-background: 240 10% 3.9%;
+    --task-card-status-options-background: 240 10% 10%;
     --task-card-status-options-foreground: 0 0% 90%;
     --task-card-status-options-accent: 240 3.7% 16%;
     --task-card-status-options-border: 0 0% 15%;
 
-    --task-card-status-dialog-background: 240 10% 3.9%;
+    --task-card-status-dialog-background: 240 5.9% 10%;
     --task-card-status-dialog-foreground: 0 0% 90%;
     --task-card-status-dialog-accent: 240 3.7% 16%;
     --task-card-status-dialog-border: 0 0% 15%;

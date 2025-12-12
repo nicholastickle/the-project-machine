@@ -26,6 +26,7 @@ export default function TaskBookArchive({ taskId, disabled = false, onArchiveCom
             size="sm"
             onClick={handleArchive}
             disabled={disabled || !taskId}
+            className="bg-task-book-background text-task-book-foreground hover:bg-task-book-accent hover:text-task-book-accent-foreground border-task-book-border"
         >
             <Archive size={14} className="mr-1" />
             Archive
