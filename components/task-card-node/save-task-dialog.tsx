@@ -25,7 +25,7 @@ export default function SaveTaskDialog({ isOpen, onOpenChange, onConfirm, taskTi
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md bg-task-card-status-dialog-background text-task-card-status-dialog-foreground border border-task-card-status-dialog-border">
                 <div className="flex flex-col gap-6 py-2">
                     {/* Row 1: Question */}
                     <div className="text-center">
@@ -44,7 +44,7 @@ export default function SaveTaskDialog({ isOpen, onOpenChange, onConfirm, taskTi
                         <Button
                             variant="outline"
                             onClick={handleNo}
-                            className="min-w-[100px]"
+                            className="min-w-[100px] border border-task-card-status-dialog-border text-task-card-status-dialog-foreground hover:bg-task-card-status-dialog-accent hover:text-task-card-status-dialog-foreground"
                         >
                             No
                         </Button>

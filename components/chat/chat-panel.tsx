@@ -27,7 +27,8 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
 
   // Notify parent when visibility changes
   useEffect(() => {
-    onVisibilityChange?.(isVisible, !isCentered)
+    // When chat is not visible, it should not be considered docked
+    onVisibilityChange?.(isVisible, isVisible && !isCentered)
   }, [isVisible, isCentered, onVisibilityChange])
 
   // Typewriter effect state for the last AI message
@@ -66,7 +67,7 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
     if (canConfirm && messages.length > 0) {
       const lastMessage = messages[messages.length - 1]
       const lastDisplayed = displayedMessages[displayedMessages.length - 1]
-      
+
       if (lastMessage.role === 'ai' && lastDisplayed && lastDisplayed.content.length > 10) {
         // Only complete instantly if we've typed at least 10 characters
         setDisplayedMessages(messages) // Show complete content instantly
@@ -298,7 +299,7 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
             <Button
               variant="ghost"
               size="icon"
-    
+
               disabled
             >
               <Paperclip className="h-8 w-8 text-chat-panel-foreground" />

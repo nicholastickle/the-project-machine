@@ -116,6 +116,13 @@ const config = {
 					'icon-foreground': 'hsl(var(--task-book-icon-foreground))',
 					'icon-border': 'hsl(var(--task-book-icon-border))'
 				},
+				'canvas-buttons': {
+					background: 'hsl(var(--canvas-buttons-background))',
+					foreground: 'hsl(var(--canvas-buttons-foreground))',
+					border: 'hsl(var(--canvas-buttons-border))',
+					accent: 'hsl(var(--canvas-buttons-accent))',
+					'accent-foreground': 'hsl(var(--canvas-buttons-accent-foreground))'
+				},
 				control: {
 					DEFAULT: 'hsl(var(--control))',
 					background: 'hsl(var(--control-background))',
@@ -157,7 +164,11 @@ const config = {
 					'status-options-background': 'hsl(var(--task-card-status-options-background))',
 					'status-options-foreground': 'hsl(var(--task-card-status-options-foreground))',
 					'status-options-border': 'hsl(var(--task-card-status-options-border))',
-					'status-options-accent': 'hsl(var(--task-card-status-options-accent))'
+					'status-options-accent': 'hsl(var(--task-card-status-options-accent))',
+					'status-dialog-background': 'hsl(var(--task-card-status-dialog-background))',
+					'status-dialog-foreground': 'hsl(var(--task-card-status-dialog-foreground))',
+					'status-dialog-accent': 'hsl(var(--task-card-status-dialog-accent))',
+					'status-dialog-border': 'hsl(var(--task-card-status-dialog-border))'
 				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',

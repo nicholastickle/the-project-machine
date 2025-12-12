@@ -93,7 +93,7 @@ export default function CanvasPage() {
                     onConfirm={handleChatConfirm}
                     onVisibilityChange={handleChatVisibilityChange}
                 />
-                <ExportButtons isChatVisible={isChatVisible} />
+                <ExportButtons isChatVisible={isChatDocked} />
                 <TaskBook />
                 <CanvasSidebar />
                 <CanvasToolbar />

@@ -119,6 +119,11 @@
     --task-card-status-options-accent: 240 4.8% 94%;
     --task-card-status-options-border: 210 17% 6% / 0.15;
 
+    --task-card-status-dialog-background: 0 0% 100%;
+    --task-card-status-dialog-foreground: 210 11% 7%;
+    --task-card-status-dialog-accent: 240 4.8% 94%;
+    --task-card-status-dialog-border: 210 17% 6% / 0.15;
+
     --task-card-not-started: 240 4.8% 94%;
     --task-card-on-going: 45 99.2% 48.6%;
     --task-card-stuck: 0 68.5% 49.8%;
@@ -132,7 +137,7 @@
     --canvas-buttons-foreground: 240 5.3% 26.1%;
     --canvas-buttons-border: 210 17% 6% / 0.15;
     --canvas-buttons-accent: 240 4.8% 94%;
-    --canvas-buttons-accent-foreground: 240 5.9% 10%;
+    --canvas-buttons-accent-foreground: 240 5.3% 26.1%;
   }
 
   .dark {
@@ -245,6 +250,11 @@
     --task-card-status-options-foreground: 0 0% 90%;
     --task-card-status-options-accent: 240 3.7% 16%;
     --task-card-status-options-border: 0 0% 15%;
+
+    --task-card-status-dialog-background: 240 10% 3.9%;
+    --task-card-status-dialog-foreground: 0 0% 90%;
+    --task-card-status-dialog-accent: 240 3.7% 16%;
+    --task-card-status-dialog-border: 0 0% 15%;
 
     --task-card-not-started: 240 3.7% 16%;
     --task-card-on-going: 45 99.2% 48.6%;
