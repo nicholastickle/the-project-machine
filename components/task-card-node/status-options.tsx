@@ -43,13 +43,20 @@ export default function SelectStatus({ nodeId, status }: SelectStatusProps) {
         if (node) {
             addSavedTask({
                 title: String(node.data.title || "Untitled Task"),
+                description: String(node.data.description || ""),
                 status: "Complete",
                 estimatedHours: typeof node.data.estimatedHours === 'number' ? node.data.estimatedHours : undefined,
                 timeSpent: Number(node.data.timeSpent || 0),
-                subtasks: [], // Sprint 2: Empty for now
+                subtasks: (node.data.subtasks || []) as Array<{
+                    id: string;
+                    title: string;
+                    isCompleted: boolean;
+                    estimatedDuration: number;
+                    timeSpent: number;
+                }>,
             });
         }
-        
+
         // Update the node status
         if (pendingStatus) {
             updateNodeData(nodeId, { status: pendingStatus });
