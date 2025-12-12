@@ -19,7 +19,7 @@ export default function NavControlBar() {
         () => fitView({
             duration: 1500,
             padding: 0.15,
-            minZoom: 0.5,
+            minZoom: 0.2,
             maxZoom: 2
         }),
         [fitView]

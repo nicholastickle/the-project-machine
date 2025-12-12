@@ -104,29 +104,24 @@ const useStore = create<AppState>()(
                     status?: string;
                     estimatedHours?: number;
                     timeSpent?: number;
+                    description?: string;
+                    subtasks?: { id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }[];
                 }) => {
                     const nodes = get().nodes;
                     let position = nodeData?.position || { x: 200, y: 200 };
 
-                    // Vertical column layout with dynamic viewport calculation
+                    // Horizontal layout - cards placed side by side
                     if (!nodeData?.position) {
-                        const CARD_HEIGHT = 280;
-                        const CARD_VERTICAL_SPACING = 360; // Spacing to fit arrow clearly
-                        const COLUMN_SPACING = 500;
-                        const START_X = 300;
-                        const START_Y = 150;
-
-                        // Calculate max cards per column based on viewport
-                        const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1000;
-                        const maxCardsPerColumn = Math.max(3, Math.floor((viewportHeight - 200) / CARD_VERTICAL_SPACING));
+                        const HORIZONTAL_SPACING = 700; // Space between cards horizontally
+                        const START_X = -500;
+                        const START_Y = 200;
 
                         const taskNodes = nodes.filter(n => n.type === 'taskCardNode');
-                        const columnIndex = Math.floor(taskNodes.length / maxCardsPerColumn);
-                        const cardInColumn = taskNodes.length % maxCardsPerColumn;
+                        const cardIndex = taskNodes.length;
 
                         position = {
-                            x: START_X + (columnIndex * COLUMN_SPACING),
-                            y: START_Y + (cardInColumn * CARD_VERTICAL_SPACING)
+                            x: START_X + (cardIndex * HORIZONTAL_SPACING),
+                            y: START_Y
                         };
                     }
 
@@ -139,6 +134,8 @@ const useStore = create<AppState>()(
                             status: nodeData?.status ?? 'Not started',
                             estimatedHours: nodeData?.estimatedHours,
                             timeSpent: nodeData?.timeSpent ?? 0,
+                            description: nodeData?.description ?? "",
+                            subtasks: nodeData?.subtasks ?? [],
                         },
                     };
 
@@ -152,7 +149,7 @@ const useStore = create<AppState>()(
                     return newNode.id;
                 },
 
-                updateNodeData: (nodeId: string, newData: Partial<{ title: string; status: string; timeSpent: number; estimatedHours: number }>, saveToHistory: boolean = true) => {
+                updateNodeData: (nodeId: string, newData: Partial<{ title: string; status: string; timeSpent: number; estimatedHours: number; description: string; subtasks: { id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }[] }>, saveToHistory: boolean = true) => {
                     set({
                         nodes: get().nodes.map(node =>
                             node.id === nodeId
@@ -189,9 +186,106 @@ const useStore = create<AppState>()(
                 },
 
                 resetCanvas: () => {
+                    // Clear persisted data from localStorage
+                    localStorage.removeItem('canvas-storage');
+                    localStorage.removeItem('taskbook-storage');
+
                     set({
                         nodes: initialNodes,
                         edges: initialEdges,
+                    });
+
+                    get().saveHistory();
+                },
+
+                addSubtask: (nodeId: string) => {
+                    const newSubtask = {
+                        id: uuidv4(),
+                        title: "",
+                        isCompleted: false,
+                        estimatedDuration: 0,
+                        timeSpent: 0
+                    };
+
+                    set({
+                        nodes: get().nodes.map(node => {
+                            if (node.id === nodeId) {
+                                const updatedSubtasks = [...((node.data.subtasks as any[]) || []), newSubtask];
+
+                                // Calculate totals from subtasks
+                                const totalEstimated = updatedSubtasks.reduce((sum: number, subtask: any) => sum + (subtask.estimatedDuration || 0), 0);
+                                const totalTimeSpent = updatedSubtasks.reduce((sum: number, subtask: any) => sum + (subtask.timeSpent || 0), 0);
+
+                                return {
+                                    ...node,
+                                    data: {
+                                        ...node.data,
+                                        subtasks: updatedSubtasks,
+                                        estimatedHours: totalEstimated,
+                                        timeSpent: totalTimeSpent
+                                    }
+                                };
+                            }
+                            return node;
+                        })
+                    });
+
+                    get().saveHistory();
+                },
+
+                updateSubtask: (nodeId: string, subtaskId: string, data: Partial<{ id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }>) => {
+                    set({
+                        nodes: get().nodes.map(node => {
+                            if (node.id === nodeId) {
+                                const updatedSubtasks = ((node.data.subtasks as any[]) || []).map((subtask: any) =>
+                                    subtask.id === subtaskId
+                                        ? { ...subtask, ...data }
+                                        : subtask
+                                );
+
+                                // Calculate totals from subtasks
+                                const totalEstimated = updatedSubtasks.reduce((sum: number, subtask: any) => sum + (subtask.estimatedDuration || 0), 0);
+                                const totalTimeSpent = updatedSubtasks.reduce((sum: number, subtask: any) => sum + (subtask.timeSpent || 0), 0);
+
+                                return {
+                                    ...node,
+                                    data: {
+                                        ...node.data,
+                                        subtasks: updatedSubtasks,
+                                        estimatedHours: totalEstimated,
+                                        timeSpent: totalTimeSpent
+                                    }
+                                };
+                            }
+                            return node;
+                        })
+                    });
+
+                    get().saveHistory();
+                },
+
+                deleteSubtask: (nodeId: string, subtaskId: string) => {
+                    set({
+                        nodes: get().nodes.map(node => {
+                            if (node.id === nodeId) {
+                                const updatedSubtasks = ((node.data.subtasks as any[]) || []).filter((subtask: any) => subtask.id !== subtaskId);
+
+                                // Calculate totals from remaining subtasks
+                                const totalEstimated = updatedSubtasks.reduce((sum: number, subtask: any) => sum + (subtask.estimatedDuration || 0), 0);
+                                const totalTimeSpent = updatedSubtasks.reduce((sum: number, subtask: any) => sum + (subtask.timeSpent || 0), 0);
+
+                                return {
+                                    ...node,
+                                    data: {
+                                        ...node.data,
+                                        subtasks: updatedSubtasks,
+                                        estimatedHours: totalEstimated,
+                                        timeSpent: totalTimeSpent
+                                    }
+                                };
+                            }
+                            return node;
+                        })
                     });
 
                     get().saveHistory();

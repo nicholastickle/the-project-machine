@@ -43,13 +43,20 @@ export default function SelectStatus({ nodeId, status }: SelectStatusProps) {
         if (node) {
             addSavedTask({
                 title: String(node.data.title || "Untitled Task"),
+                description: String(node.data.description || ""),
                 status: "Complete",
                 estimatedHours: typeof node.data.estimatedHours === 'number' ? node.data.estimatedHours : undefined,
                 timeSpent: Number(node.data.timeSpent || 0),
-                subtasks: [], // Sprint 2: Empty for now
+                subtasks: (node.data.subtasks || []) as Array<{
+                    id: string;
+                    title: string;
+                    isCompleted: boolean;
+                    estimatedDuration: number;
+                    timeSpent: number;
+                }>,
             });
         }
-        
+
         // Update the node status
         if (pendingStatus) {
             updateNodeData(nodeId, { status: pendingStatus });
@@ -79,7 +86,7 @@ export default function SelectStatus({ nodeId, status }: SelectStatusProps) {
                 taskTitle={String(currentNode?.data.title || "")}
             />
             <Select value={status} onValueChange={handleStatusChange}>
-                <CustomSelectTrigger className=" flex border-none p-0 focus:ring-0 focus:ring-offset-0 mr-10 bg-task-card-status-options-background">
+                <CustomSelectTrigger className=" flex border-none p-0 focus:ring-0 focus:ring-offset-0 mr-10 bg-task-card-background-accent">
                     <SelectValue placeholder="Select a status" />
                 </CustomSelectTrigger>
                 <SelectContent side="bottom" className=" bg-task-card-status-options-background text-task-card-status-options-foreground border border-task-card-status-options-border rounded-lg shadow-md">

@@ -8,6 +8,7 @@ import CanvasToolbar from "@/components/toolbar/canvas-toolbar"
 import CanvasSidebarTrigger from "@/components/sidebar/sidebar-trigger"
 import ExportButtons from "@/components/export/export-buttons"
 import TaskBook from "@/components/task-book/task-book"
+import { bridgeDesignTasks } from "@/components/chat/chat-mock-data"
 import useStore from "@/stores/flow-store"
 import { useEffect, useRef, useState } from "react"
 import type { ReactFlowInstance } from "@xyflow/react"
@@ -55,29 +56,15 @@ export default function CanvasPage() {
     // Handle confirmation from chat - add scripted tasks to canvas
     const handleChatConfirm = () => {
         // Sprint 2: Add 13 pre-defined bridge design tasks when user confirms
-        const scriptedTasks = [
-            { title: 'General Research', status: 'Not started', estimatedHours: 114.4 },
-            { title: 'Initial sizing and bridge element determination', status: 'Not started', estimatedHours: 33.6 },
-            { title: 'Calculation of loads', status: 'Not started', estimatedHours: 20.8 },
-            { title: 'Check in with reviewer', status: 'Not started', estimatedHours: 9.6 },
-            { title: 'Structural analysis', status: 'Not started', estimatedHours: 80 },
-            { title: 'Section designs', status: 'Not started', estimatedHours: 212 },
-            { title: 'Final geometry checks', status: 'Not started', estimatedHours: 28 },
-            { title: 'Miscellaneous items', status: 'Not started', estimatedHours: 50.4 },
-            { title: 'Sketches for draftspersons and BIM modellers', status: 'Not started', estimatedHours: 64 },
-            { title: 'Detailed review from the reviewer', status: 'Not started', estimatedHours: 96 },
-            { title: 'Design adjustments after review', status: 'Not started', estimatedHours: 104 },
-            { title: 'Bill of quantities and specs', status: 'Not started', estimatedHours: 40 },
-            { title: 'Calculation reports', status: 'Not started', estimatedHours: 80 },
-        ]
+        const scriptedTasks = bridgeDesignTasks
 
         // Add tasks sequentially with animation (one at a time)
         scriptedTasks.forEach((task, index) => {
             setTimeout(() => {
                 addTaskNode(task)
-                
-                // Zoom out to fit all tasks after the first few are added
-                if (index === 2) {
+
+                // Fit view after last task is added
+                if (index === scriptedTasks.length - 1) {
                     setTimeout(() => {
                         if (reactFlowInstance.current) {
                             reactFlowInstance.current.fitView({
@@ -102,11 +89,11 @@ export default function CanvasPage() {
         <SidebarProvider defaultOpen={false}>
             <div className="fixed inset-0 h-screen w-screen overflow-hidden">
                 <Canvas onInit={setReactFlowInstance} />
-                <ChatPanel 
-                    onConfirm={handleChatConfirm} 
+                <ChatPanel
+                    onConfirm={handleChatConfirm}
                     onVisibilityChange={handleChatVisibilityChange}
                 />
-                <ExportButtons isChatDocked={isChatDocked} hasNodes={nodes.filter(n => n.type === 'taskCardNode').length > 0} />
+                <ExportButtons isChatVisible={isChatDocked} />
                 <TaskBook />
                 <CanvasSidebar />
                 <CanvasToolbar />
