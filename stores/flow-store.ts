@@ -16,6 +16,22 @@ const useStore = create<AppState>()(
                 edges: initialEdges,
                 history: [{ nodes: initialNodes, edges: initialEdges }],
                 historyIndex: 0,
+                projectId: null,
+                lastSavedAt: null,
+                isDirty: false,
+                isSaving: false,
+
+                setProjectId: (projectId) => {
+                    set({ projectId, isDirty: false });
+                },
+
+                markDirty: () => {
+                    set({ isDirty: true });
+                },
+
+                markClean: () => {
+                    set({ isDirty: false });
+                },
 
                 saveHistory: () => {
                     const { nodes, edges, history, historyIndex } = get();
@@ -26,7 +42,8 @@ const useStore = create<AppState>()(
                     }
                     set({
                         history: newHistory,
-                        historyIndex: newHistory.length - 1
+                        historyIndex: newHistory.length - 1,
+                        isDirty: true, // Mark as dirty when history changes
                     });
                 },
 
@@ -91,11 +108,11 @@ const useStore = create<AppState>()(
                 },
 
                 setNodes: (nodes) => {
-                    set({ nodes });
+                    set({ nodes, isDirty: true });
                 },
 
                 setEdges: (edges) => {
-                    set({ edges });
+                    set({ edges, isDirty: true });
                 },
 
                 addTaskNode: (nodeData?: {
@@ -309,4 +326,5 @@ const useStore = create<AppState>()(
 
 );
 
+export { useStore };
 export default useStore;
