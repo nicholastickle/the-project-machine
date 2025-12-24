@@ -52,7 +52,15 @@ export default function CanvasSidebar(props: React.ComponentProps<typeof Sidebar
             const response = await fetch('/api/projects')
             if (response.ok) {
                 const data = await response.json()
-                setProjects(data.projects || [])
+                const loadedProjects = data.projects || []
+                setProjects(loadedProjects)
+                
+                // Auto-select first project if none selected
+                const currentProjectId = useStore.getState().projectId
+                if (!currentProjectId && loadedProjects.length > 0) {
+                    console.log('[CanvasSidebar] Auto-selecting first project:', loadedProjects[0].id)
+                    setProjectId(loadedProjects[0].id)
+                }
             }
         } catch (error) {
             console.error('[CanvasSidebar] Error loading projects:', error)

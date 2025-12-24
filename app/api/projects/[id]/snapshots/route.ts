@@ -25,7 +25,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     let query = supabase
       .from('plan_snapshots')
-      .select('id, project_id, created_at, created_by, snapshot_type, summary')
+      .select('id, project_id, created_at, created_by, snapshot_type, summary, snapshot_data')
       .eq('project_id', projectId)
       .order('created_at', { ascending: false })
       .limit(limit)

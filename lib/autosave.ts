@@ -10,6 +10,7 @@ export async function saveSnapshotToServer(
   edges: Edge[],
   type: 'manual' | 'autosave' = 'autosave'
 ): Promise<boolean> {
+  console.log(`[Autosave] Saving snapshot: projectId=${projectId}, type=${type}, nodes=${nodes.length}, edges=${edges.length}`)
   try {
     const response = await fetch(`/api/projects/${projectId}/snapshots`, {
       method: 'POST',
@@ -21,13 +22,14 @@ export async function saveSnapshotToServer(
     })
 
     if (response.ok) {
+      console.log('[Autosave] ✅ Snapshot saved successfully')
       return true
     } else {
-      console.error('Failed to save snapshot:', await response.text())
+      console.error('[Autosave] ❌ Failed to save snapshot:', await response.text())
       return false
     }
   } catch (error) {
-    console.error('Error saving snapshot:', error)
+    console.error('[Autosave] ❌ Error saving snapshot:', error)
     return false
   }
 }
@@ -61,21 +63,30 @@ export async function loadSnapshotById(
 export async function loadLatestSnapshot(
   projectId: string
 ): Promise<{ nodes: Node[]; edges: Edge[] } | null> {
+  console.log(`[Autosave] Loading latest snapshot for projectId=${projectId}`)
   try {
     const response = await fetch(`/api/projects/${projectId}/snapshots?limit=1`)
 
     if (response.ok) {
       const data = await response.json()
       if (data.snapshots && data.snapshots.length > 0) {
-        return data.snapshots[0].snapshot_data as { nodes: Node[]; edges: Edge[] }
+        const snapshotData = data.snapshots[0].snapshot_data
+        if (!snapshotData || !snapshotData.nodes) {
+          console.error('[Autosave] ❌ Snapshot data is missing or malformed:', data.snapshots[0])
+          return null
+        }
+        const snapshot = snapshotData as { nodes: Node[]; edges: Edge[] }
+        console.log(`[Autosave] ✅ Snapshot loaded: nodes=${snapshot.nodes.length}, edges=${snapshot.edges.length}`)
+        return snapshot
       }
+      console.log('[Autosave] ⚠️ No snapshots found for this project')
       return null
     } else {
-      console.error('Failed to load latest snapshot:', await response.text())
+      console.error('[Autosave] ❌ Failed to load latest snapshot:', await response.text())
       return null
     }
   } catch (error) {
-    console.error('Error loading latest snapshot:', error)
+    console.error('[Autosave] ❌ Error loading latest snapshot:', error)
     return null
   }
 }
@@ -92,12 +103,23 @@ export function useAutosave(intervalMs: number = 120000) {
   const markClean = useStore((state) => state.markClean)
 
   const performAutosave = async () => {
-    if (!projectId || !isDirty) return
+    if (!projectId) {
+      console.log('[Autosave] ⚠️ Skipped: No projectId set')
+      return
+    }
+    if (!isDirty) {
+      console.log('[Autosave] ⚠️ Skipped: Canvas is clean (no changes)')
+      return
+    }
 
+    console.log('[Autosave] 🔄 Starting autosave...')
     const success = await saveSnapshotToServer(projectId, nodes, edges, 'autosave')
     if (success) {
       markClean()
       useStore.setState({ lastSavedAt: new Date().toISOString() })
+      console.log('[Autosave] ✅ Autosave complete')
+    } else {
+      console.log('[Autosave] ❌ Autosave failed')
     }
   }
 
