@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Send, Paperclip, MessageSquare } from 'lucide-react'
+import useStore from '@/stores/flow-store'
 
 interface Message {
   id: string
@@ -56,18 +57,35 @@ export default function ChatPanel({ projectId, onVisibilityChange }: ChatPanelPr
     setIsLoading(true)
 
     try {
-      // TODO: Wire to real AI endpoint
+      // Get current canvas state
+      const { nodes, edges } = useStore.getState()
+      
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           projectId,
           message: userMessage.content,
-          history: messages
+          history: messages,
+          currentSnapshot: { nodes, edges }
         })
       })
 
       const data = await response.json()
+
+      // Check if API returned an error
+      if (!response.ok || data.error) {
+        console.error('[Chat] API error:', data)
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: data.error === 'OpenAI API key not configured' 
+            ? 'The AI service is not configured yet. Please add your OpenAI API key.'
+            : `Error: ${data.error || 'Unknown error'}${data.details ? ' - ' + data.details : ''}`
+        }
+        setMessages(prev => [...prev, errorMessage])
+        return
+      }
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -78,11 +96,11 @@ export default function ChatPanel({ projectId, onVisibilityChange }: ChatPanelPr
 
       setMessages(prev => [...prev, aiMessage])
     } catch (error) {
-      console.error('Chat error:', error)
+      console.error('[Chat] Network error:', error)
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Sorry, I\'m not connected yet. The AI endpoint is being set up.'
+        content: 'Network error. Please check your connection and try again.'
       }
       setMessages(prev => [...prev, errorMessage])
     } finally {
