@@ -81,3 +81,37 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+export async function DELETE(request: NextRequest, context: RouteContext) {
+  try {
+    const { id } = await context.params
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Soft delete: set archived_at timestamp
+    const { data: project, error } = await supabase
+      .from('projects')
+      .update({ archived_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error archiving project:', error)
+      return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 })
+    }
+
+    if (!project) {
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Unexpected error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
