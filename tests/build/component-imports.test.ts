@@ -1,0 +1,223 @@
+import { describe, it, expect } from 'vitest'
+
+describe('Component Imports', () => {
+  describe('Sidebar Components', () => {
+    it('should import canvas-sidebar', async () => {
+      await expect(import('@/components/sidebar/canvas-sidebar')).resolves.toBeDefined()
+    })
+
+    it('should import nav-projects', async () => {
+      await expect(import('@/components/sidebar/nav-projects')).resolves.toBeDefined()
+    })
+
+    it('should import new-project', async () => {
+      await expect(import('@/components/sidebar/new-project')).resolves.toBeDefined()
+    })
+
+    it('should import options-project', async () => {
+      await expect(import('@/components/sidebar/options-project')).resolves.toBeDefined()
+    })
+
+    it('should import nav-user', async () => {
+      await expect(import('@/components/sidebar/nav-user')).resolves.toBeDefined()
+    })
+
+    it('should import nav-help', async () => {
+      await expect(import('@/components/sidebar/nav-help')).resolves.toBeDefined()
+    })
+
+    it('should import options-help', async () => {
+      await expect(import('@/components/sidebar/options-help')).resolves.toBeDefined()
+    })
+
+    it('should import sidebar-trigger', async () => {
+      await expect(import('@/components/sidebar/sidebar-trigger')).resolves.toBeDefined()
+    })
+
+    it('should import theme-changer', async () => {
+      await expect(import('@/components/sidebar/theme-changer')).resolves.toBeDefined()
+    })
+  })
+
+  describe('Canvas Components', () => {
+    it('should import canvas', async () => {
+      await expect(import('@/components/canvas/canvas')).resolves.toBeDefined()
+    })
+
+    it('should import background', async () => {
+      await expect(import('@/components/canvas/background')).resolves.toBeDefined()
+    })
+
+    it('should import initial-nodes', async () => {
+      await expect(import('@/components/canvas/initial-nodes')).resolves.toBeDefined()
+    })
+
+    it('should import initial-edges', async () => {
+      await expect(import('@/components/canvas/initial-edges')).resolves.toBeDefined()
+    })
+  })
+
+  describe('Node Components', () => {
+    it('should import task-card-node', async () => {
+      await expect(import('@/components/task-card-node/task-card-node')).resolves.toBeDefined()
+    })
+
+    it('should import instruction-node', async () => {
+      await expect(import('@/components/instruction-node/instruction-node')).resolves.toBeDefined()
+    })
+
+    it('should import logo-node', async () => {
+      await expect(import('@/components/logo/logo-node')).resolves.toBeDefined()
+    })
+  })
+
+  describe('Toolbar Components', () => {
+    it('should import canvas-toolbar', async () => {
+      await expect(import('@/components/toolbar/canvas-toolbar')).resolves.toBeDefined()
+    })
+  })
+
+  describe('Task Book Components', () => {
+    it('should import task-book', async () => {
+      await expect(import('@/components/task-book/task-book')).resolves.toBeDefined()
+    })
+
+    it('should import task-book-dialog', async () => {
+      await expect(import('@/components/task-book/task-book-dialog')).resolves.toBeDefined()
+    })
+
+    it('should import task-book-icon', async () => {
+      await expect(import('@/components/task-book/task-book-icon')).resolves.toBeDefined()
+    })
+
+    it('should import task-book-archive', async () => {
+      await expect(import('@/components/task-book/task-book-archive')).resolves.toBeDefined()
+    })
+  })
+
+  describe('Export Components', () => {
+    it('should import export-buttons', async () => {
+      await expect(import('@/components/export/export-buttons')).resolves.toBeDefined()
+    })
+  })
+
+  describe('Navigation Controls', () => {
+    it('should import minimap', async () => {
+      await expect(import('@/components/navigation-controls/minimap')).resolves.toBeDefined()
+    })
+
+    it('should import nav-control-bar', async () => {
+      await expect(import('@/components/navigation-controls/nav-control-bar')).resolves.toBeDefined()
+    })
+
+    it('should import nav-toggle', async () => {
+      await expect(import('@/components/navigation-controls/nav-toggle')).resolves.toBeDefined()
+    })
+  })
+
+  describe('AI Components', () => {
+    it('should import ai-orb', async () => {
+      await expect(import('@/components/ai-chat/ai-orb')).resolves.toBeDefined()
+    })
+  })
+
+  describe('Admin Components', () => {
+    it('should import ai-status-indicator', async () => {
+      await expect(import('@/components/admin/ai-status-indicator')).resolves.toBeDefined()
+    })
+
+    it('should import usage-display', async () => {
+      await expect(import('@/components/admin/usage-display')).resolves.toBeDefined()
+    })
+  })
+
+  describe('Landing Page Components', () => {
+    it('should import header', async () => {
+      await expect(import('@/components/landing/header')).resolves.toBeDefined()
+    })
+
+    it('should import hero-section', async () => {
+      await expect(import('@/components/landing/hero-section')).resolves.toBeDefined()
+    })
+
+    it('should import about-section', async () => {
+      await expect(import('@/components/landing/about-section')).resolves.toBeDefined()
+    })
+
+    it('should import bento-section', async () => {
+      await expect(import('@/components/landing/bento-section')).resolves.toBeDefined()
+    })
+
+    it('should import bento-card', async () => {
+      await expect(import('@/components/landing/bento-card')).resolves.toBeDefined()
+    })
+
+    it('should import cta-section', async () => {
+      await expect(import('@/components/landing/cta-section')).resolves.toBeDefined()
+    })
+
+    it('should import footer-section', async () => {
+      await expect(import('@/components/landing/footer-section')).resolves.toBeDefined()
+    })
+
+    it('should import dashboard-preview', async () => {
+      await expect(import('@/components/landing/dashboard-preview')).resolves.toBeDefined()
+    })
+
+    it('should import typewriter-subheadline', async () => {
+      await expect(import('@/components/landing/typewriter-subheadline')).resolves.toBeDefined()
+    })
+  })
+
+  describe('Chat Components', () => {
+    it('should import chat-panel', async () => {
+      await expect(import('@/components/chat/chat-panel')).resolves.toBeDefined()
+    })
+  })
+
+  describe('Theme Components', () => {
+    it('should import theme-provider', async () => {
+      await expect(import('@/components/theme-provider/theme-provider')).resolves.toBeDefined()
+    })
+
+    it('should import theme-toggle', async () => {
+      await expect(import('@/components/theme-provider/theme-toggle')).resolves.toBeDefined()
+    })
+  })
+})
+
+describe('Store Imports', () => {
+  it('should import flow-store', async () => {
+    await expect(import('@/stores/flow-store')).resolves.toBeDefined()
+  })
+
+  it('should import taskbook-store', async () => {
+    await expect(import('@/stores/taskbook-store')).resolves.toBeDefined()
+  })
+
+  it('should import types', async () => {
+    await expect(import('@/stores/types')).resolves.toBeDefined()
+  })
+})
+
+describe('Hook Imports', () => {
+  it('should import use-mobile', async () => {
+    await expect(import('@/hooks/use-mobile')).resolves.toBeDefined()
+  })
+
+  it('should import use-toast', async () => {
+    await expect(import('@/hooks/use-toast')).resolves.toBeDefined()
+  })
+})
+
+describe('Lib Imports', () => {
+  it('should import utils', async () => {
+    await expect(import('@/lib/utils')).resolves.toBeDefined()
+  })
+})
+
+describe('App Pages', () => {
+  it('should import canvas page', async () => {
+    await expect(import('@/app/canvas/page')).resolves.toBeDefined()
+  })
+})
