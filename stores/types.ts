@@ -32,11 +32,18 @@ export type AppState = {
   edges: Edge[];
   history: { nodes: AppNode[]; edges: Edge[] }[];
   historyIndex: number;
+  projectId: string | null;
+  lastSavedAt: string | null;
+  isDirty: boolean;
+  isSaving: boolean;
   onNodesChange: OnNodesChange<AppNode>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   setNodes: (nodes: AppNode[]) => void;
   setEdges: (edges: Edge[]) => void;
+  setProjectId: (projectId: string | null) => void;
+  markDirty: () => void;
+  markClean: () => void;
   addTaskNode: (nodeData?: {
     title?: string;
     position?: { x: number; y: number };
