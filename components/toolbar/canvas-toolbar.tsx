@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/tooltip"
 import useStore from "@/stores/flow-store"
 import { useSidebar } from "@/components/ui/sidebar"
-import ProjectSelector from "@/components/project-selector/project-selector"
 import { saveSnapshotToServer } from "@/lib/autosave"
 import { useState } from "react"
 
@@ -58,11 +57,6 @@ export default function CanvasToolbar() {
 
     return (
         <TooltipProvider>
-            {/* Project Selector - Top Center */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50">
-                <ProjectSelector />
-            </div>
-
             {/* Toolbar - Left Side */}
             <div className={`absolute top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2 bg-toolbar-background border border-toolbar-border rounded-full px-1 py-2 shadow-sm ${!isMobile && open ? 'left-[263px]' : 'left-[7px] md:left-[55px]'} ${isMobile && !open ? 'left-[0px]' : ''}`}>
                 <Tooltip>

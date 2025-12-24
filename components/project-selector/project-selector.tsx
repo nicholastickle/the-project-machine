@@ -68,9 +68,10 @@ export default function ProjectSelector() {
           setProjectId(data.projects[0].id)
         }
       } else {
-        const errorData = await response.json()
+        const errorData = await response.json().catch(() => ({ error: 'Failed to parse error' }))
         console.error('[ProjectSelector] Failed to load projects:', {
           status: response.status,
+          statusText: response.statusText,
           error: errorData
         })
       }

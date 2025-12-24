@@ -44,15 +44,27 @@ export default function CanvasPage() {
 
     // Load latest snapshot when project changes
     useEffect(() => {
-        if (!projectId) return
+        if (!projectId) {
+            console.log('[Canvas] No projectId, skipping snapshot load')
+            return
+        }
 
+        console.log('[Canvas] Loading snapshot for project:', projectId)
         loadLatestSnapshot(projectId).then((snapshot) => {
             if (snapshot) {
+                console.log('[Canvas] Snapshot loaded:', {
+                    nodeCount: snapshot.nodes.length,
+                    edgeCount: snapshot.edges.length
+                })
                 setNodes(snapshot.nodes)
                 setEdges(snapshot.edges)
                 markClean()
                 useStore.setState({ lastSavedAt: new Date().toISOString() })
+            } else {
+                console.log('[Canvas] No snapshot found for project, starting with empty canvas')
             }
+        }).catch((error) => {
+            console.error('[Canvas] Error loading snapshot:', error)
         })
     }, [projectId])
 
