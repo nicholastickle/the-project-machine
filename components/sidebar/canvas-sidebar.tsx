@@ -6,6 +6,7 @@ import { LayoutDashboard } from "lucide-react"
 import { NavProjects } from "@/components/sidebar/nav-projects"
 import { NavUser } from "@/components/sidebar/nav-user"
 import { NavHelp } from "@/components/sidebar/nav-help"
+import FileUploadPanel from "@/components/files/file-upload-panel"
 import { ProjectMachineLogo } from "@/components/logo/project-machine-logo"
 import {
     Sidebar,
@@ -13,6 +14,8 @@ import {
     SidebarFooter,
     SidebarHeader,
     SidebarRail,
+    SidebarGroup,
+    SidebarGroupLabel,
 } from "@/components/ui/sidebar"
 import { createClient } from "@/lib/supabase/client"
 import type { User } from "@supabase/supabase-js"
@@ -104,6 +107,10 @@ export default function CanvasSidebar(props: React.ComponentProps<typeof Sidebar
                     onProjectClick={(projectId) => setProjectId(projectId)}
                     onProjectCreated={loadProjects}
                 />
+                <SidebarGroup>
+                    <SidebarGroupLabel>Reference Files</SidebarGroupLabel>
+                    <FileUploadPanel />
+                </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
                 <div className="flex items-center justify-between w-full">
