@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import {
     LayoutDashboard,
 } from "lucide-react"
@@ -16,14 +17,10 @@ import {
     SidebarHeader,
     SidebarRail,
 } from "@/components/ui/sidebar"
+import { createClient } from "@/lib/supabase/client"
+import type { User } from "@supabase/supabase-js"
 
 const data = {
-    user: {
-        name: "Project User",
-        email: "user@projectmachine.com",
-        avatar: "/images/avatars/robert-fox.png",
-    },
-
     projects: [
         {
             title: "Projects",
@@ -50,6 +47,27 @@ const data = {
 }
 
 export default function CanvasSidebar(props: React.ComponentProps<typeof Sidebar>) {
+    const [user, setUser] = useState<User | null>(null)
+
+    useEffect(() => {
+        const supabase = createClient()
+
+        // Get initial session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setUser(session?.user ?? null)
+        })
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null)
+        })
+
+        return () => subscription.unsubscribe()
+    }, [])
+
+    // Extract name from email (before @)
+    const userName = user?.email?.split('@')[0] || 'User'
+
     return (
         <Sidebar collapsible="icon" className="z-40" {...props}>
             <SidebarHeader>
@@ -61,7 +79,11 @@ export default function CanvasSidebar(props: React.ComponentProps<typeof Sidebar
             </SidebarContent>
             <SidebarFooter>
                 <div className="flex items-center justify-between w-full">
-                    <NavUser user={data.user} />
+                    <NavUser user={{
+                        name: userName,
+                        email: user?.email || 'loading...',
+                        avatar: '/images/avatars/robert-fox.png'
+                    }} />
                     <NavHelp />
                 </div>
             </SidebarFooter>

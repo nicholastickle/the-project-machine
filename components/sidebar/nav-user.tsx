@@ -114,7 +114,15 @@ export function NavUser({
 
             </DropdownMenuGroup>
             <DropdownMenuSeparator className="bg-sidebar-border" />
-            <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
+            <DropdownMenuItem 
+              className="focus:bg-sidebar-accent focus:text-foreground text-xs"
+              onClick={async () => {
+                const { createClient } = await import('@/lib/supabase/client')
+                const supabase = createClient()
+                await supabase.auth.signOut()
+                window.location.reload()
+              }}
+            >
               <LogOut />
               Log out
             </DropdownMenuItem>
