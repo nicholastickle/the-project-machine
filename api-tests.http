@@ -1,0 +1,254 @@
+# Project Machine API Testing
+# Install the "REST Client" extension in VS Code to use this file
+# Click "Send Request" above each request to execute
+
+### Variables (update these)
+@baseUrl = http://localhost:3000
+@projectId = YOUR_PROJECT_ID_HERE
+@snapshotId = YOUR_SNAPSHOT_ID_HERE
+@reflectionId = YOUR_REFLECTION_ID_HERE
+@fileId = YOUR_FILE_ID_HERE
+@noteId = YOUR_NOTE_ID_HERE
+@userId = YOUR_USER_ID_HERE
+
+### NOTE: You must be logged in via browser first!
+### Open http://localhost:3000 and sign in, then come back here
+
+###############################################
+# PROJECTS
+###############################################
+
+### Get all projects
+GET {{baseUrl}}/api/projects
+Content-Type: application/json
+
+### Create new project
+POST {{baseUrl}}/api/projects
+Content-Type: application/json
+
+{
+  "name": "Test Project from REST Client",
+  "description": "Testing the API endpoints"
+}
+
+### Update project
+PATCH {{baseUrl}}/api/projects/{{projectId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Project Name",
+  "description": "Updated description"
+}
+
+### Delete project
+DELETE {{baseUrl}}/api/projects/{{projectId}}
+
+###############################################
+# SNAPSHOTS
+###############################################
+
+### Get all snapshots
+GET {{baseUrl}}/api/projects/{{projectId}}/snapshots
+
+### Create snapshot (autosave)
+POST {{baseUrl}}/api/projects/{{projectId}}/snapshots
+Content-Type: application/json
+
+{
+  "snapshot_data": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "type": "taskCardNode",
+        "position": { "x": 100, "y": 200 },
+        "data": {
+          "title": "Test Task",
+          "status": "Not started",
+          "description": "This is a test task",
+          "estimatedHours": 4,
+          "timeSpent": 0,
+          "subtasks": []
+        }
+      }
+    ],
+    "edges": []
+  }
+}
+
+### Get specific snapshot
+GET {{baseUrl}}/api/projects/{{projectId}}/snapshots/{{snapshotId}}
+
+### Restore snapshot
+POST {{baseUrl}}/api/projects/{{projectId}}/snapshots/{{snapshotId}}/restore
+
+###############################################
+# REFLECTIONS
+###############################################
+
+### Get all reflections
+GET {{baseUrl}}/api/projects/{{projectId}}/reflections
+
+### Get reflections by type
+GET {{baseUrl}}/api/projects/{{projectId}}/reflections?type=start-of-day
+
+### Create reflection
+POST {{baseUrl}}/api/projects/{{projectId}}/reflections
+Content-Type: application/json
+
+{
+  "reflection_type": "start-of-day",
+  "reflection_text": "Today I plan to implement the file upload feature and test all API endpoints."
+}
+
+### Update reflection
+PATCH {{baseUrl}}/api/projects/{{projectId}}/reflections/{{reflectionId}}
+Content-Type: application/json
+
+{
+  "reflection_text": "Updated: Today I completed the file upload and started on chat integration."
+}
+
+### Delete reflection
+DELETE {{baseUrl}}/api/projects/{{projectId}}/reflections/{{reflectionId}}
+
+###############################################
+# FILES
+###############################################
+
+### Get all files
+GET {{baseUrl}}/api/projects/{{projectId}}/files
+
+### Upload file (Excel/CSV/PDF)
+# Note: Use Postman or curl for actual file uploads
+# Example curl command:
+# curl -X POST "{{baseUrl}}/api/projects/{{projectId}}/files" \
+#   -F "file=@/path/to/your/file.xlsx" \
+#   -F "extractStructure=true"
+
+### Confirm file summary
+PATCH {{baseUrl}}/api/projects/{{projectId}}/files/{{fileId}}
+Content-Type: application/json
+
+{
+  "summary": "This Excel file contains our Q1 project requirements with 3 sheets covering features, timeline, and budget."
+}
+
+### Delete file
+DELETE {{baseUrl}}/api/projects/{{projectId}}/files/{{fileId}}
+
+###############################################
+# EXPORTS
+###############################################
+
+### Export as Excel
+# This will download a file - open in browser to test
+GET {{baseUrl}}/api/projects/{{projectId}}/export/excel
+
+### Export timesheet
+GET {{baseUrl}}/api/projects/{{projectId}}/export/timesheet
+
+###############################################
+# AI CHAT
+###############################################
+
+### Send message to AI
+POST {{baseUrl}}/api/ai/chat
+Content-Type: application/json
+
+{
+  "projectId": "{{projectId}}",
+  "message": "Add a task for user authentication",
+  "history": [],
+  "currentSnapshot": {
+    "nodes": [],
+    "edges": []
+  }
+}
+
+###############################################
+# CHAT HISTORY
+###############################################
+
+### Get chat history
+GET {{baseUrl}}/api/projects/{{projectId}}/chat
+
+### Save chat message
+POST {{baseUrl}}/api/projects/{{projectId}}/chat
+Content-Type: application/json
+
+{
+  "role": "user",
+  "content": "How do I structure the database schema?"
+}
+
+### Save AI response
+POST {{baseUrl}}/api/projects/{{projectId}}/chat
+Content-Type: application/json
+
+{
+  "role": "assistant",
+  "content": "For the database schema, I recommend using UUID primary keys..."
+}
+
+### Clear chat history
+DELETE {{baseUrl}}/api/projects/{{projectId}}/chat
+
+###############################################
+# COLLABORATION
+###############################################
+
+### Get collaborators
+GET {{baseUrl}}/api/projects/{{projectId}}/collaborators
+
+### Invite user (not yet implemented)
+POST {{baseUrl}}/api/projects/{{projectId}}/collaborators
+Content-Type: application/json
+
+{
+  "email": "teammate@example.com",
+  "role": "editor"
+}
+
+### Remove collaborator
+DELETE {{baseUrl}}/api/projects/{{projectId}}/collaborators/{{userId}}
+
+###############################################
+# REFERENCE NOTES
+###############################################
+
+### Get all notes
+GET {{baseUrl}}/api/projects/{{projectId}}/notes
+
+### Create note
+POST {{baseUrl}}/api/projects/{{projectId}}/notes
+Content-Type: application/json
+
+{
+  "title": "API Design Principles",
+  "content": "Always return consistent error formats. Use RLS for security. Document all endpoints."
+}
+
+### Update note
+PATCH {{baseUrl}}/api/projects/{{projectId}}/notes/{{noteId}}
+Content-Type: application/json
+
+{
+  "title": "Updated API Principles",
+  "content": "Updated content here..."
+}
+
+### Delete note
+DELETE {{baseUrl}}/api/projects/{{projectId}}/notes/{{noteId}}
+
+###############################################
+# USAGE TRACKING
+###############################################
+
+### Get usage stats
+GET {{baseUrl}}/api/usage
+
+### Get usage by date range
+GET {{baseUrl}}/api/usage?start_date=2025-12-01&end_date=2025-12-31
+
+### Get usage by event type
+GET {{baseUrl}}/api/usage?event_type=ai_query
