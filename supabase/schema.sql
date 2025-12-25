@@ -59,6 +59,16 @@ create table if not exists file_summaries (
   created_at timestamptz default now()
 );
 
+-- Chat Messages: Conversation history with AI
+create table if not exists chat_messages (
+  id uuid primary key default uuid_generate_v4(),
+  project_id uuid references projects(id) on delete cascade not null,
+  role text not null check (role in ('user', 'assistant')),
+  content text not null,
+  created_at timestamptz default now(),
+  created_by uuid references auth.users(id)
+);
+
 -- Project Members: Minimal roles
 create table if not exists project_members (
   project_id uuid references projects(id) on delete cascade not null,
@@ -82,6 +92,7 @@ create table if not exists usage_logs (
 create index if not exists idx_plan_snapshots_project on plan_snapshots(project_id, created_at desc);
 create index if not exists idx_reflections_project on reflections(project_id, created_at desc);
 create index if not exists idx_reference_notes_project on reference_notes(project_id);
+create index if not exists idx_chat_messages_project on chat_messages(project_id, created_at asc);
 create index if not exists idx_usage_logs_project on usage_logs(project_id, created_at desc);
 create index if not exists idx_usage_logs_type on usage_logs(event_type, created_at desc);
 create index if not exists idx_usage_logs_user on usage_logs(user_id, created_at desc);
@@ -108,6 +119,7 @@ alter table plan_snapshots enable row level security;
 alter table reflections enable row level security;
 alter table reference_notes enable row level security;
 alter table file_summaries enable row level security;
+alter table chat_messages enable row level security;
 alter table project_members enable row level security;
 alter table usage_logs enable row level security;
 
@@ -258,7 +270,43 @@ create policy "Editors can create file summaries"
       where id = file_summaries.project_id and created_by = auth.uid()
     )
   );
+Chat Messages
+create policy "Users can view chat messages"
+  on chat_messages for select
+  using (
+    exists (
+      select 1 from project_members
+      where project_id = chat_messages.project_id and user_id = auth.uid()
+    ) or exists (
+      select 1 from projects
+      where id = chat_messages.project_id and created_by = auth.uid()
+    )
+  );
 
+create policy "Editors can create chat messages"
+  on chat_messages for insert
+  with check (
+    exists (
+      select 1 from project_members
+      where project_id = chat_messages.project_id
+        and user_id = auth.uid()
+        and role = 'editor'
+    ) or exists (
+      select 1 from projects
+      where id = chat_messages.project_id and created_by = auth.uid()
+    )
+  );
+
+create policy "Users can delete chat messages"
+  on chat_messages for delete
+  using (
+    exists (
+      select 1 from projects
+      where id = chat_messages.project_id and created_by = auth.uid()
+    )
+  );
+
+-- RLS Policies: 
 -- RLS Policies: Project Members
 create policy "Users can view project members"
   on project_members for select
