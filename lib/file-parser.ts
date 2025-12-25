@@ -9,7 +9,7 @@ interface FileStructure {
 
 export async function parseExcelFile(buffer: Buffer): Promise<FileStructure> {
   const workbook = new ExcelJS.Workbook()
-  await workbook.xlsx.load(buffer)
+  await workbook.xlsx.load(buffer as any)
 
   const sheets = workbook.worksheets.map(sheet => {
     const rows: any[] = []

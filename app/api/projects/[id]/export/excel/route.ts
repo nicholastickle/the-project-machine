@@ -59,8 +59,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
     // Add task rows
     taskNodes.forEach(node => {
-      const data = node.data || {}
-      const subtasks = data.subtasks || []
+      const data: any = node.data || {}
+      const subtasks: any[] = Array.isArray(data.subtasks) ? data.subtasks : []
       const completedSubtasks = subtasks.filter((s: any) => s.isCompleted).length
       const totalSubtasks = subtasks.length
       const progress = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
         status: data.status || 'Not started',
         description: data.description || '',
         estimatedHours: data.estimatedHours || 0,
-        timeSpent: Math.round((data.timeSpent || 0) / 3600 * 100) / 100, // Convert seconds to hours
+        timeSpent: Math.round((Number(data.timeSpent) || 0) / 3600 * 100) / 100, // Convert seconds to hours
         progress: `${progress}%`,
         dependencies: depTitles
       })
@@ -96,8 +96,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
     ]
 
     taskNodes.forEach(node => {
-      const data = node.data || {}
-      const subtasks = data.subtasks || []
+      const data: any = node.data || {}
+      const subtasks: any[] = Array.isArray(data.subtasks) ? data.subtasks : []
       subtasks.forEach((subtask: any) => {
         subtasksSheet.addRow({
           parentTask: data.title || 'Untitled Task',

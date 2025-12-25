@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Send, Paperclip, MessageSquare } from 'lucide-react'
 import useStore from '@/stores/flow-store'
 
@@ -31,12 +32,63 @@ export default function ChatPanel({ projectId, onVisibilityChange }: ChatPanelPr
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
+  const [showCommandConfirm, setShowCommandConfirm] = useState(false)
+  const [pendingCommand, setPendingCommand] = useState<any>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     onVisibilityChange?.(isVisible)
   }, [isVisible, onVisibilityChange])
+
+  // Parse AI response for commands
+  const parseCommand = (response: string): any | null => {
+    const commandMatch = response.match(/\[COMMAND:([\s\S]*?)\]/)
+    if (!commandMatch) return null
+
+    try {
+      return JSON.parse(commandMatch[1])
+    } catch {
+      return null
+    }
+  }
+
+  // Execute confirmed command
+  const executeCommand = (command: any) => {
+    const { addTaskNode, updateNodeData, deleteNode, nodes } = useStore.getState()
+
+    switch (command.action) {
+      case 'addTask':
+        addTaskNode({
+          title: command.title,
+          status: command.status || 'Not started',
+          description: command.description || '',
+          subtasks: command.subtasks || [],
+          position: command.position
+        })
+        break
+
+      case 'updateTask':
+        const nodeToUpdate = nodes.find(n => 
+          typeof n.data.title === 'string' && 
+          n.data.title.toLowerCase().includes(command.taskName?.toLowerCase())
+        )
+        if (nodeToUpdate) {
+          updateNodeData(nodeToUpdate.id, command.updates)
+        }
+        break
+
+      case 'deleteTask':
+        const nodeToDelete = nodes.find(n => 
+          typeof n.data.title === 'string' &&
+          n.data.title.toLowerCase().includes(command.taskName?.toLowerCase())
+        )
+        if (nodeToDelete) {
+          deleteNode(nodeToDelete.id)
+        }
+        break
+    }
+  }
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -87,14 +139,23 @@ export default function ChatPanel({ projectId, onVisibilityChange }: ChatPanelPr
         return
       }
 
+      // Check for embedded commands
+      const command = parseCommand(data.response)
+      
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response || 'Sorry, I encountered an error.',
+        content: data.response?.replace(/\[COMMAND:[\s\S]*?\]/, '').trim() || 'Sorry, I encountered an error.',
         sources: data.sources
       }
 
       setMessages(prev => [...prev, aiMessage])
+
+      // Show confirmation dialog for commands
+      if (command) {
+        setPendingCommand(command)
+        setShowCommandConfirm(true)
+      }
     } catch (error) {
       console.error('[Chat] Network error:', error)
       const errorMessage: Message = {
@@ -194,6 +255,40 @@ export default function ChatPanel({ projectId, onVisibilityChange }: ChatPanelPr
 
           <div ref={messagesEndRef} />
         </div>
+
+        {/* Command Confirmation Dialog */}
+        <Dialog open={showCommandConfirm} onOpenChange={setShowCommandConfirm}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirm Action</DialogTitle>
+              <DialogDescription>
+                The AI wants to modify your canvas:
+              </DialogDescription>
+            </DialogHeader>
+            
+            {pendingCommand && (
+              <div className="p-3 rounded-lg bg-muted text-sm">
+                <strong>{pendingCommand.action}:</strong>
+                <pre className="mt-2 whitespace-pre-wrap">
+                  {JSON.stringify(pendingCommand, null, 2)}
+                </pre>
+              </div>
+            )}
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowCommandConfirm(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => {
+                if (pendingCommand) executeCommand(pendingCommand)
+                setShowCommandConfirm(false)
+                setPendingCommand(null)
+              }}>
+                Confirm
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Input Area */}
         <div className="p-3 border-t border-chat-panel-border bg-chat-panel-background flex-shrink-0">

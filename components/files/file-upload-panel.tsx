@@ -126,7 +126,7 @@ export default function FileUploadPanel() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 group-data-[collapsible=icon]:hidden">
       {/* Upload Zone */}
       <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
         <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />

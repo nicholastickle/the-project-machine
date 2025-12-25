@@ -72,14 +72,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
     // Add time entries
     taskNodes.forEach(node => {
-      const data = node.data || {}
+      const data: any = node.data || {}
       const taskTitle = data.title || 'Untitled Task'
       const status = data.status || 'Not started'
-      const subtasks = data.subtasks || []
+      const subtasks: any[] = Array.isArray(data.subtasks) ? data.subtasks : []
 
       if (subtasks.length === 0) {
         // Task without subtasks
-        const hours = Math.round((data.timeSpent || 0) / 3600 * 100) / 100
+        const hours = Math.round((Number(data.timeSpent) || 0) / 3600 * 100) / 100
         if (hours > 0) {
           totalHours += hours
           sheet.addRow({

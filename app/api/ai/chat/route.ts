@@ -58,7 +58,21 @@ CONVERSATION STYLE:
 - Acknowledge what you don't know
 - Suggest ways to improve context (add notes, reflections, file summaries)
 - Help break down complex work into tasks
-- Point out potential risks or dependencies`
+- Point out potential risks or dependencies
+
+COMMAND EXECUTION:
+When the user asks you to modify the canvas (add/update/delete tasks), embed a command in your response using this format:
+[COMMAND:{"action":"addTask","title":"Task Name","status":"not-started","description":"Description","subtasks":[{"title":"Subtask","duration":30}],"position":{"x":200,"y":200}}]
+
+Available commands:
+- addTask: Create new task node
+  {"action":"addTask","title":"string","status":"not-started|in-progress|completed","description":"string","subtasks":[],"position":{"x":number,"y":number}}
+- updateTask: Modify existing task
+  {"action":"updateTask","taskName":"string","updates":{"status":"completed","description":"Updated"}}
+- deleteTask: Remove task
+  {"action":"deleteTask","taskName":"string"}
+
+The user will see a confirmation dialog before any changes are applied. Keep your conversational response separate from the command.`
 
     // Prepare messages for OpenAI
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
