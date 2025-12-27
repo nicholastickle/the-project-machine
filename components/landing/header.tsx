@@ -44,8 +44,8 @@ export default function Header() {
   )
 
   return (
-    <header className="w-full py-4 px-6">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <header className="z-50 w-full py-1 px-6 absolute top-0 left-0 right-0 sticky border border-border-dark bg-background backdrop-blur-md">
+      <div className="max-w-7xl mx-auto flex items-center justify-between ">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
             <Link href="/" className="text-foreground text-xl font-semibold cursor-pointer">

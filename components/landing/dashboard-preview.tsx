@@ -34,7 +34,7 @@ export default function DashboardPreview() {
 
   return (
     <AnimatedSectionWhileInView delay={0.1}>
-      <section className="flex justify-center -mt-45 sm:-mt-82 md:-mt-50 lg:-mt-50 xl:-mt-72 z-30 relative w-[calc(100vw-32px)] sm:w-[calc(100vw-48px)] md:w-[95vw] lg:w-[90vw] xl:w-[1160px] max-w-[1160px] mx-auto bg-primary-light/40 rounded-2xl p-2 shadow-lg">
+      <section className="flex justify-center -mt-45 sm:-mt-82 md:-mt-50 lg:-mt-50 xl:-mt-72 z-30 relative w-[calc(100vw-32px)] sm:w-[calc(100vw-48px)] md:w-[95vw] lg:w-[90vw] xl:w-[1160px] max-w-[1160px] mx-auto bg-primary-light/40 rounded-2xl p-2 shadow-lg ">
         <Image
           src={isDark ? "/images/Dashboard-preview-dark.png" : "/images/Dashboard-preview-light.png"}
           alt="Dashboard preview"

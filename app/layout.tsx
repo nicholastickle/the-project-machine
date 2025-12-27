@@ -6,7 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider/theme-provider'
 
 export const metadata: Metadata = {
   title: 'Project Machine',
-  description: 'Turn conversations into actionable project plans. AI project manager that creates tasks, estimates time, and organizes workflows through natural voice interaction.',
+  description: 'Turn conversations into actionable project plans. AI project manager that creates tasks, estimates time, and organizes workflows.',
 }
 
 export const viewport: Viewport = {

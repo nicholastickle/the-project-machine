@@ -69,7 +69,7 @@ export function TypewriterSubheadline() {
     }, [displayText, isDeleting, phraseIndex, phrases])
 
     return (
-        <div className="text-lg md:text-2xl max-w-2xl mx-auto leading-relaxed h-16 flex items-center justify-center mt-5">
+        <div className="text-lg md:text-2xl max-w-2xl mx-auto leading-relaxed h-16 flex items-center justify-center">
             <span className=" text-foreground min-w-[400px] text-center">
                 {displayText}
                 <span className="animate-pulse">|</span>
