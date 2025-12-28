@@ -49,7 +49,7 @@ export function TypewriterSubheadline() {
             () => {
                 if (!isDeleting) {
                     if (displayText === currentPhrase) {
-                        setTimeout(() => setIsDeleting(true), 500)
+                        setTimeout(() => setIsDeleting(true), 400)
                     } else {
                         setDisplayText(currentPhrase.slice(0, displayText.length + 1))
                     }
@@ -69,8 +69,8 @@ export function TypewriterSubheadline() {
     }, [displayText, isDeleting, phraseIndex, phrases])
 
     return (
-        <div className="text-lg md:text-2xl max-w-2xl mx-auto leading-relaxed h-16 flex items-center justify-center">
-            <span className=" text-foreground min-w-[400px] text-center">
+        <div className="text-md max-w-4xl flex items-center justify-start">
+            <span className=" text-muted min-w-[700px] text-start">
                 {displayText}
                 <span className="animate-pulse">|</span>
             </span>

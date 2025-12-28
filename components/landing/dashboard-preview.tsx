@@ -3,7 +3,6 @@
 import Image from "next/image"
 import { useTheme } from "next-themes"
 import { useState, useEffect } from "react"
-import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 
 export default function DashboardPreview() {
   const { resolvedTheme } = useTheme()
@@ -13,10 +12,14 @@ export default function DashboardPreview() {
     setMounted(true)
   }, [])
 
+ if (!mounted || !resolvedTheme) {
+    return null
+  }
+
   if (!mounted) {
     return (
-      <AnimatedSectionWhileInView delay={0.1}>
-        <section className="flex justify-center -mt-45 sm:-mt-82 md:-mt-50 lg:-mt-50 xl:-mt-72 z-30 relative w-[calc(100vw-32px)] sm:w-[calc(100vw-48px)] md:w-[95vw] lg:w-[90vw] xl:w-[1160px] max-w-[1160px] mx-auto bg-primary-light/40 rounded-2xl p-2 shadow-lg">
+      
+        <section className="absolute top-[600px] left-1/2 transform -translate-x-1/2 z-30 w-[calc(100vw-32px)] sm:w-[calc(100vw-48px)] md:w-[95vw] lg:w-[90vw] xl:w-[1160px] max-w-[1160px] bg-primary-light/40 rounded-2xl p-2 shadow-lg">
           <Image
             src="/images/Dashboard-preview-light.png"
             alt="Dashboard preview"
@@ -26,15 +29,15 @@ export default function DashboardPreview() {
             className="w-full h-full object-cover rounded-xl shadow-lg"
           />
         </section>
-      </AnimatedSectionWhileInView>
+      
     )
   }
 
   const isDark = resolvedTheme === 'dark'
 
   return (
-    <AnimatedSectionWhileInView delay={0.1}>
-      <section className="flex justify-center -mt-45 sm:-mt-82 md:-mt-50 lg:-mt-50 xl:-mt-72 z-30 relative w-[calc(100vw-32px)] sm:w-[calc(100vw-48px)] md:w-[95vw] lg:w-[90vw] xl:w-[1160px] max-w-[1160px] mx-auto bg-primary-light/40 rounded-2xl p-2 shadow-lg ">
+    
+      <section className="absolute top-[600px] left-1/2 transform -translate-x-1/2 z-30 w-[calc(100vw-32px)] sm:w-[calc(100vw-48px)] md:w-[95vw] lg:w-[90vw] xl:w-[1160px] max-w-[1160px] bg-primary-light/40 rounded-2xl p-2 shadow-lg ">
         <Image
           src={isDark ? "/images/Dashboard-preview-dark.png" : "/images/Dashboard-preview-light.png"}
           alt="Dashboard preview"
@@ -44,6 +47,6 @@ export default function DashboardPreview() {
           className="w-full h-full object-cover rounded-xl shadow-lg"
         />
       </section>
-    </AnimatedSectionWhileInView>
+    
   )
 }

@@ -12,8 +12,11 @@ import { ModeToggle } from "@/components/theme-provider/theme-toggle"
 export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const navItems = [
-    { name: "Features", href: "#features-section" },
-    { name: "About", href: "#about-section" },
+    { name: "The machine", href: "#features-section" },
+    { name: "About us", href: "#about-section" },
+    { name: "Resources", href: "#resources-section" },
+    { name: "Pricing", href: "#pricing-section" },
+    { name: "FAQ", href: "#faq-section" },
   ]
 
   const handleScroll = useCallback(

@@ -431,29 +431,30 @@ export default function HeroSection() {
 
 
 
-        <div className="flex flex-row relative z-10 w-full mt-10 md:mt-10 lg:mt-10  ">
+        <div className="flex flex-row relative z-10 w-full mt-10 md:mt-10 lg:mt-10 px-4  ">
          
-          <div className="flex flex-[10]">
+          <div className="flex flex-[10] gap-5">
             <AnimatedSectionWhileInView delay={0.2}>
-              <h1 className="text-2xl md:text-6xl text-left p-2">
+              <h1 className="text-2xl md:text-6xl text-left mb-8">
                 <span className="text-foreground ">
-                  The only planning canvas that learns from every completed task.
+                  The only planning canvas that <br />
+                  learns from every completed task.
                 </span>
               </h1>
 
-              <p className="text-sm md:text-base lg:text-lg text-muted max-w-3xl text-left p-2">
-                A modern take on project planning that combines AI-powered task generation with
-                real-time learning from your completed tasks all done on a single canvas.
+              <p className="text-md text-muted max-w-3xl text-left mb-8 ">
+                A modern take on project planning that combines AI-powered task generation <br />
+                with real-time learning from your completed tasks all done on a single canvas.
               </p>
 
 
               <div
-                className="flex flex-row justify-start gap-4"
+                className="flex flex-row justify-start gap-4 mb-16 h-10"
               >
 
                 {/* Get Started Button */}
                 <Link href="/canvas">
-                  <Button className="z-10 bg-accent outline outline-border-dark text-foreground hover:bg-accent px-8 py-3 rounded-full font-medium text-base transition-all duration-300 flex items-center gap-3 h-full">
+                  <Button className="z-10 bg-accent outline outline-border-dark text-foreground hover:bg-white/10 px-8 py-3 rounded-full font-medium text-base transition-all duration-300 flex items-center gap-3 h-full">
                     Get started
                   </Button>
                 </Link>
@@ -461,13 +462,13 @@ export default function HeroSection() {
                 {/* Subscribe Button */}
                 <div className="relative group">
 
-                  <div className="z-10 bg-accent  outline border-none outline-border-dark rounded-full px-2 flex items-center gap-2 h-full">
+                  <div className="z-10 bg-accent/50 outline border-none outline-border-dark rounded-full px-2 flex items-center gap-2 h-full">
                     <input
                       type="email"
                       placeholder="Subscribe for updates"
-                      className="bg-transparent text-foreground placeholder:text-muted font-medium text-base border-none outline-none px-4 py-2 min-w-[220px]"
+                      className="bg-transparent text-foreground placeholder:text-muted border-none outline-none px-4  min-w-[250px]"
                     />
-                    <button className="bg-white/20 hover:bg-white/30 text-foreground rounded-full p-2 transition-colors duration-200 flex items-center justify-center">
+                    <button className="bg-accent hover:bg-white/10 text-foreground rounded-full p-2 transition-colors duration-200 flex items-center justify-center">
                       <Send size={16} />
                     </button>
                   </div>

@@ -17,13 +17,13 @@ export default function Home() {
         <SpacerElement height="80px" text="Project hero" />
         <HeroSection />
         <DashboardPreview />
-        <SpacerElement height="80px" text="Project features" />
+        <SpacerElement height="500px" text="Project features" />
         <BentoSection />
-        <SpacerElement height="80px" text="Project about" />
+        <SpacerElement height="80px" text="Project about us section" />
         <AboutSection />
-        <SpacerElement height="80px" text="Call to action" />
+        <SpacerElement height="80px" text="Project call to action" />
         <CTASection />
-        <SpacerElement height="80px" text="Footer section" />
+        <SpacerElement height="80px" text="Project footer" />
         <FooterSection />
       </div>
     </>

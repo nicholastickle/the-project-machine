@@ -311,13 +311,11 @@
 
 @layer utilities {
   .diagonal-lines {
-    background-image: repeating-linear-gradient(
-      135deg,
-      transparent,
-      transparent 8px,
-      hsl(var(--border-dark)) 8px,
-      hsl(var(--border-dark)) 9px
-    );
+    background-image: repeating-linear-gradient(135deg,
+        transparent,
+        transparent 8px,
+        hsl(var(--border-dark)) 8px,
+        hsl(var(--border-dark)) 9px);
     background-attachment: fixed;
   }
 }
