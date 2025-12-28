@@ -545,7 +545,7 @@
 - `viewer`: Read-only access (future feature)
 
 ### `POST /api/projects/[id]/collaborators`
-**Invite user to project** *(Not Yet Implemented)*
+**Invite user to project**
 
 **Request**:
 ```json
@@ -555,21 +555,63 @@
 }
 ```
 
-**Response**:
+**Response (User exists in system)**:
 ```json
 {
-  "message": "Invitation feature coming soon",
-  "details": "In v1.0, this will send an email invitation to the user"
+  "message": "User added as collaborator",
+  "collaborator": {
+    "user_id": "uuid",
+    "email": "user@example.com",
+    "role": "editor"
+  }
 }
 ```
 
-**Status**: `501 Not Implemented`
+**Response (User not in system - invitation created)**:
+```json
+{
+  "message": "Invitation created (email not sent - configure email service)",
+  "invitation": {
+    "id": "uuid",
+    "invited_email": "user@example.com",
+    "role": "editor",
+    "expires_at": "2026-01-01T00:00:00Z",
+    "invite_link": "http://localhost:3000/invite/abc-123-def"
+  },
+  "note": "Send this link manually to the user. Email service not configured yet."
+}
+```
 
-**Future Implementation**:
-1. Create pending invitation
-2. Send email with invitation link
-3. User accepts via link
-4. Add to project_members table
+**How it works**:
+1. If user exists in system → Added directly as collaborator
+2. If user doesn't exist → Creates pending invitation with 7-day expiry
+3. Invitation link: `/invite/{token}`
+4. Email service not configured yet - copy link manually
+
+### `POST /api/invite/[token]`
+**Accept project invitation**
+
+**Request**: No body required (authenticated user only)
+
+**Response**:
+```json
+{
+  "message": "Invitation accepted successfully",
+  "project_id": "uuid",
+  "role": "editor"
+}
+```
+
+**Notes**:
+- User must be logged in first
+- Invitation expires after 7 days
+- Email must match invitation (or allow any authenticated user)
+- Automatically adds user to project_members
+
+**Errors**:
+- `404`: Invalid token
+- `400`: Already accepted or expired
+- `403`: Email mismatch
 
 ### `DELETE /api/projects/[id]/collaborators/[userId]`
 **Remove collaborator from project**
@@ -785,6 +827,17 @@
 - `content` (text)
 - `created_at` (timestamp)
 - `created_by` (uuid, FK to auth.users)
+
+**pending_invitations**
+- `id` (uuid, PK)
+- `project_id` (uuid, FK to projects)
+- `invited_email` (text)
+- `role` (text) - 'editor' or 'viewer'
+- `invited_by` (uuid, FK to auth.users)
+- `invite_token` (text, unique)
+- `expires_at` (timestamp)
+- `accepted_at` (timestamp, nullable)
+- `created_at` (timestamp)
 
 **project_members**
 - `project_id` (uuid, FK to projects)

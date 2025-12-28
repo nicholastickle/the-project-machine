@@ -200,7 +200,7 @@ DELETE {{baseUrl}}/api/projects/{{projectId}}/chat
 ### Get collaborators
 GET {{baseUrl}}/api/projects/{{projectId}}/collaborators
 
-### Invite user (not yet implemented)
+### Invite user (existing user - adds directly)
 POST {{baseUrl}}/api/projects/{{projectId}}/collaborators
 Content-Type: application/json
 
@@ -208,6 +208,19 @@ Content-Type: application/json
   "email": "teammate@example.com",
   "role": "editor"
 }
+
+### Invite user (new user - creates invitation)
+POST {{baseUrl}}/api/projects/{{projectId}}/collaborators
+Content-Type: application/json
+
+{
+  "email": "newuser@example.com",
+  "role": "viewer"
+}
+
+### Accept invitation (user must be logged in)
+# Replace TOKEN with the invite_token from the invite response
+POST {{baseUrl}}/api/invite/TOKEN_HERE
 
 ### Remove collaborator
 DELETE {{baseUrl}}/api/projects/{{projectId}}/collaborators/{{userId}}

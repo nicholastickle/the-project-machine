@@ -69,6 +69,19 @@ create table if not exists chat_messages (
   created_by uuid references auth.users(id)
 );
 
+-- Pending Invitations: Track project invites
+create table if not exists pending_invitations (
+  id uuid primary key default uuid_generate_v4(),
+  project_id uuid references projects(id) on delete cascade not null,
+  invited_email text not null,
+  role text not null check (role in ('editor', 'viewer')),
+  invited_by uuid references auth.users(id) not null,
+  invite_token text unique not null,
+  expires_at timestamptz not null,
+  accepted_at timestamptz,
+  created_at timestamptz default now()
+);
+
 -- Project Members: Minimal roles
 create table if not exists project_members (
   project_id uuid references projects(id) on delete cascade not null,
@@ -93,6 +106,8 @@ create index if not exists idx_plan_snapshots_project on plan_snapshots(project_
 create index if not exists idx_reflections_project on reflections(project_id, created_at desc);
 create index if not exists idx_reference_notes_project on reference_notes(project_id);
 create index if not exists idx_chat_messages_project on chat_messages(project_id, created_at asc);
+create index if not exists idx_pending_invitations_token on pending_invitations(invite_token);
+create index if not exists idx_pending_invitations_email on pending_invitations(invited_email, accepted_at);
 create index if not exists idx_usage_logs_project on usage_logs(project_id, created_at desc);
 create index if not exists idx_usage_logs_type on usage_logs(event_type, created_at desc);
 create index if not exists idx_usage_logs_user on usage_logs(user_id, created_at desc);
@@ -120,6 +135,7 @@ alter table reflections enable row level security;
 alter table reference_notes enable row level security;
 alter table file_summaries enable row level security;
 alter table chat_messages enable row level security;
+alter table pending_invitations enable row level security;
 alter table project_members enable row level security;
 alter table usage_logs enable row level security;
 

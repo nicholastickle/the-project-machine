@@ -102,7 +102,7 @@ export async function POST(
     // Verify project ownership
     const { data: project } = await supabase
       .from('projects')
-      .select('id')
+      .select('id, name')
       .eq('id', projectId)
       .eq('created_by', user.id)
       .single()
@@ -111,18 +111,117 @@ export async function POST(
       return NextResponse.json({ error: 'Only project owner can add collaborators' }, { status: 403 })
     }
 
-    // TODO: In production, send email invitation instead of direct add
-    // For now, we'll just return success with a note
-    // Real implementation would:
-    // 1. Create pending_invitations table entry
-    // 2. Send email with invitation link
-    // 3. User accepts invite via link
-    // 4. Add to project_members
+    // Check if user exists in auth.users by email
+    const { data: invitedUser } = await supabase
+      .from('auth.users')
+      .select('id')
+      .eq('email', email)
+      .single()
+
+    // If user exists in system, add directly to project_members
+    if (invitedUser) {
+      // Check if already a member
+      const { data: existingMember } = await supabase
+        .from('project_members')
+        .select('user_id')
+        .eq('project_id', projectId)
+        .eq('user_id', invitedUser.id)
+        .single()
+
+      if (existingMember) {
+        return NextResponse.json({ error: 'User is already a collaborator' }, { status: 400 })
+      }
+
+      // Add to project_members
+      const { error: insertError } = await supabase
+        .from('project_members')
+        .insert({
+          project_id: projectId,
+          user_id: invitedUser.id,
+          role
+        })
+
+      if (insertError) {
+        console.error('Error adding collaborator:', insertError)
+        return NextResponse.json({ error: 'Failed to add collaborator' }, { status: 500 })
+      }
+
+      // Log usage
+      await supabase.from('usage_logs').insert({
+        project_id: projectId,
+        user_id: user.id,
+        event_type: 'collaborator_added',
+        event_data: {
+          invited_email: email,
+          role,
+          added_directly: true
+        }
+      })
+
+      return NextResponse.json({
+        message: 'User added as collaborator',
+        collaborator: {
+          user_id: invitedUser.id,
+          email,
+          role
+        }
+      })
+    }
+
+    // User not in system - create pending invitation
+    const inviteToken = crypto.randomUUID()
+    const expiresAt = new Date()
+    expiresAt.setDate(expiresAt.getDate() + 7) // 7 days to accept
+
+    const { data: invitation, error: inviteError } = await supabase
+      .from('pending_invitations')
+      .insert({
+        project_id: projectId,
+        invited_email: email,
+        role,
+        invited_by: user.id,
+        invite_token: inviteToken,
+        expires_at: expiresAt.toISOString()
+      })
+      .select('id, invited_email, role, expires_at')
+      .single()
+
+    if (inviteError) {
+      console.error('Error creating invitation:', inviteError)
+      return NextResponse.json({ error: 'Failed to create invitation' }, { status: 500 })
+    }
+
+    // Log usage
+    await supabase.from('usage_logs').insert({
+      project_id: projectId,
+      user_id: user.id,
+      event_type: 'invitation_sent',
+      event_data: {
+        invited_email: email,
+        role,
+        invite_token: inviteToken
+      }
+    })
+
+    // TODO: Send email with invitation link
+    // In production, use email service (e.g., SendGrid, Resend)
+    // const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL}/invite/${inviteToken}`
+    // await sendEmail(email, 'Project Invitation', inviteLink)
 
     return NextResponse.json({
-      message: 'Invitation feature coming soon',
-      details: 'In v1.0, this will send an email invitation to the user'
-    }, { status: 501 }) // Not Implemented
+      message: 'Invitation created (email not sent - configure email service)',
+      invitation: {
+        ...invitation,
+        invite_link: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite/${inviteToken}`
+      },
+      note: 'Send this link manually to the user. Email service not configured yet.'
+    })
+
+  } catch (error: any) {
+    console.error('Invite error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
 
   } catch (error: any) {
     console.error('Invite error:', error)
