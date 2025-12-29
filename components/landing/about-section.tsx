@@ -45,7 +45,7 @@ export default function AboutSection() {
                             <h2 className="w-full max-w-[655px] text-start text-foreground text-5xl italic">
                                 &ldquo;We spent our careers building the physical world. Now we&apos;re building the engine that powers it.&rdquo;
                             </h2>
-                            
+
                         </div>
                     </div>
 
