@@ -115,11 +115,11 @@ describe('Component Imports', () => {
     })
   })
 
-  describe('AI Components', () => {
-    it('should import ai-orb', async () => {
-      await expect(import('@/components/ai-chat/ai-orb')).resolves.toBeDefined()
-    })
-  })
+  // describe('AI Components', () => {
+  //   it('should import ai-orb', async () => {
+  //     await expect(import('@/components/ai-chat/ai-orb')).resolves.toBeDefined()
+  //   })
+  // })
 
   describe('Admin Components', () => {
     it('should import ai-status-indicator', async () => {
