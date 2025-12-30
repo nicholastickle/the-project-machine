@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Send, Paperclip, MessageSquare } from 'lucide-react'
 import useStore from '@/stores/flow-store'
+import { parseCommand } from '@/lib/ai/command-parser'
 
 interface Message {
   id: string
@@ -42,16 +43,8 @@ export default function ChatPanel({ projectId, onVisibilityChange }: ChatPanelPr
   }, [isVisible, onVisibilityChange])
 
   // Parse AI response for commands
-  const parseCommand = (response: string): any | null => {
-    const commandMatch = response.match(/\[COMMAND:([\s\S]*?)\]/)
-    if (!commandMatch) return null
+  // logic moved to lib/ai/command-parser.ts
 
-    try {
-      return JSON.parse(commandMatch[1])
-    } catch {
-      return null
-    }
-  }
 
   // Execute confirmed command
   const executeCommand = (command: any) => {
@@ -69,8 +62,8 @@ export default function ChatPanel({ projectId, onVisibilityChange }: ChatPanelPr
         break
 
       case 'updateTask':
-        const nodeToUpdate = nodes.find(n => 
-          typeof n.data.title === 'string' && 
+        const nodeToUpdate = nodes.find(n =>
+          typeof n.data.title === 'string' &&
           n.data.title.toLowerCase().includes(command.taskName?.toLowerCase())
         )
         if (nodeToUpdate) {
@@ -79,7 +72,7 @@ export default function ChatPanel({ projectId, onVisibilityChange }: ChatPanelPr
         break
 
       case 'deleteTask':
-        const nodeToDelete = nodes.find(n => 
+        const nodeToDelete = nodes.find(n =>
           typeof n.data.title === 'string' &&
           n.data.title.toLowerCase().includes(command.taskName?.toLowerCase())
         )
@@ -111,7 +104,7 @@ export default function ChatPanel({ projectId, onVisibilityChange }: ChatPanelPr
     try {
       // Get current canvas state
       const { nodes, edges } = useStore.getState()
-      
+
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -131,7 +124,7 @@ export default function ChatPanel({ projectId, onVisibilityChange }: ChatPanelPr
         const errorMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: data.error === 'OpenAI API key not configured' 
+          content: data.error === 'OpenAI API key not configured'
             ? 'The AI service is not configured yet. Please add your OpenAI API key.'
             : `Error: ${data.error || 'Unknown error'}${data.details ? ' - ' + data.details : ''}`
         }
@@ -141,7 +134,7 @@ export default function ChatPanel({ projectId, onVisibilityChange }: ChatPanelPr
 
       // Check for embedded commands
       const command = parseCommand(data.response)
-      
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -265,7 +258,7 @@ export default function ChatPanel({ projectId, onVisibilityChange }: ChatPanelPr
                 The AI wants to modify your canvas:
               </DialogDescription>
             </DialogHeader>
-            
+
             {pendingCommand && (
               <div className="p-3 rounded-lg bg-muted text-sm">
                 <strong>{pendingCommand.action}:</strong>
