@@ -1,24 +1,64 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { extractUserFromCookies, createAuthenticatedClient } from '@/lib/supabase/auth-utils'
 import type { ProjectInsert } from '@/lib/supabase/types'
 
 // GET /api/projects - List user's projects
 export async function GET(request: NextRequest) {
   try {
+    console.log('[GET /api/projects] Starting request')
+    console.log('[GET /api/projects] Request headers:', {
+      cookie: request.headers.get('cookie') ? 'set' : 'not set',
+      authorization: request.headers.get('authorization') ? 'set' : 'not set',
+    })
+    
+    // Try the standard approach first
     const supabase = await createClient()
+    let { data: { user }, error: authError } = await supabase.auth.getUser()
     
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
-    console.log('[GET /api/projects] Auth check:', {
+    console.log('[GET /api/projects] Standard auth check:', {
       hasUser: !!user,
       userId: user?.id,
       userEmail: user?.email,
       authError: authError?.message
     })
     
+    // If standard auth fails, try extracting from cookies directly
+    if (!user && authError) {
+      console.log('[GET /api/projects] Standard auth failed, trying cookie extraction...')
+      const userFromCookie = await extractUserFromCookies()
+      if (userFromCookie) {
+        user = {
+          id: userFromCookie.id!,
+          email: userFromCookie.email,
+          // @ts-ignore - just setting the fields we need
+          aud: 'authenticated',
+          role: 'authenticated',
+        }
+        authError = null
+        console.log('[GET /api/projects] Successfully extracted user from cookies:', {
+          userId: user.id,
+          userEmail: user.email
+        })
+      }
+    }
+    
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      console.error('[GET /api/projects] Authorization failed:', {
+        authError: authError?.message,
+        noUser: !user
+      })
+      return NextResponse.json(
+        { 
+          error: 'Unauthorized', 
+          details: authError?.message || 'No user found in session',
+          debug: {
+            hasAuthError: !!authError,
+            hasUser: !!user
+          }
+        }, 
+        { status: 401 }
+      )
     }
 
     // Fetch projects (RLS will filter to user's projects)
@@ -36,13 +76,25 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching projects:', error)
-      return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
+      return NextResponse.json(
+        { 
+          error: 'Failed to fetch projects', 
+          details: error.message 
+        }, 
+        { status: 500 }
+      )
     }
 
     return NextResponse.json({ projects })
   } catch (error) {
     console.error('Unexpected error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json(
+      { 
+        error: 'Internal server error', 
+        details: String(error) 
+      }, 
+      { status: 500 }
+    )
   }
 }
 

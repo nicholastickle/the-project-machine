@@ -1,8 +1,31 @@
-# Project Machine API Testing
+# Project Machine API Testing - Updated
 # Install the "REST Client" extension in VS Code to use this file
-# Click "Send Request" above each request to execute
 
-### Variables (update these)
+###############################################
+# QUICK SETUP (Read REST_CLIENT_GUIDE.md for details)
+###############################################
+
+### 1. Open browser: http://localhost:3000/canvas
+### 2. Open DevTools (F12) → Application → Cookies → http://localhost:3000  
+### 3. Find cookie: sb-xjgjirnqitcpgwawgnlk-auth-token
+### 4. Copy the VALUE (the long string)
+### 5. Replace YOUR_COOKIE_VALUE_HERE below with that value
+
+@authCookie = sb-xjgjirnqitcpgwawgnlk-auth-token=base64-eyJhY2Nlc3NfdG9rZW4iOiJleUpoYkdjaU9pSkZVekkxTmlJc0ltdHBaQ0k2SWpjMk1EUTBORGszTFRrME9HSXROR1EyWmkxaU5USXpMV015WVdNd05UZzBNREU0T1NJc0luUjVjQ0k2SWtwWFZDSjkuZXlKcGMzTWlPaUpvZEhSd2N6b3ZMM2hxWjJwcGNtNXhhWFJqY0dkM1lYZG5ibXhyTG5OMWNHRmlZWE5sTG1OdkwyRjFkR2d2ZGpFaUxDSnpkV0lpT2lJMk5EQTNZakl5WWkwM1lqRmhMVFEwT0dFdE9UWXdZUzFtTm1ReE5ETTNOamd5TVRFaUxDSmhkV1FpT2lKaGRYUm9aVzUwYVdOaGRHVmtJaXdpWlhod0lqb3hOelkzTWpFMU1UUXhMQ0pwWVhRaU9qRTNOamN5TVRFMU5ERXNJbVZ0WVdsc0lqb2lZbkpwWjJoMGIyNTBZVzVrWVdKaGJuUjFRR2R0WVdsc0xtTnZiU0lzSW5Cb2IyNWxJam9pSWl3aVlYQndYMjFsZEdGa1lYUmhJanA3SW5CeWIzWnBaR1Z5SWpvaVpXMWhhV3dpTENKd2NtOTJhV1JsY25NaU9sc2laVzFoYVd3aVhYMHNJblZ6WlhKZmJXVjBZV1JoZEdFaU9uc2laVzFoYVd3aU9pSmljbWxuYUhSdmJuUmhibVJoWW1GdWRIVkFaMjFoYVd3dVkyOXRJaXdpWlcxaGFXeGZkbVZ5YVdacFpXUWlPblJ5ZFdVc0luQm9iMjVsWDNabGNtbG1hV1ZrSWpwbVlXeHpaU3dpYzNWaUlqb2lOalF3TjJJeU1tSXROMkl4WVMwME5EaGhMVGsyTUdFdFpqWmtNVFF6TnpZNE1qRXhJbjBzSW5KdmJHVWlPaUpoZFhSb1pXNTBhV05oZEdWa0lpd2lZV0ZzSWpvaVlXRnNNU0lzSW1GdGNpSTZXM3NpYldWMGFHOWtJam9pY0dGemMzZHZjbVFpTENKMGFXMWxjM1JoYlhBaU9qRTNOalkxTnprMk5qTjlYU3dpYzJWemMybHZibDlwWkNJNklqbG1OV0V3TldNMkxUZGxOamt0TkdWaU5DMWlaRFU0TFdWak1qTXdPVGt3TmpGbVpTSXNJbWx6WDJGdWIyNTViVzkxY3lJNlptRnNjMlY5LlpCTzJyd1NyWUc2VXpTa2RjRUJkS3ExN1hFZWpNeHhibTBPbjUxNzNfN21LaTJaNlJqQVJvMUJuWkxBN01DSzMyNWhkdV9vR2wwVTBsakVnUnF6RFFRIiwidG9rZW5fdHlwZSI6ImJlYXJlciIsImV4cGlyZXNfaW4iOjM2MDAsImV4cGlyZXNfYXQiOjE3NjcyMTUxNDEsInJlZnJlc2hfdG9rZW4iOiJqeHUzaHpjejc1dHciLCJ1c2VyIjp7ImlkIjoiNjQwN2IyMmItN2IxYS00NDhhLTk2MGEtZjZkMTQzNzY4MjExIiwiYXVkIjoiYXV0aGVudGljYXRlZCIsInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiZW1haWwiOiJicmlnaHRvbnRhbmRhYmFudHVAZ21haWwuY29tIiwiZW1haWxfY29uZmlybWVkX2F0IjoiMjAyNS0xMi0yNFQxMTo0NTowMC4wODQ4MzlaIiwicGhvbmUiOiIiLCJjb25maXJtZWRfYXQiOiIyMDI1LTEyLTI0VDExOjQ1OjAwLjA4NDgzOVoiLCJsYXN0X3NpZ25faW5fYXQiOiIyMDI1LTEyLTI1VDA3OjA3OjQ5LjAzMDAwOVoiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6ImJyaWdodG9udGFuZGFiYW50dUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiI2NDA3YjIyYi03YjFhLTQ0OGEtOTYwYS1mNmQxNDM3NjgyMTEifSwiaWRlbnRpdGllcyI6W3siaWRlbnRpdHlfaWQiOiJjNjI5NzYyNS0zZDkyLTQzYWItYTc1ZS1mYTFhYWQ3OWRlNDQiLCJpZCI6IjY0MDdiMjJiLTdiMWEtNDQ4YS05NjBhLWY2ZDE0Mzc2ODIxMSIsInVzZXJfaWQiOiI2NDA3YjIyYi03YjFhLTQ0OGEtOTYwYS1mNmQxNDM3NjgyMTEiLCJpZGVudGl0eV9kYXRhIjp7ImVtYWlsIjoiYnJpZ2h0b250YW5kYWJhbnR1QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiI2NDA3YjIyYi03YjFhLTQ0OGEtOTYwYS1mNmQxNDM3NjgyMTEifSwicHJvdmlkZXIiOiJlbWFpbCIsImxhc3Rfc2lnbl9pbl9hdCI6IjIwMjUtMTItMjRUMTE6NDU6MDAuMDc3NTU0WiIsImNyZWF0ZWRfYXQiOiIyMDI1LTEyLTI0VDExOjQ1OjAwLjA3ODE3WiIsInVwZGF0ZWRfYXQiOiIyMDI1LTEyLTI0VDExOjQ1OjAwLjA3ODE3WiIsImVtYWlsIjoiYnJpZ2h0b250YW5kYWJhbnR1QGdtYWlsLmNvbSJ9XSwiY3JlYXRlZF9hdCI6IjIwMjUtMTItMjRUMTE6NDU6MDAuMDM2ODgyWiIsInVwZGF0ZWRfYXQiOiIyMDI1LTEyLTMxVDIwOjA1OjQxLjk2NDc5NFoiLCJpc19hbm9ueW1vdXMiOmZhbHNlfX0
+
+###############################################
+# VERIFY YOUR SETUP
+###############################################
+
+### First, test that your cookie works by running this:
+GET http://localhost:3000/api/test-auth
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+###############################################
+# VARIABLES
+###############################################
+
 @baseUrl = http://localhost:3000
 @projectId = YOUR_PROJECT_ID_HERE
 @snapshotId = YOUR_SNAPSHOT_ID_HERE
@@ -11,29 +34,34 @@
 @noteId = YOUR_NOTE_ID_HERE
 @userId = YOUR_USER_ID_HERE
 
-### NOTE: You must be logged in via browser first!
-### Open http://localhost:3000 and sign in, then come back here
-
 ###############################################
-# PROJECTS
+# PROJECTS (Use @authCookie with all requests below)
 ###############################################
 
 ### Get all projects
 GET {{baseUrl}}/api/projects
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 ### Create new project
 POST {{baseUrl}}/api/projects
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
   "name": "Test Project from REST Client",
   "description": "Testing the API endpoints"
 }
 
+### Get single project
+GET {{baseUrl}}/api/projects/{{projectId}}
+Content-Type: application/json
+Cookie: {{authCookie}}
+
 ### Update project
 PATCH {{baseUrl}}/api/projects/{{projectId}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
   "name": "Updated Project Name",
@@ -42,6 +70,7 @@ Content-Type: application/json
 
 ### Delete project
 DELETE {{baseUrl}}/api/projects/{{projectId}}
+Cookie: {{authCookie}}
 
 ###############################################
 # SNAPSHOTS
@@ -49,10 +78,12 @@ DELETE {{baseUrl}}/api/projects/{{projectId}}
 
 ### Get all snapshots
 GET {{baseUrl}}/api/projects/{{projectId}}/snapshots
+Cookie: {{authCookie}}
 
 ### Create snapshot (autosave)
 POST {{baseUrl}}/api/projects/{{projectId}}/snapshots
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
   "snapshot_data": {
@@ -77,9 +108,11 @@ Content-Type: application/json
 
 ### Get specific snapshot
 GET {{baseUrl}}/api/projects/{{projectId}}/snapshots/{{snapshotId}}
+Cookie: {{authCookie}}
 
 ### Restore snapshot
 POST {{baseUrl}}/api/projects/{{projectId}}/snapshots/{{snapshotId}}/restore
+Cookie: {{authCookie}}
 
 ###############################################
 # REFLECTIONS
@@ -87,13 +120,16 @@ POST {{baseUrl}}/api/projects/{{projectId}}/snapshots/{{snapshotId}}/restore
 
 ### Get all reflections
 GET {{baseUrl}}/api/projects/{{projectId}}/reflections
+Cookie: {{authCookie}}
 
 ### Get reflections by type
 GET {{baseUrl}}/api/projects/{{projectId}}/reflections?type=start-of-day
+Cookie: {{authCookie}}
 
 ### Create reflection
 POST {{baseUrl}}/api/projects/{{projectId}}/reflections
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
   "reflection_type": "start-of-day",
@@ -103,6 +139,7 @@ Content-Type: application/json
 ### Update reflection
 PATCH {{baseUrl}}/api/projects/{{projectId}}/reflections/{{reflectionId}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
   "reflection_text": "Updated: Today I completed the file upload and started on chat integration."
@@ -110,6 +147,7 @@ Content-Type: application/json
 
 ### Delete reflection
 DELETE {{baseUrl}}/api/projects/{{projectId}}/reflections/{{reflectionId}}
+Cookie: {{authCookie}}
 
 ###############################################
 # FILES
@@ -117,35 +155,32 @@ DELETE {{baseUrl}}/api/projects/{{projectId}}/reflections/{{reflectionId}}
 
 ### Get all files
 GET {{baseUrl}}/api/projects/{{projectId}}/files
-
-### Upload file (Excel/CSV/PDF)
-# Note: Use Postman or curl for actual file uploads
-# Example curl command:
-# curl -X POST "{{baseUrl}}/api/projects/{{projectId}}/files" \
-#   -F "file=@/path/to/your/file.xlsx" \
-#   -F "extractStructure=true"
+Cookie: {{authCookie}}
 
 ### Confirm file summary
 PATCH {{baseUrl}}/api/projects/{{projectId}}/files/{{fileId}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
-  "summary": "This Excel file contains our Q1 project requirements with 3 sheets covering features, timeline, and budget."
+  "summary": "This Excel file contains our Q1 project requirements with 3 sheets."
 }
 
 ### Delete file
 DELETE {{baseUrl}}/api/projects/{{projectId}}/files/{{fileId}}
+Cookie: {{authCookie}}
 
 ###############################################
 # EXPORTS
 ###############################################
 
 ### Export as Excel
-# This will download a file - open in browser to test
 GET {{baseUrl}}/api/projects/{{projectId}}/export/excel
+Cookie: {{authCookie}}
 
 ### Export timesheet
 GET {{baseUrl}}/api/projects/{{projectId}}/export/timesheet
+Cookie: {{authCookie}}
 
 ###############################################
 # AI CHAT
@@ -154,6 +189,7 @@ GET {{baseUrl}}/api/projects/{{projectId}}/export/timesheet
 ### Send message to AI
 POST {{baseUrl}}/api/ai/chat
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
   "projectId": "{{projectId}}",
@@ -171,27 +207,21 @@ Content-Type: application/json
 
 ### Get chat history
 GET {{baseUrl}}/api/projects/{{projectId}}/chat
+Cookie: {{authCookie}}
 
 ### Save chat message
 POST {{baseUrl}}/api/projects/{{projectId}}/chat
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
   "role": "user",
   "content": "How do I structure the database schema?"
 }
 
-### Save AI response
-POST {{baseUrl}}/api/projects/{{projectId}}/chat
-Content-Type: application/json
-
-{
-  "role": "assistant",
-  "content": "For the database schema, I recommend using UUID primary keys..."
-}
-
 ### Clear chat history
 DELETE {{baseUrl}}/api/projects/{{projectId}}/chat
+Cookie: {{authCookie}}
 
 ###############################################
 # COLLABORATION
@@ -199,31 +229,21 @@ DELETE {{baseUrl}}/api/projects/{{projectId}}/chat
 
 ### Get collaborators
 GET {{baseUrl}}/api/projects/{{projectId}}/collaborators
+Cookie: {{authCookie}}
 
-### Invite user (existing user - adds directly)
+### Invite existing user
 POST {{baseUrl}}/api/projects/{{projectId}}/collaborators
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
   "email": "teammate@example.com",
   "role": "editor"
 }
 
-### Invite user (new user - creates invitation)
-POST {{baseUrl}}/api/projects/{{projectId}}/collaborators
-Content-Type: application/json
-
-{
-  "email": "newuser@example.com",
-  "role": "viewer"
-}
-
-### Accept invitation (user must be logged in)
-# Replace TOKEN with the invite_token from the invite response
-POST {{baseUrl}}/api/invite/TOKEN_HERE
-
 ### Remove collaborator
 DELETE {{baseUrl}}/api/projects/{{projectId}}/collaborators/{{userId}}
+Cookie: {{authCookie}}
 
 ###############################################
 # REFERENCE NOTES
@@ -231,19 +251,22 @@ DELETE {{baseUrl}}/api/projects/{{projectId}}/collaborators/{{userId}}
 
 ### Get all notes
 GET {{baseUrl}}/api/projects/{{projectId}}/notes
+Cookie: {{authCookie}}
 
 ### Create note
 POST {{baseUrl}}/api/projects/{{projectId}}/notes
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
   "title": "API Design Principles",
-  "content": "Always return consistent error formats. Use RLS for security. Document all endpoints."
+  "content": "Always return consistent error formats. Use RLS for security."
 }
 
 ### Update note
 PATCH {{baseUrl}}/api/projects/{{projectId}}/notes/{{noteId}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
   "title": "Updated API Principles",
@@ -252,6 +275,7 @@ Content-Type: application/json
 
 ### Delete note
 DELETE {{baseUrl}}/api/projects/{{projectId}}/notes/{{noteId}}
+Cookie: {{authCookie}}
 
 ###############################################
 # USAGE TRACKING
@@ -259,9 +283,8 @@ DELETE {{baseUrl}}/api/projects/{{projectId}}/notes/{{noteId}}
 
 ### Get usage stats
 GET {{baseUrl}}/api/usage
+Cookie: {{authCookie}}
 
 ### Get usage by date range
 GET {{baseUrl}}/api/usage?start_date=2025-12-01&end_date=2025-12-31
-
-### Get usage by event type
-GET {{baseUrl}}/api/usage?event_type=ai_query
+Cookie: {{authCookie}}
