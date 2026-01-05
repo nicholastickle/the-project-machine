@@ -33,6 +33,9 @@ Cookie: {{authCookie}}
 @fileId = YOUR_FILE_ID_HERE
 @noteId = YOUR_NOTE_ID_HERE
 @userId = YOUR_USER_ID_HERE
+@taskId = YOUR_TASK_ID_HERE
+@subtaskId = YOUR_SUBTASK_ID_HERE
+@commentId = YOUR_COMMENT_ID_HERE
 
 ###############################################
 # PROJECTS (Use @authCookie with all requests below)
@@ -70,6 +73,115 @@ Cookie: {{authCookie}}
 
 ### Delete project
 DELETE {{baseUrl}}/api/projects/{{projectId}}
+Cookie: {{authCookie}}
+
+###############################################
+# TASKS (New - Hybrid Model)
+###############################################
+
+### Get all tasks for project
+GET {{baseUrl}}/api/projects/{{projectId}}/tasks
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+### Create new task
+POST {{baseUrl}}/api/projects/{{projectId}}/tasks
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "title": "Implement authentication system",
+  "description": "Set up Supabase auth with email/password login",
+  "status": "backlog",
+  "priority": "high",
+  "estimatedHours": 8,
+  "dueDate": "2025-01-20T00:00:00Z",
+  "tags": ["backend", "security"]
+}
+
+### Update task
+PATCH {{baseUrl}}/api/tasks/{{taskId}}
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "status": "in_progress",
+  "actualHours": 3
+}
+
+### Soft-delete task
+DELETE {{baseUrl}}/api/tasks/{{taskId}}
+Cookie: {{authCookie}}
+
+###############################################
+# SUBTASKS
+###############################################
+
+### Get all subtasks for task
+GET {{baseUrl}}/api/tasks/{{taskId}}/subtasks
+Cookie: {{authCookie}}
+
+### Create new subtask
+POST {{baseUrl}}/api/tasks/{{taskId}}/subtasks
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "title": "Set up database schema",
+  "estimatedMinutes": 30,
+  "sortOrder": 0
+}
+
+###############################################
+# ASSIGNMENTS
+###############################################
+
+### Get all assignments for task
+GET {{baseUrl}}/api/tasks/{{taskId}}/assignments
+Cookie: {{authCookie}}
+
+### Assign user to task
+POST {{baseUrl}}/api/tasks/{{taskId}}/assignments
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "userId": "{{userId}}",
+  "role": "assignee"
+}
+
+### Remove user assignment
+DELETE {{baseUrl}}/api/tasks/{{taskId}}/assignments?userId={{userId}}
+Cookie: {{authCookie}}
+
+###############################################
+# COMMENTS
+###############################################
+
+### Get all comments for task
+GET {{baseUrl}}/api/tasks/{{taskId}}/comments
+Cookie: {{authCookie}}
+
+### Add comment to task
+POST {{baseUrl}}/api/tasks/{{taskId}}/comments
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "content": "This looks good! Ready for review."
+}
+
+### Update own comment
+PATCH {{baseUrl}}/api/comments/{{commentId}}
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "content": "Updated: This is ready to merge after testing."
+}
+
+### Soft-delete own comment
+DELETE {{baseUrl}}/api/comments/{{commentId}}
 Cookie: {{authCookie}}
 
 ###############################################

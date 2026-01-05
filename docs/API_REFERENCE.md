@@ -9,14 +9,17 @@
 ## Table of Contents
 
 1. [Projects](#projects)
-2. [Snapshots](#snapshots)
-3. [Reflections](#reflections)
-4. [Files](#files)
-5. [Exports](#exports)
-6. [AI Chat](#ai-chat)
-7. [Usage Tracking](#usage-tracking)
-8. [Collaboration](#collaboration) *(Coming Soon)*
-9. [Settings](#settings) *(Coming Soon)*
+2. [Tasks](#tasks) ⭐ **New - Hybrid Model**
+3. [Subtasks](#subtasks) ⭐ **New**
+4. [Assignments](#assignments) ⭐ **New**
+5. [Comments](#comments) ⭐ **New**
+6. [Snapshots](#snapshots)
+7. [Reflections](#reflections)
+8. [Files](#files)
+9. [Exports](#exports)
+10. [AI Chat](#ai-chat)
+11. [Usage Tracking](#usage-tracking)
+12. [Collaboration](#collaboration) *(Coming Soon)*
 
 ---
 
@@ -94,6 +97,468 @@
   "success": true
 }
 ```
+
+---
+
+## Tasks
+
+⭐ **New in v0.3 - Hybrid Model**: Tasks now exist as database rows with canvas nodes that reference them. This enables proper relational features (assignments, comments, subtasks) while maintaining visual workflow capabilities.
+
+### `GET /api/projects/[id]/tasks`
+**List all tasks for a project**
+
+**Query Parameters**: None
+
+**Response**:
+```json
+{
+  "tasks": [
+    {
+      "id": "uuid",
+      "projectId": "uuid",
+      "title": "Implement authentication",
+      "description": "Set up Supabase auth with email/password",
+      "status": "in_progress",
+      "priority": "high",
+      "estimatedHours": 8,
+      "actualHours": 5,
+      "dueDate": "2025-01-15T00:00:00Z",
+      "tags": ["backend", "security"],
+      "dependencies": [],
+      "createdAt": "2025-01-01T00:00:00Z",
+      "updatedAt": "2025-01-05T12:30:00Z",
+      "deletedAt": null
+    }
+  ]
+}
+```
+
+**Status Codes**:
+- `200` - Success
+- `401` - Unauthorized (no session)
+- `403` - Forbidden (RLS policy blocked access)
+
+**Notes**:
+- Automatically filters out soft-deleted tasks (`deletedAt IS NULL`)
+- RLS policies ensure users only see tasks from their own projects
+
+### `POST /api/projects/[id]/tasks`
+**Create a new task**
+
+**Request**:
+```json
+{
+  "title": "New task title",
+  "description": "Optional description",
+  "status": "backlog",
+  "priority": "medium",
+  "estimatedHours": 4,
+  "dueDate": "2025-01-20T00:00:00Z",
+  "tags": ["frontend"]
+}
+```
+
+**Response**:
+```json
+{
+  "task": {
+    "id": "uuid",
+    "projectId": "uuid",
+    "title": "New task title",
+    "description": "Optional description",
+    "status": "backlog",
+    "priority": "medium",
+    "estimatedHours": 4,
+    "actualHours": 0,
+    "dueDate": "2025-01-20T00:00:00Z",
+    "tags": ["frontend"],
+    "dependencies": [],
+    "createdAt": "2025-01-05T14:00:00Z",
+    "updatedAt": "2025-01-05T14:00:00Z",
+    "deletedAt": null
+  }
+}
+```
+
+**Required Fields**: `title`
+
+**Optional Fields**: `description`, `status` (defaults to 'backlog'), `priority`, `estimatedHours`, `actualHours`, `dueDate`, `tags`, `dependencies`
+
+**Status Codes**:
+- `201` - Task created
+- `400` - Invalid request body (missing title, invalid status/priority)
+- `401` - Unauthorized
+- `403` - Forbidden (RLS policy blocked access to project)
+
+### `PATCH /api/tasks/[id]`
+**Update an existing task**
+
+**Request** (all fields optional, only send what you want to update):
+```json
+{
+  "title": "Updated title",
+  "status": "in_progress",
+  "actualHours": 6
+}
+```
+
+**Response**:
+```json
+{
+  "task": {
+    "id": "uuid",
+    "projectId": "uuid",
+    "title": "Updated title",
+    "status": "in_progress",
+    "actualHours": 6,
+    "updatedAt": "2025-01-05T15:30:00Z"
+  }
+}
+```
+
+**Updatable Fields**: `title`, `description`, `status`, `priority`, `estimatedHours`, `actualHours`, `dueDate`, `tags`, `dependencies`
+
+**Status Codes**:
+- `200` - Task updated
+- `400` - Invalid request body
+- `401` - Unauthorized
+- `404` - Task not found (or RLS blocked access)
+
+**Notes**:
+- `updatedAt` is automatically set to current timestamp
+- Returns `404` if task doesn't exist OR if RLS policy blocks access (can't distinguish for security)
+
+### `DELETE /api/tasks/[id]`
+**Soft-delete a task**
+
+**Response**:
+```json
+{
+  "success": true
+}
+```
+
+**Status Codes**:
+- `200` - Task soft-deleted
+- `401` - Unauthorized
+- `404` - Task not found (or RLS blocked access)
+
+**Notes**:
+- This is a **soft delete** - sets `deletedAt` to current timestamp
+- Deleted tasks are hidden from list endpoints but data is preserved
+- Hard deletion (from database) requires direct SQL access
+
+---
+
+## Subtasks
+
+⭐ **New in v0.3**: Subtasks are checklist items within tasks, ordered by `sortOrder`.
+
+### `GET /api/tasks/[id]/subtasks`
+**List all subtasks for a task**
+
+**Response**:
+```json
+{
+  "subtasks": [
+    {
+      "id": "uuid",
+      "taskId": "uuid",
+      "title": "Set up project structure",
+      "completed": true,
+      "sortOrder": 0,
+      "estimatedMinutes": 30,
+      "actualMinutes": 25
+    },
+    {
+      "id": "uuid",
+      "taskId": "uuid",
+      "title": "Install dependencies",
+      "completed": false,
+      "sortOrder": 1,
+      "estimatedMinutes": 15,
+      "actualMinutes": 0
+    }
+  ]
+}
+```
+
+**Status Codes**:
+- `200` - Success
+- `401` - Unauthorized
+- `404` - Parent task not found (or RLS blocked access)
+
+**Notes**:
+- Results are ordered by `sortOrder` ASC
+- Subtasks do NOT have `deletedAt` (hard-deleted only)
+
+### `POST /api/tasks/[id]/subtasks`
+**Create a new subtask**
+
+**Request**:
+```json
+{
+  "title": "Review code",
+  "estimatedMinutes": 20,
+  "sortOrder": 2
+}
+```
+
+**Response**:
+```json
+{
+  "subtask": {
+    "id": "uuid",
+    "taskId": "uuid",
+    "title": "Review code",
+    "completed": false,
+    "sortOrder": 2,
+    "estimatedMinutes": 20,
+    "actualMinutes": 0
+  }
+}
+```
+
+**Required Fields**: `title`
+
+**Optional Fields**: `completed` (defaults to false), `sortOrder`, `estimatedMinutes`, `actualMinutes`
+
+**Status Codes**:
+- `201` - Subtask created
+- `400` - Invalid request body
+- `401` - Unauthorized
+- `404` - Parent task not found
+
+---
+
+## Assignments
+
+⭐ **New in v0.3**: Task assignments link users to tasks with specific roles (assignee/reviewer).
+
+### `GET /api/tasks/[id]/assignments`
+**List all assignments for a task**
+
+**Response**:
+```json
+{
+  "assignments": [
+    {
+      "id": "uuid",
+      "taskId": "uuid",
+      "userId": "uuid",
+      "role": "assignee",
+      "assignedAt": "2025-01-01T00:00:00Z"
+    },
+    {
+      "id": "uuid",
+      "taskId": "uuid",
+      "userId": "uuid-2",
+      "role": "reviewer",
+      "assignedAt": "2025-01-02T00:00:00Z"
+    }
+  ]
+}
+```
+
+**Status Codes**:
+- `200` - Success
+- `401` - Unauthorized
+- `404` - Parent task not found
+
+### `POST /api/tasks/[id]/assignments`
+**Assign a user to a task**
+
+**Request**:
+```json
+{
+  "userId": "uuid",
+  "role": "assignee"
+}
+```
+
+**Response**:
+```json
+{
+  "assignment": {
+    "id": "uuid",
+    "taskId": "uuid",
+    "userId": "uuid",
+    "role": "assignee",
+    "assignedAt": "2025-01-05T16:00:00Z"
+  }
+}
+```
+
+**Required Fields**: `userId`, `role`
+
+**Valid Roles**: `assignee`, `reviewer`
+
+**Status Codes**:
+- `201` - Assignment created
+- `400` - Invalid request body (missing userId/role, invalid role)
+- `401` - Unauthorized
+- `404` - Parent task not found
+
+### `DELETE /api/tasks/[id]/assignments?userId={userId}`
+**Remove a user's assignment from a task**
+
+**Query Parameters**: 
+- `userId` (required) - The UUID of the user to unassign
+
+**Response**:
+```json
+{
+  "success": true
+}
+```
+
+**Status Codes**:
+- `200` - Assignment removed
+- `400` - Missing userId query parameter
+- `401` - Unauthorized
+- `404` - Task not found or assignment doesn't exist
+
+**Notes**:
+- This is a **hard delete** (removes row from database)
+- Use query parameter to specify which user to unassign
+
+---
+
+## Comments
+
+⭐ **New in v0.3**: Task comments support threaded discussions with author-only edit/delete permissions.
+
+### `GET /api/tasks/[id]/comments`
+**List all comments for a task**
+
+**Response**:
+```json
+{
+  "comments": [
+    {
+      "id": "uuid",
+      "taskId": "uuid",
+      "authorId": "uuid",
+      "content": "This looks good, just needs testing",
+      "createdAt": "2025-01-01T10:00:00Z",
+      "updatedAt": "2025-01-01T10:00:00Z",
+      "deletedAt": null
+    },
+    {
+      "id": "uuid",
+      "taskId": "uuid",
+      "authorId": "uuid-2",
+      "content": "Added tests in commit abc123",
+      "createdAt": "2025-01-02T14:30:00Z",
+      "updatedAt": "2025-01-02T14:30:00Z",
+      "deletedAt": null
+    }
+  ]
+}
+```
+
+**Status Codes**:
+- `200` - Success
+- `401` - Unauthorized
+- `404` - Parent task not found
+
+**Notes**:
+- Results ordered by `createdAt` ASC (chronological)
+- Soft-deleted comments are filtered out
+
+### `POST /api/tasks/[id]/comments`
+**Add a comment to a task**
+
+**Request**:
+```json
+{
+  "content": "Great work on this! Ready to merge."
+}
+```
+
+**Response**:
+```json
+{
+  "comment": {
+    "id": "uuid",
+    "taskId": "uuid",
+    "authorId": "uuid",
+    "content": "Great work on this! Ready to merge.",
+    "createdAt": "2025-01-05T17:00:00Z",
+    "updatedAt": "2025-01-05T17:00:00Z",
+    "deletedAt": null
+  }
+}
+```
+
+**Required Fields**: `content`
+
+**Status Codes**:
+- `201` - Comment created
+- `400` - Invalid request body (missing or empty content)
+- `401` - Unauthorized
+- `404` - Parent task not found
+
+**Notes**:
+- Content is automatically trimmed (whitespace removed from ends)
+- `authorId` is set automatically from session
+
+### `PATCH /api/comments/[id]`
+**Edit your own comment**
+
+**Request**:
+```json
+{
+  "content": "Updated comment text"
+}
+```
+
+**Response**:
+```json
+{
+  "comment": {
+    "id": "uuid",
+    "taskId": "uuid",
+    "authorId": "uuid",
+    "content": "Updated comment text",
+    "createdAt": "2025-01-05T17:00:00Z",
+    "updatedAt": "2025-01-05T17:30:00Z",
+    "deletedAt": null
+  }
+}
+```
+
+**Required Fields**: `content`
+
+**Status Codes**:
+- `200` - Comment updated
+- `400` - Invalid request body
+- `401` - Unauthorized
+- `404` - Comment not found or you're not the author
+
+**Notes**:
+- Only the comment author can edit (enforced by RLS)
+- `updatedAt` automatically set to current timestamp
+
+### `DELETE /api/comments/[id]`
+**Soft-delete your own comment**
+
+**Response**:
+```json
+{
+  "success": true
+}
+```
+
+**Status Codes**:
+- `200` - Comment soft-deleted
+- `401` - Unauthorized
+- `404` - Comment not found or you're not the author
+
+**Notes**:
+- Only the comment author can delete (enforced by RLS)
+- This is a **soft delete** - sets `deletedAt` timestamp
+- Deleted comments hidden from list endpoints
 
 ---
 
