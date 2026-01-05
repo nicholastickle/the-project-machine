@@ -18,10 +18,11 @@ export const assignmentRoleEnum = pgEnum('assignment_role', ['assignee', 'review
 export const projects = pgTable('projects', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
+  description: text('description'),
   createdBy: uuid('created_by').notNull().references(() => users.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-  deletedAt: timestamp('deleted_at'),
+  archivedAt: timestamp('archived_at'),
 });
 
 export const projectMembers = pgTable('project_members', {

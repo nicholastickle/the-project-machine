@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { ProjectUpdate } from '@/lib/supabase/types'
+import { db } from '@/lib/db'
+import { projects } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 
 type RouteContext = {
   params: Promise<{ id: string }>
@@ -18,18 +20,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: project, error } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('id', id)
-      .single()
+    // Use Drizzle to fetch project with RLS
+    const [project] = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.id, id));
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json({ error: 'Project not found' }, { status: 404 })
-      }
-      console.error('Error fetching project:', error)
-      return NextResponse.json({ error: 'Failed to fetch project' }, { status: 500 })
+    if (!project) {
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     }
 
     return NextResponse.json({ project })
@@ -54,25 +52,27 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const body = await request.json()
     const { name, description, archived_at } = body
 
-    const updateData: ProjectUpdate = {}
+    const updateData: any = {}
     if (name !== undefined) updateData.name = name.trim()
     if (description !== undefined) updateData.description = description?.trim() || null
-    if (archived_at !== undefined) updateData.archived_at = archived_at
+    if (archived_at !== undefined) updateData.archivedAt = archived_at
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 })
     }
 
-    const { data: project, error } = await supabase
-      .from('projects')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single()
+    // Auto-update updatedAt
+    updateData.updatedAt = new Date();
 
-    if (error) {
-      console.error('Error updating project:', error)
-      return NextResponse.json({ error: 'Failed to update project' }, { status: 500 })
+    // Use Drizzle to update project with RLS
+    const [project] = await db
+      .update(projects)
+      .set(updateData)
+      .where(eq(projects.id, id))
+      .returning();
+
+    if (!project) {
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     }
 
     return NextResponse.json({ project })
@@ -92,18 +92,12 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Soft delete: set archived_at timestamp
-    const { data: project, error } = await supabase
-      .from('projects')
-      .update({ archived_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error archiving project:', error)
-      return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 })
-    }
+    // Soft delete: set archivedAt timestamp with Drizzle
+    const [project] = await db
+      .update(projects)
+      .set({ archivedAt: new Date() })
+      .where(eq(projects.id, id))
+      .returning();
 
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 })

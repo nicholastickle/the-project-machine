@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { extractUserFromCookies, createAuthenticatedClient } from '@/lib/supabase/auth-utils'
-import type { ProjectInsert } from '@/lib/supabase/types'
+import { db } from '@/lib/db'
+import { projects, projectMembers, usageLogs } from '@/lib/db/schema'
+import { isNull, desc } from 'drizzle-orm'
 
 // GET /api/projects - List user's projects
 export async function GET(request: NextRequest) {
@@ -61,31 +63,20 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Fetch projects (RLS will filter to user's projects)
-    const { data: projects, error } = await supabase
-      .from('projects')
-      .select('*')
-      .is('archived_at', null)
-      .order('updated_at', { ascending: false })
+    // Fetch projects with Drizzle (RLS will filter to user's projects)
+    const projectsList = await db
+      .select()
+      .from(projects)
+      .where(isNull(projects.archivedAt))
+      .orderBy(desc(projects.updatedAt));
 
     console.log('[GET /api/projects] Query result:', {
-      projectCount: projects?.length || 0,
-      error: error?.message,
-      errorDetails: error
+      projectCount: projectsList?.length || 0,
+      error: undefined,
+      errorDetails: null
     })
 
-    if (error) {
-      console.error('Error fetching projects:', error)
-      return NextResponse.json(
-        { 
-          error: 'Failed to fetch projects', 
-          details: error.message 
-        }, 
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json({ projects })
+    return NextResponse.json({ projects: projectsList })
   } catch (error) {
     console.error('Unexpected error:', error)
     return NextResponse.json(
@@ -116,50 +107,42 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Project name is required' }, { status: 400 })
     }
 
-    const projectData: ProjectInsert = {
-      name: name.trim(),
-      description: description?.trim() || null,
-      created_by: user.id
-    }
-
-    const { data: project, error } = await supabase
-      .from('projects')
-      .insert(projectData)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error creating project:', error)
-      return NextResponse.json({ error: 'Failed to create project' }, { status: 500 })
-    }
+    // Use Drizzle to create project with RLS
+    const [project] = await db
+      .insert(projects)
+      .values({
+        name: name.trim(),
+        description: description?.trim() || null,
+        createdBy: user.id,
+      })
+      .returning();
 
     console.log('[POST /api/projects] Project created:', {
       projectId: project.id,
       projectName: project.name,
-      createdBy: project.created_by
+      createdBy: project.createdBy
     })
 
-    // Add creator as project member
-    const { error: memberError } = await supabase.from('project_members').insert({
-      project_id: project.id,
-      user_id: user.id,
-      role: 'editor'
-    })
-
-    if (memberError) {
+    // Add creator as project member with Drizzle
+    try {
+      await db.insert(projectMembers).values({
+        projectId: project.id,
+        userId: user.id,
+        role: 'editor',
+      });
+      console.log('[POST /api/projects] Creator added to project_members')
+    } catch (memberError) {
       console.error('[POST /api/projects] Failed to add creator to project_members:', memberError)
       // Don't fail the request, but log it
-    } else {
-      console.log('[POST /api/projects] Creator added to project_members')
     }
 
-    // Log usage event
-    await supabase.from('usage_logs').insert({
-      project_id: project.id,
-      user_id: user.id,
-      event_type: 'project_created',
-      event_data: { name: project.name }
-    })
+    // Log usage event with Drizzle
+    await db.insert(usageLogs).values({
+      projectId: project.id,
+      userId: user.id,
+      eventType: 'project_created',
+      eventData: { name: project.name },
+    });
 
     return NextResponse.json({ project }, { status: 201 })
   } catch (error) {

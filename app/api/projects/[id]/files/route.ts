@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { db } from '@/lib/db'
+import { fileSummaries } from '@/lib/db/schema'
+import { eq, desc } from 'drizzle-orm'
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
@@ -30,17 +33,12 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get file summaries from database
-    const { data: files, error } = await supabase
-      .from('file_summaries')
-      .select('*')
-      .eq('project_id', projectId)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching files:', error)
-      return NextResponse.json({ error: 'Failed to fetch files' }, { status: 500 })
-    }
+    // Use Drizzle to get file summaries from database with RLS
+    const files = await db
+      .select()
+      .from(fileSummaries)
+      .where(eq(fileSummaries.projectId, projectId))
+      .orderBy(desc(fileSummaries.createdAt));
 
     return NextResponse.json({ files })
   } catch (error: any) {
