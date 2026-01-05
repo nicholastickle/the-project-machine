@@ -432,30 +432,29 @@ export default function HeroSection() {
 
 
 
-        <div className="flex flex-row relative z-10 w-full mt-10 md:mt-10 lg:mt-10 px-4  ">
+        <div className="flex flex-col w-full mt-10 px-4  ">
          
-          <div className="flex flex-[10] gap-5">
+          <div className="flex flex-[10] z-10">
             <AnimatedSectionWhileInView delay={0.2}>
-              <h1 className="text-2xl md:text-6xl text-left mb-8">
-                <span className="text-foreground ">
-                  The only planning canvas that <br />
-                  learns from every completed task.
+              <h1 className="text-2xl md:text-6xl text-left mb-8 w-2/3">
+                <span className="text-foreground">
+                  The only planning canvas that
+                  learns from every completed task
                 </span>
               </h1>
 
               <p className="text-md text-muted max-w-3xl text-left mb-8 ">
                 A modern take on project planning that combines AI-powered task generation <br />
-                with real-time learning from your completed tasks all done on a single canvas.
+                with real-time learning from your completed tasks all done on a single canvas
               </p>
 
 
               <div
-                className="flex flex-row justify-start gap-4 mb-16 h-10"
+                className="flex flex-row justify-start gap-4 mb-8 h-10"
               >
 
-                {/* Get Started Button */}
                 <Link href="/canvas">
-                  <Button className="z-10 bg-accent outline outline-border-dark text-foreground hover:bg-white/10 px-8 py-3 rounded-full font-medium text-base transition-all duration-300 flex items-center gap-3 h-full">
+                  <Button className="bg-transparent border border-border-dark text-foreground hover:bg-accent px-8 py-3 rounded-md font-medium flex items-center gap-3 h-full">
                     Get started
                   </Button>
                 </Link>

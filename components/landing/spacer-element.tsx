@@ -15,7 +15,7 @@ export default function SpacerElement({ height = "100px", text = "" }: SpacerEle
 
             <div className="flex flex -1 justify-start items-end max-w-[1220px] md:w-[98vw] lg:w-[98vw] xl:w-[1220px] ">
                 {text && (
-                    <span className="absolute text-xs text-muted-foreground/30">
+                    <span className="absolute text-xs text-muted-foreground/20 pl-2">
                         {text}
                     </span>
                 )}
