@@ -155,6 +155,16 @@ export const reflections = pgTable('reflections', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+export const referenceNotes = pgTable('reference_notes', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  createdBy: uuid('created_by').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 export const fileSummaries = pgTable('file_summaries', {
   id: uuid('id').primaryKey().defaultRandom(),
   projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
@@ -205,6 +215,7 @@ export const projectsRelations = relations(projects, ({ many, one }) => ({
   snapshots: many(planSnapshots),
   chatThreads: many(chatThreads),
   reflections: many(reflections),
+  referenceNotes: many(referenceNotes),
   fileSummaries: many(fileSummaries),
   invitations: many(pendingInvitations),
   taskbookEntries: many(taskbookEntries),

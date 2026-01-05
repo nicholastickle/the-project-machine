@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { ReflectionInsert } from '@/lib/supabase/types'
+import { db } from '@/lib/db'
+import { reflections, usageLogs } from '@/lib/db/schema'
+import { eq, desc } from 'drizzle-orm'
 
 type RouteContext = {
   params: Promise<{ id: string }>
@@ -20,19 +22,15 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') || '20')
 
-    const { data: reflections, error } = await supabase
-      .from('reflections')
-      .select('*')
-      .eq('project_id', projectId)
-      .order('created_at', { ascending: false })
-      .limit(limit)
+    // Use Drizzle to fetch reflections with RLS
+    const reflectionsList = await db
+      .select()
+      .from(reflections)
+      .where(eq(reflections.projectId, projectId))
+      .orderBy(desc(reflections.createdAt))
+      .limit(limit);
 
-    if (error) {
-      console.error('Error fetching reflections:', error)
-      return NextResponse.json({ error: 'Failed to fetch reflections' }, { status: 500 })
-    }
-
-    return NextResponse.json({ reflections })
+    return NextResponse.json({ reflections: reflectionsList })
   } catch (error) {
     console.error('Unexpected error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -61,31 +59,24 @@ export async function POST(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Content is required' }, { status: 400 })
     }
 
-    const reflectionData: ReflectionInsert = {
-      project_id: projectId,
-      reflection_type,
-      content: content.trim(),
-      created_by: user.id
-    }
+    // Use Drizzle to create reflection with RLS
+    const [reflection] = await db
+      .insert(reflections)
+      .values({
+        projectId,
+        userId: user.id,
+        reflectionType: reflection_type,
+        content: content.trim(),
+      })
+      .returning();
 
-    const { data: reflection, error } = await supabase
-      .from('reflections')
-      .insert(reflectionData)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error creating reflection:', error)
-      return NextResponse.json({ error: 'Failed to create reflection' }, { status: 500 })
-    }
-
-    // Log usage
-    await supabase.from('usage_logs').insert({
-      project_id: projectId,
-      user_id: user.id,
-      event_type: 'reflection_added',
-      event_data: { reflection_type }
-    })
+    // Log usage with Drizzle
+    await db.insert(usageLogs).values({
+      projectId,
+      userId: user.id,
+      eventType: 'reflection_added',
+      eventData: { reflection_type },
+    });
 
     return NextResponse.json({ reflection }, { status: 201 })
   } catch (error) {

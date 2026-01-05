@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { db } from '@/lib/db'
+import { referenceNotes, usageLogs } from '@/lib/db/schema'
+import { eq, desc } from 'drizzle-orm'
 
 export async function GET(
   request: NextRequest,
@@ -14,16 +17,18 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: notes, error } = await supabase
-      .from('reference_notes')
-      .select('id, title, content, created_at, updated_at')
-      .eq('project_id', projectId)
-      .order('updated_at', { ascending: false })
-
-    if (error) {
-      console.error('Error loading notes:', error)
-      return NextResponse.json({ error: 'Failed to load notes' }, { status: 500 })
-    }
+    // Use Drizzle to fetch notes with RLS
+    const notes = await db
+      .select({
+        id: referenceNotes.id,
+        title: referenceNotes.title,
+        content: referenceNotes.content,
+        createdAt: referenceNotes.createdAt,
+        updatedAt: referenceNotes.updatedAt,
+      })
+      .from(referenceNotes)
+      .where(eq(referenceNotes.projectId, projectId))
+      .orderBy(desc(referenceNotes.updatedAt));
 
     return NextResponse.json({ notes: notes || [] })
   } catch (error: any) {
@@ -52,28 +57,30 @@ export async function POST(
       return NextResponse.json({ error: 'Title and content are required' }, { status: 400 })
     }
 
-    const { data: note, error } = await supabase
-      .from('reference_notes')
-      .insert({
-        project_id: projectId,
+    // Use Drizzle to create note with RLS
+    const [note] = await db
+      .insert(referenceNotes)
+      .values({
+        projectId,
         title,
         content,
-        created_by: user.id
+        createdBy: user.id,
       })
-      .select('id, title, content, created_at, updated_at')
-      .single()
+      .returning({
+        id: referenceNotes.id,
+        title: referenceNotes.title,
+        content: referenceNotes.content,
+        createdAt: referenceNotes.createdAt,
+        updatedAt: referenceNotes.updatedAt,
+      });
 
-    if (error) {
-      console.error('Error creating note:', error)
-      return NextResponse.json({ error: 'Failed to create note' }, { status: 500 })
-    }
-
-    await supabase.from('usage_logs').insert({
-      project_id: projectId,
-      user_id: user.id,
-      event_type: 'note_created',
-      event_data: { title, content_length: content.length }
-    })
+    // Log usage with Drizzle
+    await db.insert(usageLogs).values({
+      projectId,
+      userId: user.id,
+      eventType: 'note_created',
+      eventData: { title, content_length: content.length },
+    });
 
     return NextResponse.json({ note })
   } catch (error: any) {

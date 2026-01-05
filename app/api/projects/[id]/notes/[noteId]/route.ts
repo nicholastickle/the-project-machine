@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { db } from '@/lib/db'
+import { referenceNotes, usageLogs } from '@/lib/db/schema'
+import { eq, and } from 'drizzle-orm'
 
 export async function PATCH(
   request: NextRequest,
@@ -25,18 +28,23 @@ export async function PATCH(
       return NextResponse.json({ error: 'No updates provided' }, { status: 400 })
     }
 
-    const { data: note, error } = await supabase
-      .from('reference_notes')
-      .update(updates)
-      .eq('id', noteId)
-      .eq('project_id', projectId)
-      .select('id, title, content, updated_at')
-      .single()
-
-    if (error) {
-      console.error('Error updating note:', error)
-      return NextResponse.json({ error: 'Failed to update note' }, { status: 500 })
-    }
+    // Use Drizzle to update note with RLS
+    updates.updatedAt = new Date();
+    const [note] = await db
+      .update(referenceNotes)
+      .set(updates)
+      .where(
+        and(
+          eq(referenceNotes.id, noteId),
+          eq(referenceNotes.projectId, projectId)
+        )
+      )
+      .returning({
+        id: referenceNotes.id,
+        title: referenceNotes.title,
+        content: referenceNotes.content,
+        updatedAt: referenceNotes.updatedAt,
+      });
 
     if (!note) {
       return NextResponse.json({ error: 'Note not found' }, { status: 404 })
@@ -62,22 +70,22 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { error } = await supabase
-      .from('reference_notes')
-      .delete()
-      .eq('id', noteId)
-      .eq('project_id', projectId)
+    // Use Drizzle to delete note with RLS
+    await db
+      .delete(referenceNotes)
+      .where(
+        and(
+          eq(referenceNotes.id, noteId),
+          eq(referenceNotes.projectId, projectId)
+        )
+      );
 
-    if (error) {
-      console.error('Error deleting note:', error)
-      return NextResponse.json({ error: 'Failed to delete note' }, { status: 500 })
-    }
-
-    await supabase.from('usage_logs').insert({
-      project_id: projectId,
-      user_id: user.id,
-      event_type: 'note_deleted',
-      event_data: { note_id: noteId }
+    // Log usage with Drizzle
+    await db.insert(usageLogs).values({
+      projectId,
+      userId: user.id,
+      eventType: 'note_deleted',
+      eventData: { note_id: noteId }
     })
 
     return NextResponse.json({ success: true })

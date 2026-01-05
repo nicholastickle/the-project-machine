@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { db } from '@/lib/db'
+import { reflections } from '@/lib/db/schema'
+import { eq, and } from 'drizzle-orm'
 
 type RouteContext = {
   params: Promise<{ id: string; reflectionId: string }>
@@ -16,14 +19,18 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: reflection, error } = await supabase
-      .from('reflections')
-      .select('*')
-      .eq('id', reflectionId)
-      .eq('project_id', projectId)
-      .single()
+    // Use Drizzle to fetch reflection with RLS
+    const [reflection] = await db
+      .select()
+      .from(reflections)
+      .where(
+        and(
+          eq(reflections.id, reflectionId),
+          eq(reflections.projectId, projectId)
+        )
+      );
 
-    if (error || !reflection) {
+    if (!reflection) {
       return NextResponse.json({ error: 'Reflection not found' }, { status: 404 })
     }
 
@@ -49,7 +56,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const { reflection_type, content, tags } = body
 
     const updateData: any = {}
-    if (reflection_type !== undefined) updateData.reflection_type = reflection_type
+    if (reflection_type !== undefined) updateData.reflectionType = reflection_type
     if (content !== undefined) updateData.content = content
     if (tags !== undefined) updateData.tags = tags
 
@@ -57,18 +64,17 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 })
     }
 
-    const { data: reflection, error } = await supabase
-      .from('reflections')
-      .update(updateData)
-      .eq('id', reflectionId)
-      .eq('project_id', projectId)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error updating reflection:', error)
-      return NextResponse.json({ error: 'Failed to update reflection' }, { status: 500 })
-    }
+    // Use Drizzle to update reflection with RLS
+    const [reflection] = await db
+      .update(reflections)
+      .set(updateData)
+      .where(
+        and(
+          eq(reflections.id, reflectionId),
+          eq(reflections.projectId, projectId)
+        )
+      )
+      .returning();
 
     if (!reflection) {
       return NextResponse.json({ error: 'Reflection not found' }, { status: 404 })
@@ -92,11 +98,15 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { error } = await supabase
-      .from('reflections')
-      .delete()
-      .eq('id', reflectionId)
-      .eq('project_id', projectId)
+    // Use Drizzle to delete reflection with RLS
+    await db
+      .delete(reflections)
+      .where(
+        and(
+          eq(reflections.id, reflectionId),
+          eq(reflections.projectId, projectId)
+        )
+      );
 
     if (error) {
       console.error('Error deleting reflection:', error)
