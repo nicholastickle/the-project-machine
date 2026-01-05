@@ -114,7 +114,8 @@ export const taskbookEntries = pgTable('taskbook_entries', {
 export const planSnapshots = pgTable('plan_snapshots', {
   id: uuid('id').primaryKey().defaultRandom(),
   projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
-  canvasState: jsonb('canvas_state').notNull(), // { nodes: [{ id, task_id, position }], edges: [] }
+  snapshotData: jsonb('snapshot_data').notNull(), // { nodes: [{ id, task_id, position }], edges: [] }
+  snapshotType: text('snapshot_type').default('manual'), // 'manual' | 'autosave' | 'ai_generated'
   summary: text('summary'),
   createdBy: uuid('created_by').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),

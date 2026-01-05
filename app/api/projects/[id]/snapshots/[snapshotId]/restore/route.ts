@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { db } from '@/lib/db'
+import { planSnapshots, usageLogs } from '@/lib/db/schema'
+import { eq, and } from 'drizzle-orm'
 
 type RouteContext = {
   params: Promise<{ id: string; snapshotId: string }>
@@ -17,34 +20,40 @@ export async function POST(request: NextRequest, context: RouteContext) {
     }
 
     // Fetch the snapshot
-    const { data: snapshot, error } = await supabase
-      .from('plan_snapshots')
-      .select('snapshot_data, snapshot_type, summary')
-      .eq('id', snapshotId)
-      .eq('project_id', projectId)
-      .single()
+    const [snapshot] = await db
+      .select({
+        snapshotData: planSnapshots.snapshotData,
+        snapshotType: planSnapshots.snapshotType,
+        summary: planSnapshots.summary
+      })
+      .from(planSnapshots)
+      .where(
+        and(
+          eq(planSnapshots.id, snapshotId),
+          eq(planSnapshots.projectId, projectId)
+        )
+      )
 
-    if (error || !snapshot) {
-      console.error('Error fetching snapshot:', error)
+    if (!snapshot) {
       return NextResponse.json({ error: 'Snapshot not found' }, { status: 404 })
     }
 
     // Log the restore action
-    await supabase.from('usage_logs').insert({
-      project_id: projectId,
-      user_id: user.id,
-      event_type: 'snapshot_restore',
-      event_data: {
+    await db.insert(usageLogs).values({
+      projectId: projectId,
+      userId: user.id,
+      eventType: 'snapshot_restore',
+      eventData: {
         snapshot_id: snapshotId,
-        snapshot_type: snapshot.snapshot_type
+        snapshot_type: snapshot.snapshotType
       }
     })
 
     return NextResponse.json({
       snapshot: {
         id: snapshotId,
-        snapshot_data: snapshot.snapshot_data,
-        snapshot_type: snapshot.snapshot_type,
+        snapshot_data: snapshot.snapshotData,
+        snapshot_type: snapshot.snapshotType,
         summary: snapshot.summary
       }
     })

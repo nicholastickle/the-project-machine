@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { PlanSnapshotInsert } from '@/lib/supabase/types'
+import { db } from '@/lib/db'
+import { planSnapshots, usageLogs } from '@/lib/db/schema'
+import { eq, desc } from 'drizzle-orm'
 
 type RouteContext = {
   params: Promise<{ id: string }>
@@ -23,23 +25,18 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const limit = parseInt(searchParams.get('limit') || '50')
     const type = searchParams.get('type') // 'manual' | 'autosave' | 'ai_generated'
 
-    let query = supabase
-      .from('plan_snapshots')
-      .select('id, project_id, created_at, created_by, snapshot_type, summary, snapshot_data')
-      .eq('project_id', projectId)
-      .order('created_at', { ascending: false })
+    let query = db
+      .select()
+      .from(planSnapshots)
+      .where(eq(planSnapshots.projectId, projectId))
+      .orderBy(desc(planSnapshots.createdAt))
       .limit(limit)
 
     if (type) {
-      query = query.eq('snapshot_type', type)
+      query = query.where(eq(planSnapshots.snapshotType, type))
     }
 
-    const { data: snapshots, error } = await query
-
-    if (error) {
-      console.error('Error fetching snapshots:', error)
-      return NextResponse.json({ error: 'Failed to fetch snapshots' }, { status: 500 })
-    }
+    const snapshots = await query
 
     return NextResponse.json({ snapshots })
   } catch (error) {
@@ -72,33 +69,25 @@ export async function POST(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'snapshot_data must have nodes and edges arrays' }, { status: 400 })
     }
 
-    const snapshotData: PlanSnapshotInsert = {
-      project_id: projectId,
-      snapshot_data: snapshot_data,
-      snapshot_type: snapshot_type || 'manual',
-      summary: summary || null,
-      created_by: user.id
-    }
-
-    const { data: snapshot, error } = await supabase
-      .from('plan_snapshots')
-      .insert(snapshotData)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error creating snapshot:', error)
-      return NextResponse.json({ error: 'Failed to create snapshot' }, { status: 500 })
-    }
+    const [snapshot] = await db
+      .insert(planSnapshots)
+      .values({
+        projectId: projectId,
+        snapshotData: snapshot_data,
+        snapshotType: snapshot_type || 'manual',
+        summary: summary || null,
+        createdBy: user.id
+      })
+      .returning()
 
     // Log usage event
-    await supabase.from('usage_logs').insert({
-      project_id: projectId,
-      user_id: user.id,
-      event_type: 'snapshot_saved',
-      event_data: {
+    await db.insert(usageLogs).values({
+      projectId: projectId,
+      userId: user.id,
+      eventType: 'snapshot_saved',
+      eventData: {
         snapshot_id: snapshot.id,
-        snapshot_type: snapshot.snapshot_type,
+        snapshot_type: snapshot.snapshotType,
         node_count: snapshot_data.nodes.length,
         edge_count: snapshot_data.edges.length
       }

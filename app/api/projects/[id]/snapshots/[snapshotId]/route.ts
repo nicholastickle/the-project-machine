@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { db } from '@/lib/db'
+import { planSnapshots, usageLogs } from '@/lib/db/schema'
+import { eq, and } from 'drizzle-orm'
 
 type RouteContext = {
   params: Promise<{ id: string; snapshotId: string }>
@@ -17,27 +20,26 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: snapshot, error } = await supabase
-      .from('plan_snapshots')
-      .select('*')
-      .eq('id', snapshotId)
-      .eq('project_id', projectId)
-      .single()
+    const [snapshot] = await db
+      .select()
+      .from(planSnapshots)
+      .where(
+        and(
+          eq(planSnapshots.id, snapshotId),
+          eq(planSnapshots.projectId, projectId)
+        )
+      )
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json({ error: 'Snapshot not found' }, { status: 404 })
-      }
-      console.error('Error fetching snapshot:', error)
-      return NextResponse.json({ error: 'Failed to fetch snapshot' }, { status: 500 })
+    if (!snapshot) {
+      return NextResponse.json({ error: 'Snapshot not found' }, { status: 404 })
     }
 
     // Log usage event
-    await supabase.from('usage_logs').insert({
-      project_id: projectId,
-      user_id: user.id,
-      event_type: 'snapshot_loaded',
-      event_data: { snapshot_id: snapshot.id }
+    await db.insert(usageLogs).values({
+      projectId: projectId,
+      userId: user.id,
+      eventType: 'snapshot_loaded',
+      eventData: { snapshot_id: snapshot.id }
     })
 
     return NextResponse.json({ snapshot })
