@@ -1,36 +1,61 @@
 import useStore from '@/stores/flow-store'
 import type { Node, Edge } from '@xyflow/react'
 
+// Debounce timer
+let autosaveTimer: NodeJS.Timeout | null = null;
+const AUTOSAVE_DEBOUNCE_MS = 3000; // 3 seconds
+
 /**
- * Save current canvas state to server as a snapshot
+ * Save current canvas state to server as a snapshot (debounced)
  */
 export async function saveSnapshotToServer(
   projectId: string,
   nodes: Node[],
   edges: Edge[],
-  type: 'manual' | 'autosave' = 'autosave'
+  type: 'manual' | 'autosave' = 'autosave',
+  debounce: boolean = true
 ): Promise<boolean> {
-  console.log(`[Autosave] Saving snapshot: projectId=${projectId}, type=${type}, nodes=${nodes.length}, edges=${edges.length}`)
-  try {
-    const response = await fetch(`/api/projects/${projectId}/snapshots`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type,
-        snapshot_data: { nodes, edges },
-      }),
-    })
+  // Clear existing timer if debouncing
+  if (debounce && autosaveTimer) {
+    clearTimeout(autosaveTimer);
+  }
 
-    if (response.ok) {
-      console.log('[Autosave] ✅ Snapshot saved successfully')
-      return true
-    } else {
-      console.error('[Autosave] ❌ Failed to save snapshot:', await response.text())
+  const doSave = async () => {
+    console.log(`[Autosave] Saving snapshot: projectId=${projectId}, type=${type}, nodes=${nodes.length}, edges=${edges.length}`)
+    try {
+      const response = await fetch(`/api/projects/${projectId}/snapshots`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type,
+          snapshot_data: { nodes, edges },
+        }),
+      })
+
+      if (response.ok) {
+        console.log('[Autosave] ✅ Snapshot saved successfully')
+        return true
+      } else {
+        console.error('[Autosave] ❌ Failed to save snapshot:', await response.text())
+        return false
+      }
+    } catch (error) {
+      console.error('[Autosave] ❌ Error saving snapshot:', error)
       return false
     }
-  } catch (error) {
-    console.error('[Autosave] ❌ Error saving snapshot:', error)
-    return false
+  };
+
+  if (debounce && type === 'autosave') {
+    // Debounce autosaves
+    return new Promise((resolve) => {
+      autosaveTimer = setTimeout(async () => {
+        const result = await doSave();
+        resolve(result);
+      }, AUTOSAVE_DEBOUNCE_MS);
+    });
+  } else {
+    // Immediate save for manual saves
+    return doSave();
   }
 }
 
