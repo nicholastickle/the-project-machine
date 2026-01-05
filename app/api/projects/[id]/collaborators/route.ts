@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { db } from '@/lib/db'
+import { projects, projectMembers, usageLogs, pendingInvitations } from '@/lib/db/schema'
+import { eq, and, asc } from 'drizzle-orm'
 
 export async function GET(
   request: NextRequest,
@@ -16,11 +19,13 @@ export async function GET(
     }
 
     // Verify user has access to project
-    const { data: project } = await supabase
-      .from('projects')
-      .select('id, created_by')
-      .eq('id', projectId)
-      .single()
+    const [project] = await db
+      .select({
+        id: projects.id,
+        created_by: projects.createdBy
+      })
+      .from(projects)
+      .where(eq(projects.id, projectId))
 
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 })
@@ -29,12 +34,15 @@ export async function GET(
     // Check if user is owner or member
     const isOwner = project.created_by === user.id
     if (!isOwner) {
-      const { data: member } = await supabase
-        .from('project_members')
-        .select('user_id')
-        .eq('project_id', projectId)
-        .eq('user_id', user.id)
-        .single()
+      const [member] = await db
+        .select({ userId: projectMembers.userId })
+        .from(projectMembers)
+        .where(
+          and(
+            eq(projectMembers.projectId, projectId),
+            eq(projectMembers.userId, user.id)
+          )
+        )
 
       if (!member) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -42,20 +50,15 @@ export async function GET(
     }
 
     // Get all collaborators
-    const { data: members, error } = await supabase
-      .from('project_members')
-      .select(`
-        user_id,
-        role,
-        joined_at
-      `)
-      .eq('project_id', projectId)
-      .order('joined_at', { ascending: true })
-
-    if (error) {
-      console.error('Error loading collaborators:', error)
-      return NextResponse.json({ error: 'Failed to load collaborators' }, { status: 500 })
-    }
+    const members = await db
+      .select({
+        user_id: projectMembers.userId,
+        role: projectMembers.role,
+        joined_at: projectMembers.joinedAt
+      })
+      .from(projectMembers)
+      .where(eq(projectMembers.projectId, projectId))
+      .orderBy(asc(projectMembers.joinedAt))
 
     // Add project owner to the list
     const collaborators = [
@@ -100,18 +103,24 @@ export async function POST(
     }
 
     // Verify project ownership
-    const { data: project } = await supabase
-      .from('projects')
-      .select('id, name')
-      .eq('id', projectId)
-      .eq('created_by', user.id)
-      .single()
+    const [project] = await db
+      .select({
+        id: projects.id,
+        name: projects.name
+      })
+      .from(projects)
+      .where(
+        and(
+          eq(projects.id, projectId),
+          eq(projects.createdBy, user.id)
+        )
+      )
 
     if (!project) {
       return NextResponse.json({ error: 'Only project owner can add collaborators' }, { status: 403 })
     }
 
-    // Check if user exists in auth.users by email
+    // Check if user exists in auth.users by email (must use Supabase for auth.users)
     const { data: invitedUser } = await supabase
       .from('auth.users')
       .select('id')
@@ -121,37 +130,35 @@ export async function POST(
     // If user exists in system, add directly to project_members
     if (invitedUser) {
       // Check if already a member
-      const { data: existingMember } = await supabase
-        .from('project_members')
-        .select('user_id')
-        .eq('project_id', projectId)
-        .eq('user_id', invitedUser.id)
-        .single()
+      const [existingMember] = await db
+        .select({ userId: projectMembers.userId })
+        .from(projectMembers)
+        .where(
+          and(
+            eq(projectMembers.projectId, projectId),
+            eq(projectMembers.userId, invitedUser.id)
+          )
+        )
 
       if (existingMember) {
         return NextResponse.json({ error: 'User is already a collaborator' }, { status: 400 })
       }
 
       // Add to project_members
-      const { error: insertError } = await supabase
-        .from('project_members')
-        .insert({
-          project_id: projectId,
-          user_id: invitedUser.id,
+      await db
+        .insert(projectMembers)
+        .values({
+          projectId,
+          userId: invitedUser.id,
           role
         })
 
-      if (insertError) {
-        console.error('Error adding collaborator:', insertError)
-        return NextResponse.json({ error: 'Failed to add collaborator' }, { status: 500 })
-      }
-
       // Log usage
-      await supabase.from('usage_logs').insert({
-        project_id: projectId,
-        user_id: user.id,
-        event_type: 'collaborator_added',
-        event_data: {
+      await db.insert(usageLogs).values({
+        projectId: projectId,
+        userId: user.id,
+        eventType: 'collaborator_added',
+        eventData: {
           invited_email: email,
           role,
           added_directly: true
@@ -173,30 +180,29 @@ export async function POST(
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + 7) // 7 days to accept
 
-    const { data: invitation, error: inviteError } = await supabase
-      .from('pending_invitations')
-      .insert({
-        project_id: projectId,
-        invited_email: email,
+    const [invitation] = await db
+      .insert(pendingInvitations)
+      .values({
+        projectId,
+        invitedEmail: email,
         role,
-        invited_by: user.id,
-        invite_token: inviteToken,
-        expires_at: expiresAt.toISOString()
+        invitedBy: user.id,
+        inviteToken,
+        expiresAt
       })
-      .select('id, invited_email, role, expires_at')
-      .single()
-
-    if (inviteError) {
-      console.error('Error creating invitation:', inviteError)
-      return NextResponse.json({ error: 'Failed to create invitation' }, { status: 500 })
-    }
+      .returning({
+        id: pendingInvitations.id,
+        invited_email: pendingInvitations.invitedEmail,
+        role: pendingInvitations.role,
+        expires_at: pendingInvitations.expiresAt
+      })
 
     // Log usage
-    await supabase.from('usage_logs').insert({
-      project_id: projectId,
-      user_id: user.id,
-      event_type: 'invitation_sent',
-      event_data: {
+    await db.insert(usageLogs).values({
+      projectId: projectId,
+      userId: user.id,
+      eventType: 'invitation_sent',
+      eventData: {
         invited_email: email,
         role,
         invite_token: inviteToken

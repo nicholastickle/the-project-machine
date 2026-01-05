@@ -136,10 +136,9 @@ export const chatThreads = pgTable('chat_threads', {
 
 export const chatMessages = pgTable('chat_messages', {
   id: uuid('id').primaryKey().defaultRandom(),
-  threadId: uuid('thread_id').notNull().references(() => chatThreads.id, { onDelete: 'cascade' }),
+  projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
   role: chatRoleEnum('role').notNull(),
   content: text('content').notNull(),
-  metadata: jsonb('metadata'), // { model, tokens, tool_calls }
   createdBy: uuid('created_by').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
@@ -264,8 +263,8 @@ export const chatThreadsRelations = relations(chatThreads, ({ one, many }) => ({
 }));
 
 export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
-  thread: one(chatThreads, {
-    fields: [chatMessages.threadId],
-    references: [chatThreads.id],
+  project: one(projects, {
+    fields: [chatMessages.projectId],
+    references: [projects.id],
   }),
 }));

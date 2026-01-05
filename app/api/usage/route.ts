@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import type { UsageLogInsert } from '@/lib/supabase/types';
+import { db } from '@/lib/db';
+import { usageLogs } from '@/lib/db/schema';
+import { eq, desc } from 'drizzle-orm';
 
 // POST /api/usage - Log usage event
 export async function POST(request: Request) {
@@ -17,21 +19,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'event_type is required' }, { status: 400 });
     }
 
-    const logData: UsageLogInsert = {
-      event_type,
-      project_id: project_id || null,
-      user_id: user?.id || null,
-      event_data: event_data || null
-    };
-
-    const { error } = await supabase
-      .from('usage_logs')
-      .insert(logData);
-
-    if (error) {
-      console.error('Error logging usage:', error);
-      return NextResponse.json({ error: 'Failed to log usage' }, { status: 500 });
-    }
+    await db.insert(usageLogs).values({
+      eventType: event_type,
+      projectId: project_id || null,
+      userId: user?.id || null,
+      eventData: event_data || null
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -54,17 +47,15 @@ export async function GET() {
     }
 
     // Get user's usage stats
-    const { data: logs, error } = await supabase
-      .from('usage_logs')
-      .select('event_type, created_at')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+    const logs = await db
+      .select({
+        event_type: usageLogs.eventType,
+        created_at: usageLogs.createdAt
+      })
+      .from(usageLogs)
+      .where(eq(usageLogs.userId, user.id))
+      .orderBy(desc(usageLogs.createdAt))
       .limit(100);
-
-    if (error) {
-      console.error('Error fetching usage:', error);
-      return NextResponse.json({ error: 'Failed to fetch usage' }, { status: 500 });
-    }
 
     // Aggregate by event type
     const summary: Record<string, number> = {};

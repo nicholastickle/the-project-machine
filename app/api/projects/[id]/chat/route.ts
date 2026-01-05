@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { db } from '@/lib/db'
+import { chatMessages, projects, usageLogs } from '@/lib/db/schema'
+import { eq, asc } from 'drizzle-orm'
 
 export async function GET(
   request: NextRequest,
@@ -16,28 +19,26 @@ export async function GET(
     }
 
     // Verify project ownership
-    const { data: project } = await supabase
-      .from('projects')
-      .select('id')
-      .eq('id', projectId)
-      .eq('created_by', user.id)
-      .single()
+    const [project] = await db
+      .select({ id: projects.id })
+      .from(projects)
+      .where(eq(projects.id, projectId))
 
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     }
 
     // Get chat history (ordered chronologically)
-    const { data: messages, error } = await supabase
-      .from('chat_messages')
-      .select('id, role, content, created_at')
-      .eq('project_id', projectId)
-      .order('created_at', { ascending: true })
-
-    if (error) {
-      console.error('Error loading chat history:', error)
-      return NextResponse.json({ error: 'Failed to load chat history' }, { status: 500 })
-    }
+    const messages = await db
+      .select({
+        id: chatMessages.id,
+        role: chatMessages.role,
+        content: chatMessages.content,
+        created_at: chatMessages.createdAt
+      })
+      .from(chatMessages)
+      .where(eq(chatMessages.projectId, projectId))
+      .orderBy(asc(chatMessages.createdAt))
 
     return NextResponse.json({ messages: messages || [] })
   } catch (error: any) {
@@ -72,40 +73,37 @@ export async function POST(
     }
 
     // Verify project ownership
-    const { data: project } = await supabase
-      .from('projects')
-      .select('id')
-      .eq('id', projectId)
-      .eq('created_by', user.id)
-      .single()
+    const [project] = await db
+      .select({ id: projects.id })
+      .from(projects)
+      .where(eq(projects.id, projectId))
 
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     }
 
     // Insert message
-    const { data: message, error } = await supabase
-      .from('chat_messages')
-      .insert({
-        project_id: projectId,
+    const [message] = await db
+      .insert(chatMessages)
+      .values({
+        projectId,
         role,
         content,
-        created_by: user.id
+        createdBy: user.id
       })
-      .select('id, role, content, created_at')
-      .single()
-
-    if (error) {
-      console.error('Error saving chat message:', error)
-      return NextResponse.json({ error: 'Failed to save message' }, { status: 500 })
-    }
+      .returning({
+        id: chatMessages.id,
+        role: chatMessages.role,
+        content: chatMessages.content,
+        created_at: chatMessages.createdAt
+      })
 
     // Log usage
-    await supabase.from('usage_logs').insert({
-      project_id: projectId,
-      user_id: user.id,
-      event_type: 'chat_message',
-      event_data: {
+    await db.insert(usageLogs).values({
+      projectId: projectId,
+      userId: user.id,
+      eventType: 'chat_message',
+      eventData: {
         role,
         message_length: content.length
       }
@@ -133,27 +131,19 @@ export async function DELETE(
     }
 
     // Verify project ownership
-    const { data: project } = await supabase
-      .from('projects')
-      .select('id')
-      .eq('id', projectId)
-      .eq('created_by', user.id)
-      .single()
+    const [project] = await db
+      .select({ id: projects.id })
+      .from(projects)
+      .where(eq(projects.id, projectId))
 
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     }
 
     // Delete all chat messages for this project
-    const { error } = await supabase
-      .from('chat_messages')
-      .delete()
-      .eq('project_id', projectId)
-
-    if (error) {
-      console.error('Error deleting chat history:', error)
-      return NextResponse.json({ error: 'Failed to clear chat history' }, { status: 500 })
-    }
+    await db
+      .delete(chatMessages)
+      .where(eq(chatMessages.projectId, projectId))
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
