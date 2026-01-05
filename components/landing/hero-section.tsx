@@ -5,6 +5,7 @@ import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 import { TypewriterSubheadline } from "@/components/landing/typewriter-subheadline"
 import Link from "next/link"
 import { Send } from "lucide-react"
+import { SubscribeButton } from "@/components/landing/subscribe-button"
 export default function HeroSection() {
   return (
     <div className="flex flex-row justify-center border border-border-dark ">
@@ -459,20 +460,7 @@ export default function HeroSection() {
                   </Button>
                 </Link>
 
-                {/* Subscribe Button */}
-                <div className="relative group">
-
-                  <div className="z-10 bg-accent/50 outline border-none outline-border-dark rounded-full px-2 flex items-center gap-2 h-full">
-                    <input
-                      type="email"
-                      placeholder="Subscribe for updates"
-                      className="bg-transparent text-foreground placeholder:text-muted border-none outline-none px-4  min-w-[250px]"
-                    />
-                    <button className="bg-accent hover:bg-white/10 text-foreground rounded-full p-2 transition-colors duration-200 flex items-center justify-center">
-                      <Send size={16} />
-                    </button>
-                  </div>
-                </div>
+              
               </div>
               <div className="">
                 <TypewriterSubheadline />

@@ -9,14 +9,16 @@ import { Menu } from "lucide-react"
 import Link from "next/link"
 import { ModeToggle } from "@/components/theme-provider/theme-toggle"
 
+import { SignInUpButton } from "@/components/landing/sign-in-up-button"
+import { SubscribeButton } from "@/components/landing/subscribe-button"
+
 export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const navItems = [
-    { name: "The machine", href: "#features-section" },
-    { name: "About us", href: "#about-section" },
-    { name: "Resources", href: "#resources-section" },
-    { name: "Pricing", href: "#pricing-section" },
+    { name: "Features", href: "#features-section" },
+    { name: "About", href: "#about-section" },
     { name: "FAQ", href: "#faq-section" },
+    { name: "Get started", href: "#pricing-section" },
   ]
 
   const handleScroll = useCallback(
@@ -47,12 +49,12 @@ export default function Header() {
   )
 
   return (
-    <header className="z-50 w-full py-1 px-6 absolute top-0 left-0 right-0 sticky border border-border-dark bg-background backdrop-blur-md">
-      <div className="max-w-7xl mx-auto flex items-center justify-between ">
+    <header className="z-50 w-full px-5 absolute top-0 left-0 right-0 sticky border border-border-dark bg-background backdrop-blur-md h-10">
+      <div className=" mx-auto flex items-center justify-between my-auto">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-foreground text-xl font-semibold cursor-pointer">
-              Project Machine <span className="text-xs px-1 text-muted">V0.2</span>
+            <Link href="/" className="text-foreground text-lg font-semibold cursor-pointer">
+              Project Machine <sub className="text-xs px-1 text-muted">V0.3</sub>
             </Link>
           </div>
           <nav className="hidden md:flex items-center gap-2">
@@ -61,7 +63,7 @@ export default function Header() {
                 key={item.name}
                 href={item.href}
                 onClick={(e) => handleScroll(e, item.href)} // Add onClick handler
-                className="text-muted hover:text-foreground px-4 py-2 rounded-full font-medium transition-colors"
+                className="text-muted hover:text-foreground px-4 py-2 rounded-full font-medium text-sm transition-colors"
               >
                 {item.name}
               </Link>
@@ -69,9 +71,11 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <div>
-            <ModeToggle />
-          </div>
+
+
+          <SubscribeButton />
+          <ModeToggle />
+          <SignInUpButton />
 
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild className="md:hidden">
