@@ -13,11 +13,15 @@ Transform your project management with intelligent canvas planning, AI-powered i
 - **shadcn/ui** - Modern component library
 - **@xyflow/react** - Interactive canvas and flow diagrams
 
+### **Backend**
+- **Supabase** - PostgreSQL database, authentication, storage
+- **Drizzle ORM** - TypeScript-first SQL toolkit
+- **Row Level Security (RLS)** - Database-level permissions
+
 ### **Development Tools**
 - **ESLint** - Code quality and consistency
 - **Husky** - Git hooks for code quality
-- **TypeScript** - Static type checking
-- **PostCSS** - CSS processing and optimization
+- **Vitest** - Unit and integration testing
 
 ## Getting Started
 
@@ -43,18 +47,37 @@ Transform your project management with intelligent canvas planning, AI-powered i
 3. **Set up environment variables**
    ```bash
    cp .env.example .env
-   # Edit .env with your configuration
+   # Edit .env with your Supabase credentials
    ```
 
-4. **Run the development server**
+4. **Run database migrations**
+   ```bash
+   npm run db:migrate
+   npm run db:rls
+   ```
+
+5. **Run the development server**
    ```bash
    npm run dev
-   # or
-   pnpm dev
    ```
 
-5. **Open your browser**
+6. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Database
+
+This project uses **Drizzle ORM** with Supabase PostgreSQL:
+
+- **Schema**: `lib/db/schema.ts` - TypeScript-first schema definition
+- **Migrations**: `supabase/migrations/` - Version-controlled SQL migrations
+- **Commands**:
+  - `npm run db:generate` - Generate migration from schema changes
+  - `npm run db:migrate` - Apply migrations to database
+  - `npm run db:rls` - Apply Row Level Security policies
+  - `npm run db:push` - Push schema directly (dev only)
+  - `npm run db:studio` - Open Drizzle Studio GUI
+
+See [docs/diagrams/ERD.md](docs/diagrams/ERD.md) for database architecture.
 
 
 ## Contributing
