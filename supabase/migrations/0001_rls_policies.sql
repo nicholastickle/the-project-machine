@@ -316,15 +316,15 @@ CREATE POLICY "Members can create messages"
 
 CREATE POLICY "Users can view own reflections"
   ON reflections FOR SELECT
-  USING (user_id = auth.uid());
+  USING (created_by = auth.uid());
 
 CREATE POLICY "Users can create reflections"
   ON reflections FOR INSERT
-  WITH CHECK (user_id = auth.uid());
+  WITH CHECK (created_by = auth.uid());
 
 CREATE POLICY "Users can update own reflections"
   ON reflections FOR UPDATE
-  USING (user_id = auth.uid());
+  USING (created_by = auth.uid());
 
 -- ==========================================
 -- FILE SUMMARIES POLICIES
