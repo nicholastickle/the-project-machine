@@ -33,11 +33,11 @@ export default function BentoSection() {
 
             <div className="self-stretch flex flex-col justify-center items-center ">
               <div className="flex flex-row justify-start items-center  border-b border-border-dark">
-                <h2 className="w-full max-w-[655px] text-start text-foreground text-2xl md:text-4xl lg:text-6xl border-r border-border-dark">
+                <h2 className="w-1/2 text-left text-foreground text-6xl border-r border-border-dark p-6 font-semibold leading-tight">
                   Plan with the power of your own history
                 </h2>
-                <p className="w-full max-w-[600px] text-start text-muted-foreground text-md md:text-lg font-medium leading-relaxed">
-                  Project Machine is an attempt to finally get better at planning by leveraging your lessons learned and we&apos;re doing it with big data and AI
+                <p className="w-1/2 text-start text-muted-foreground text-sm font-medium leading-relaxed">
+                  Project Machine is an attempt to finally get better at planning by leveraging your lessons learned and getting better at task durations.
                 </p>
               </div>
             </div>

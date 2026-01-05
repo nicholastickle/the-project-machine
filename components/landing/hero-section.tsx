@@ -436,14 +436,12 @@ export default function HeroSection() {
          
           <div className="flex flex-[10] z-10">
             <AnimatedSectionWhileInView delay={0.2}>
-              <h1 className="text-2xl md:text-6xl text-left mb-8 w-2/3">
-                <span className="text-foreground">
+              <h1 className="text-6xl text-left mb-8 w-2/3 font-semibold leading-tight text-foreground">
                   The only planning canvas that
                   learns from every completed task
-                </span>
               </h1>
 
-              <p className="text-md text-muted max-w-3xl text-left mb-8 ">
+              <p className="text-md text-muted w-2/3 text-left mb-8 ">
                 A modern take on project planning that combines AI-powered task generation <br />
                 with real-time learning from your completed tasks all done on a single canvas
               </p>
