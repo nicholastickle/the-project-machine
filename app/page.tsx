@@ -1,7 +1,7 @@
 
 import HeroSection from "@/components/landing/hero-section"
 import DashboardPreview from "@/components/landing/dashboard-preview"
-import BentoSection from "@/components/landing/bento-section"
+import FeaturesSection from "@/components/landing/features-section"
 import AboutSection from "@/components/landing/about-section"
 import CTASection from "@/components/landing/cta-section"
 import FooterSection from "@/components/landing/footer-section"
@@ -14,16 +14,16 @@ export default function Home() {
     <>
       <div className="min-h-screen bg-background relative pb-0">
         <Header />
-        <SpacerElement height="60px" text="Project hero" />
+        <SpacerElement height="80px" text="Project hero" />
         <HeroSection />
         <DashboardPreview />
         <SpacerElement height="500px" text="Project features" />
-        <BentoSection />
-        <SpacerElement height="80px" text="Project about us section" />
+        <FeaturesSection />
+        <SpacerElement height="100px" text="Project about us section" />
         <AboutSection />
-        <SpacerElement height="80px" text="Project call to action" />
+        <SpacerElement height="100px" text="Project call to action" />
         <CTASection />
-        <SpacerElement height="80px" text="Project footer" />
+        <SpacerElement height="100px" text="Project footer" />
         <FooterSection />
       </div>
     </>

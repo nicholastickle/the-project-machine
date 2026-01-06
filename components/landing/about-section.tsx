@@ -1,6 +1,11 @@
 
+"use client"
+
 import Image from "next/image"
+import { useTheme } from "next-themes"
+import { useState, useEffect, useRef } from "react"
 import { AnimatedSection, AnimatedSectionWhileInView } from "@/components/ui/animated-section"
+import { CompanyPhilosophy } from "./company-philosophy"
 
 const LinkedInIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -15,19 +20,59 @@ const XIcon = () => (
 )
 
 export default function AboutSection() {
+    const { resolvedTheme } = useTheme()
+    const [mounted, setMounted] = useState(false)
+    const [scrollOpacity, setScrollOpacity] = useState(0)
+    const sectionRef = useRef<HTMLDivElement>(null)
+
+    // Ensure theme is hydrated before rendering
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (sectionRef.current) {
+                const rect = sectionRef.current.getBoundingClientRect()
+                const windowHeight = window.innerHeight
+
+                // Calculate opacity based on position in viewport
+                // Full opacity when section is in middle of screen
+                const center = windowHeight / 2
+                const sectionCenter = rect.top + (rect.height / 2)
+
+                // Calculate distance from center (0 = perfect center)
+                const distanceFromCenter = Math.abs(center - sectionCenter)
+
+                // Increased maximum distance for fade (full screen height instead of half)
+                const maxDistance = windowHeight * 0.8
+
+                // Calculate opacity (1 at center, 0 at max distance)
+                const opacity = Math.max(0, Math.min(1, 1 - (distanceFromCenter / maxDistance)))
+
+                setScrollOpacity(opacity)
+            }
+        }
+
+        window.addEventListener('scroll', handleScroll)
+        handleScroll() // Call once to set initial state
+
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
+
     const founders = [
         {
             name: "Nicholas Tickle",
-            title: "Co-Founder, CEO",
-            description: "Ex bridge engineer. Literally built bridges and buildings. Now building software.",
+            title: "co-founder",
+            description: "Ex bridge engineer who built bridges and buildings. Now building software",
             image: "/images/founders/01-founder-1.jpeg",
             linkedIn: "https://www.linkedin.com/in/nicholastickle/",
             x: "https://x.com/TickleNicholas",
         },
         {
             name: "Brighton Tandabantu",
-            title: "Co-Founder, CTO",
-            description: "Repeat founder. Systems architect. Fullstack developer.",
+            title: "co-founder",
+            description: "Repeat founder, systems architect, and fullstack developer",
             image: "/images/founders/02-founder-2.jpeg",
             linkedIn: "https://www.linkedin.com/in/bthanda/",
             x: "https://x.com/Its_Thandah",
@@ -35,84 +80,157 @@ export default function AboutSection() {
     ]
 
     return (
-        <div className="flex flex-row justify-center border border-border-dark ">
-            <div className=" w-[60px] diagonal-lines border-x border-border-dark">
-            </div>
-            <AnimatedSectionWhileInView className=" flex-1 max-w-[1320px relative flex flex-col items-center text-center rounded-2xl overflow-hidden w-full md:w-[98vw] lg:w-[98vw] xl:w-[1220px] max-w-[1220px] " delay={0.2}>
-                <section id="about-section" className="w-full px-5 overflow-hidden flex flex-col justify-start items-center my-0 py-8 md:py-14">
-                    <div className="self-stretch relative flex flex-col justify-center items-center gap-2 py-0">
-                        <div className="flex flex-col justify-start items-center gap-10 mb-6">
-                            <h2 className="w-full max-w-[655px] text-start text-foreground text-5xl italic">
-                                &ldquo;We spent our careers building the physical world. Now we&apos;re building the engine that powers it.&rdquo;
-                            </h2>
+        <>
+            <div className="flex flex-row justify-center border border-border-dark ">
+                <div className=" w-[60px] diagonal-lines border-l border-border-dark">
+                </div>
+                <AnimatedSectionWhileInView className=" flex-1 max-w-[1320px relative flex flex-col items-center text-center overflow-hidden w-full md:w-[98vw] lg:w-[98vw] xl:w-[1220px] max-w-[1220px] " delay={0.2}>
+                    <section id="about-section" className="w-full flex flex-col">
+                        <div className=" flex flex-row w-full ">
+                            <div className="flex flex-[3.7] border-r border-border-dark diagonal-lines">
 
-                        </div>
-                    </div>
-
-                    <div className="self-stretch flex flex-col md:flex-row justify-center items-start   max-w-[800px] mx-auto border border-border-dark">
-                        {founders.map((founder) => (
-                            <div
-                                key={founder.name}
-                                className="w-full md:flex-1 overflow-hidden flex flex-col justify-start items-center gap-6 border-x border-border-dark"
-                            >
-                                <div className="flex flex-col items-center gap-4">
-                                    <div className="w-64 h-64 rounded-full overflow-hidden bg-muted flex items-center justify-center">
-                                        <Image
-                                            src={founder.image}
-                                            alt={`${founder.name} - ${founder.title}`}
-                                            width={256}
-                                            height={256}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-
-                                    <div className="flex flex-col items-center gap-2 text-center">
-                                        <h3 className="text-foreground text-xl font-semibold leading-tight">
-                                            {founder.name}
-                                        </h3>
-                                        <p className="text-primary/100 text-sm font-medium leading-tight">
-                                            {founder.title}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="self-stretch flex flex-col gap-4">
-                                    <p className="text-muted-foreground text-sm leading-relaxed text-center">
-                                        {founder.description}
-                                    </p>
-
-                                    <div className="flex justify-center gap-4">
-                                        {founder.linkedIn && (
-                                            <a
-                                                href={founder.linkedIn}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="p-2 rounded-full bg-transparent  transition-colors duration-200 text-foreground hover:text-orange-400"
-                                                aria-label={`${founder.name}'s LinkedIn profile`}
-                                            >
-                                                <LinkedInIcon />
-                                            </a>
-                                        )}
-                                        {founder.x && (
-                                            <a
-                                                href={founder.x}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="p-2 rounded-full bg-transparent transition-colors duration-200 text-foreground hover:text-orange-400"
-                                                aria-label={`${founder.name}'s X (Twitter) profile`}
-                                            >
-                                                <XIcon />
-                                            </a>
-                                        )}
-                                    </div>
-                                </div>
                             </div>
-                        ))}
-                    </div>
-                </section>
-            </AnimatedSectionWhileInView>
-            <div className=" w-[60px] diagonal-lines border-x border-border-dark">
-            </div>
-        </div>
+                            <div className="flex flex-[8.3] justify-start items-center p-8 border-r border-b border-border-dark">
+                                <h2 className="w-full text-start text-foreground text-5xl italic font-semibold leading-tight ">
+                                    &ldquo;We spent our careers building the physical world. Now we&apos;re building the engine that powers it.&rdquo;
+                                </h2>
+
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center items-center w-full diagonal-lines" ref={sectionRef}>
+                            {/* Single Landscape Image Container with Founder Hover Areas */}
+                            <div className="relative w-full mt-8 rounded-2xl  shadow-lg">
+                                <div className="relative w-full aspect-[2.6/2]  ">
+                                    {mounted && (
+                                        <Image
+                                            src={resolvedTheme === 'dark'
+                                                ? "/images/founders/03-founders-landscape-dark.png"
+                                                : "/images/founders/03-founders-landscape-light.png"
+                                            }
+                                            alt="Nicholas Tickle and Brighton Tandabantu - Co-founders of Project Machine"
+                                            fill
+                                            className="object-cover object-center rounded-2xl"
+                                        />
+                                    )}
+                                </div>
+
+                                {/* Founder Hover Circles and Speech Bubbles */}
+                                {founders.map((founder, index) => (
+                                    // Position circles directly on the image container
+                                    <div
+                                        key={founder.name}
+                                        className={`group absolute w-60 h-80 transition-all duration-300 cursor-pointer ${index === 0
+                                            ? 'top-[35%] left-[21%]'  // Nicholas position (adjust as needed)
+                                            : 'top-[42%] right-[21%]' // Brighton position (adjust as needed)
+                                            }`}
+                                    >
+
+                                        {/* Speech Bubble */}
+                                        <div
+                                            className={`absolute transition-all duration-100 transform scale-90 group-hover:scale-100 z-20 group-hover:!opacity-100 ${index === 0
+                                                ? 'bottom-[90%] right-[75%]'     // Position for Nicholas bubble
+                                                : 'bottom-[100%] left-[75%]'    // Position for Brighton bubble
+                                                }`}
+                                            style={{ opacity: scrollOpacity }}
+                                        >
+
+                                            {/* Leader Line - positioned relative to speech bubble */}
+                                            <div
+                                                className={`absolute transition-all duration-100 z-10 group-hover:!opacity-100 ${index === 0
+                                                    ? 'top-full left-1/2 transform -translate-x-1/2'  // Below Nicholas bubble
+                                                    : 'top-full left-1/2 transform -translate-x-1/2'  // Below Brighton bubble
+                                                    }`}
+                                                style={{ opacity: scrollOpacity }}
+                                            >
+                                                <svg width="200" height="150" className="overflow-visible">
+                                                    {/* Vertical line from hover area */}
+                                                    <line
+                                                        x1={index === 0 ? "100" : "100"}
+                                                        y1={index === 0 ? "0" : "0"}
+                                                        x2={index === 0 ? "150" : "50"}
+                                                        y2={index === 0 ? "150" : "150"}
+                                                        stroke="hsl(var(--foreground))"
+                                                        strokeWidth="1"
+
+                                                    />
+                                                    {/* Horizontal line to speech bubble */}
+                                                    <line
+                                                        x1={index === 0 ? "150" : "50"}
+                                                        y1={index === 0 ? "150" : "150"}
+                                                        x2={index === 0 ? "295" : "-90"}
+                                                        y2={index === 0 ? "150" : "150"}
+                                                        stroke="hsl(var(--foreground))"
+                                                        strokeWidth="1"
+                                                    />
+                                                    {/* Open circle instead of arrow */}
+                                                    <circle
+                                                        cx={index === 0 ? "300" : "-95"}
+                                                        cy={index === 0 ? "150" : "150"}
+                                                        r="4"
+                                                        fill="none"
+                                                        stroke="hsl(var(--foreground))"
+                                                        strokeWidth="1"
+                                                    />
+
+                                                </svg>
+                                            </div>
+
+                                            <div className=" rounded-2xl p-2 w-72 relative">
+                                                <div className="flex flex-col gap-2 text-left relative z-10">
+                                                    <h3 className="text-foreground text-2xl font-bold">
+                                                        {founder.name}
+                                                    </h3>
+                                                    <p className="text-foreground text-lg font-semibold">
+                                                        {founder.title}
+                                                    </p>
+                                                    <p className="text-foreground text-md">
+                                                        {founder.description}
+                                                    </p>
+                                                </div>
+
+
+
+                                                {/* Social Links in speech bubble */}
+                                                <div className="flex justify-start gap-4 mt-4 relative z-10">
+                                                    {founder.linkedIn && (
+                                                        <a
+                                                            href={founder.linkedIn}
+
+                                                            rel="noopener noreferrer"
+                                                            className="p-2 rounded-full bg-transparent transition-colors duration-200 text-foreground hover:text-primary"
+                                                            aria-label={`${founder.name}'s LinkedIn profile`}
+                                                        >
+                                                            <LinkedInIcon />
+                                                        </a>
+                                                    )}
+                                                    {founder.x && (
+                                                        <a
+                                                            href={founder.x}
+
+                                                            rel="noopener noreferrer"
+                                                            className="p-2 rounded-full bg-transparent transition-colors duration-200 text-foreground hover:text-primary"
+                                                            aria-label={`${founder.name}'s X (Twitter) profile`}
+                                                        >
+                                                            <XIcon />
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                    <CompanyPhilosophy />
+                </AnimatedSectionWhileInView>
+                <div className=" w-[60px] diagonal-lines border-r border-border-dark">
+                </div>
+            </div >
+
+
+        </>
     )
 }
