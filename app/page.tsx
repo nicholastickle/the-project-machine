@@ -1,7 +1,7 @@
 
 import HeroSection from "@/components/landing/hero-section"
 import DashboardPreview from "@/components/landing/dashboard-preview"
-import BentoSection from "@/components/landing/bento-section"
+import FeaturesSection from "@/components/landing/features-section"
 import AboutSection from "@/components/landing/about-section"
 import CTASection from "@/components/landing/cta-section"
 import FooterSection from "@/components/landing/footer-section"
@@ -18,7 +18,7 @@ export default function Home() {
         <HeroSection />
         <DashboardPreview />
         <SpacerElement height="500px" text="Project features" />
-        <BentoSection />
+        <FeaturesSection />
         <SpacerElement height="80px" text="Project about us section" />
         <AboutSection />
         <SpacerElement height="80px" text="Project call to action" />

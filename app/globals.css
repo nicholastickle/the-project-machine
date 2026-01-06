@@ -141,7 +141,8 @@
   }
 
   .dark {
-    --background: 240 10% 5%;
+    --background: 240 100% 3%;
+      /* --background: 240 10% 5%; */
     --foreground: 0 0% 90%;
 
     --muted: 240 3.7% 50%;

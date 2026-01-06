@@ -67,7 +67,7 @@ export default function Canvas({ onInit }: CanvasProps) {
                 zoomOnDoubleClick={false}
 
             >
-                {/* <CanvasBackground /> */}
+                <CanvasBackground />
                 <NavControlBar />
             </ReactFlow>
         </div>
