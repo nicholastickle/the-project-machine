@@ -1,20 +1,17 @@
-import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
-
-
-
 export default function FooterSection() {
   return (
-    <footer className="w-full max-w-[1320px] mx-auto px-5 py-10 md:py-10">
-    
-      <div className="w-full mt-8">
-        <Separator className="mb-6 bg-muted/20" />
-        <div className="flex justify-center items-center gap-4 px-4 md:px-8">
-          <p className="text-muted-foreground text-sm">
-            © 2025 Project Machine | All rights reserved.
-          </p>
-        </div>
+
+    <div className="flex flex-row justify-center border border-border-dark ">
+      <div className=" w-[60px] diagonal-lines border-x border-border-dark">
       </div>
-    </footer>
+
+      <footer className="flex-1 max-w-[1320px relative flex flex-col items-center text-center overflow-hidden w-full md:w-[98vw] lg:w-[98vw] xl:w-[1220px] max-w-[1220px] py-5">
+
+        <p className="text-muted-foreground text-sm">
+          © 2025 Project Machine | All rights reserved.
+        </p>
+      </footer>
+      <div className=" w-[60px] diagonal-lines border-x border-border-dark"></div>
+    </div>
   )
 }

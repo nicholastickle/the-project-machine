@@ -35,7 +35,7 @@
 
     --border: 210 17% 6% / 0.5;
     --border-light: 210 17% 6% / 0.1;
-    --border-dark: 210 17% 6% / 0.15;
+    --border-dark: 210 17% 6% / 0.12;
 
     --ring: 165 96% 71%;
 
@@ -168,7 +168,7 @@
 
     --border: 0 0% 80%;
     --border-light: 0 0% 24.3%;
-    --border-dark: 0 0% 30%;
+    --border-dark: 0 0% 15%;
 
     --ring: 25 95% 49%;
 
@@ -306,5 +306,16 @@
   /* Hide scrollbar for Chrome, Safari and Opera */
   *::-webkit-scrollbar {
     display: none;
+  }
+}
+
+@layer utilities {
+  .diagonal-lines {
+    background-image: repeating-linear-gradient(135deg,
+        transparent,
+        transparent 8px,
+        hsl(var(--border-dark)) 8px,
+        hsl(var(--border-dark)) 9px);
+    background-attachment: fixed;
   }
 }

@@ -18,16 +18,16 @@ export default function AboutSection() {
     const founders = [
         {
             name: "Nicholas Tickle",
-            title: "Co-Founder",
-            description: "Web developer. Ex bridge engineer, project manager, and contractor. 10 years experience in Civil Engineering.",
+            title: "Co-Founder, CEO",
+            description: "Ex bridge engineer. Literally built bridges and buildings. Now building software.",
             image: "/images/founders/01-founder-1.jpeg",
             linkedIn: "https://www.linkedin.com/in/nicholastickle/",
             x: "https://x.com/TickleNicholas",
         },
         {
             name: "Brighton Tandabantu",
-            title: "Co-Founder",
-            description: "Second time founder. Web developer. Expert in fullstack development.",
+            title: "Co-Founder, CTO",
+            description: "Repeat founder. Systems architect. Fullstack developer.",
             image: "/images/founders/02-founder-2.jpeg",
             linkedIn: "https://www.linkedin.com/in/bthanda/",
             x: "https://x.com/Its_Thandah",
@@ -35,80 +35,84 @@ export default function AboutSection() {
     ]
 
     return (
-        <AnimatedSectionWhileInView className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
-            <section id="about-section" className="w-full px-5 overflow-hidden flex flex-col justify-start items-center my-0 py-8 md:py-14">
-                <div className="self-stretch relative flex flex-col justify-center items-center gap-2 py-0">
-                    <div className="flex flex-col justify-start items-center gap-10 mb-6">
-                        <h2 className="w-full max-w-[655px] text-center text-foreground text-2xl md:text-4xl lg:text-6xl font-semibold leading-tight md:leading-[66px]">
-                            Meet the Founders
-                        </h2>
-                        <p className="w-full max-w-[600px] text-center text-muted-foreground text-md md:text-lg font-medium leading-relaxed">
-                            We&apos;re on a mission to make planning effortless. We think we have what it takes.
-                        </p>
-                    </div>
-                </div>
+        <div className="flex flex-row justify-center border border-border-dark ">
+            <div className=" w-[60px] diagonal-lines border-x border-border-dark">
+            </div>
+            <AnimatedSectionWhileInView className=" flex-1 max-w-[1320px relative flex flex-col items-center text-center rounded-2xl overflow-hidden w-full md:w-[98vw] lg:w-[98vw] xl:w-[1220px] max-w-[1220px] " delay={0.2}>
+                <section id="about-section" className="w-full px-5 overflow-hidden flex flex-col justify-start items-center my-0 py-8 md:py-14">
+                    <div className="self-stretch relative flex flex-col justify-center items-center gap-2 py-0">
+                        <div className="flex flex-col justify-start items-center gap-10 mb-6">
+                            <h2 className="w-full max-w-[655px] text-start text-foreground text-5xl italic">
+                                &ldquo;We spent our careers building the physical world. Now we&apos;re building the engine that powers it.&rdquo;
+                            </h2>
 
-                <div className="self-stretch px-5 flex flex-col md:flex-row justify-center items-start gap-6 md:gap-8 mt-6 max-w-[800px] mx-auto">
-                    {founders.map((founder) => (
-                        <div
-                            key={founder.name}
-                            className="w-full md:flex-1 p-6 overflow-hidden rounded-xl flex flex-col justify-start items-center gap-6"
-                        >
-                            <div className="flex flex-col items-center gap-4">
-                                <div className="w-64 h-64 rounded-full overflow-hidden bg-muted flex items-center justify-center">
-                                    <Image
-                                        src={founder.image}
-                                        alt={`${founder.name} - ${founder.title}`}
-                                        width={256}
-                                        height={256}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-
-                                <div className="flex flex-col items-center gap-2 text-center">
-                                    <h3 className="text-foreground text-xl font-semibold leading-tight">
-                                        {founder.name}
-                                    </h3>
-                                    <p className="text-primary/100 text-sm font-medium leading-tight">
-                                        {founder.title}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="self-stretch flex flex-col gap-4">
-                                <p className="text-muted-foreground text-sm leading-relaxed text-center">
-                                    {founder.description}
-                                </p>
-
-                                <div className="flex justify-center gap-4">
-                                    {founder.linkedIn && (
-                                        <a
-                                            href={founder.linkedIn}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="p-2 rounded-full bg-transparent  transition-colors duration-200 text-foreground hover:text-orange-400"
-                                            aria-label={`${founder.name}'s LinkedIn profile`}
-                                        >
-                                            <LinkedInIcon />
-                                        </a>
-                                    )}
-                                    {founder.x && (
-                                        <a
-                                            href={founder.x}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="p-2 rounded-full bg-transparent transition-colors duration-200 text-foreground hover:text-orange-400"
-                                            aria-label={`${founder.name}'s X (Twitter) profile`}
-                                        >
-                                            <XIcon />
-                                        </a>
-                                    )}
-                                </div>
-                            </div>
                         </div>
-                    ))}
-                </div>
-            </section>
-        </AnimatedSectionWhileInView>
+                    </div>
+
+                    <div className="self-stretch flex flex-col md:flex-row justify-center items-start   max-w-[800px] mx-auto border border-border-dark">
+                        {founders.map((founder) => (
+                            <div
+                                key={founder.name}
+                                className="w-full md:flex-1 overflow-hidden flex flex-col justify-start items-center gap-6 border-x border-border-dark"
+                            >
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="w-64 h-64 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                                        <Image
+                                            src={founder.image}
+                                            alt={`${founder.name} - ${founder.title}`}
+                                            width={256}
+                                            height={256}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+
+                                    <div className="flex flex-col items-center gap-2 text-center">
+                                        <h3 className="text-foreground text-xl font-semibold leading-tight">
+                                            {founder.name}
+                                        </h3>
+                                        <p className="text-primary/100 text-sm font-medium leading-tight">
+                                            {founder.title}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="self-stretch flex flex-col gap-4">
+                                    <p className="text-muted-foreground text-sm leading-relaxed text-center">
+                                        {founder.description}
+                                    </p>
+
+                                    <div className="flex justify-center gap-4">
+                                        {founder.linkedIn && (
+                                            <a
+                                                href={founder.linkedIn}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="p-2 rounded-full bg-transparent  transition-colors duration-200 text-foreground hover:text-orange-400"
+                                                aria-label={`${founder.name}'s LinkedIn profile`}
+                                            >
+                                                <LinkedInIcon />
+                                            </a>
+                                        )}
+                                        {founder.x && (
+                                            <a
+                                                href={founder.x}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="p-2 rounded-full bg-transparent transition-colors duration-200 text-foreground hover:text-orange-400"
+                                                aria-label={`${founder.name}'s X (Twitter) profile`}
+                                            >
+                                                <XIcon />
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            </AnimatedSectionWhileInView>
+            <div className=" w-[60px] diagonal-lines border-x border-border-dark">
+            </div>
+        </div>
     )
 }
