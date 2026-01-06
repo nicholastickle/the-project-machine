@@ -31,7 +31,7 @@ export default function FooterSection() {
     const currentYear = new Date().getFullYear()
 
   return (
-    <div className="flex flex-row justify-center border border-border-dark">
+    <div className="flex flex-row justify-center border-x border-border-dark">
 
  {/* <div className="flex flex-row justify-center border border-border-dark ">
                 <div className=" w-[60px] diagonal-lines border-l border-border-dark">
