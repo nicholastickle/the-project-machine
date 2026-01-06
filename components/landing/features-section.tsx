@@ -48,7 +48,7 @@ export default function FeaturesSection() {
                   Plan with the power of your own history
                 </h2>
                 <p className="w-1/2 text-center text-muted-foreground text-2xl m-10 italic">
-                  "Project Machine is an attempt to finally get better at planning by leveraging your lessons learned and getting better at task durations"
+                  &quot;Project Machine is an attempt to finally get better at planning by leveraging your lessons learned and getting better at task durations&quot;
                 </p>
               </div>
             </div>
