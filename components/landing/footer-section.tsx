@@ -27,6 +27,9 @@ export default function FooterSection() {
     },
     []
   )
+
+    const currentYear = new Date().getFullYear()
+
   return (
     <div className="flex flex-row justify-center border border-border-dark">
 
@@ -85,7 +88,7 @@ export default function FooterSection() {
         {/* Copyright */}
         <div className="border-t border-border-dark pt-5 text-center">
           <p className="text-muted-foreground text-sm">
-            © 2025 Project Machine | All rights reserved.
+            © {currentYear} Project Machine | All rights reserved.
           </p>
         </div>
 
