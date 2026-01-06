@@ -17,9 +17,9 @@ export default function Home() {
         <SpacerElement height="80px" text="Project hero" />
         <HeroSection />
         <DashboardPreview />
-        <SpacerElement height="500px" text="Project features" />
+        <SpacerElement height="500px" text="Project features" id="features-section" />
         <FeaturesSection />
-        <SpacerElement height="100px" text="Project about us section" />
+        <SpacerElement height="100px" text="Project about us section" id="about-section" />
         <AboutSection />
         <SpacerElement height="100px" text="Project call to action" />
         <CTASection />
