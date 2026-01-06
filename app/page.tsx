@@ -14,16 +14,16 @@ export default function Home() {
     <>
       <div className="min-h-screen bg-background relative pb-0">
         <Header />
-        <SpacerElement height="60px" text="Project hero" />
+        <SpacerElement height="80px" text="Project hero" />
         <HeroSection />
         <DashboardPreview />
         <SpacerElement height="500px" text="Project features" />
         <FeaturesSection />
-        <SpacerElement height="80px" text="Project about us section" />
+        <SpacerElement height="100px" text="Project about us section" />
         <AboutSection />
-        <SpacerElement height="80px" text="Project call to action" />
+        <SpacerElement height="100px" text="Project call to action" />
         <CTASection />
-        <SpacerElement height="80px" text="Project footer" />
+        <SpacerElement height="100px" text="Project footer" />
         <FooterSection />
       </div>
     </>

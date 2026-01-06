@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import Image from "next/image"
 import { useTheme } from "next-themes"
+import { useState, useEffect } from "react"
 
 interface FeatureCardProps {
     icon: LucideIcon
@@ -14,9 +15,15 @@ interface FeatureCardProps {
 }
 
 export default function FeatureCard({ icon: Icon, title, description, imageUrl, imageUrlDark, imageAlt }: FeatureCardProps) {
-    const { theme } = useTheme()
+    const { resolvedTheme } = useTheme()
+    const [mounted, setMounted] = useState(false)
 
-    const currentImageUrl = theme === 'dark' && imageUrlDark ? imageUrlDark : imageUrl
+    // Ensure theme is hydrated before rendering
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    const currentImageUrl = resolvedTheme === 'dark' && imageUrlDark ? imageUrlDark : imageUrl
 
     return (
         <Card className="overflow-hidden flex flex-col h-full bg-background border border-border-dark shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer">
@@ -33,7 +40,9 @@ export default function FeatureCard({ icon: Icon, title, description, imageUrl, 
             </div>
             <div className="mt-auto">
                 <AspectRatio ratio={4 / 3} className="bg-transparent">
-                    <Image src={currentImageUrl} alt={imageAlt} fill className="object-contain" />
+                    {mounted && (
+                        <Image src={currentImageUrl} alt={imageAlt} fill className="object-contain" />
+                    )}
                 </AspectRatio>
             </div>
         </Card>
