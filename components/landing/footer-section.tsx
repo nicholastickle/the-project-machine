@@ -59,7 +59,7 @@ export default function FooterSection() {
               <Link href="#about-section" onClick={(e) => handleScroll(e, "#about-section")} className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">About</Link>
               <Link href="#faq-section" onClick={(e) => handleScroll(e, "#faq-section")} className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">FAQ</Link>
               <Link href="/canvas" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Get Started</Link>
-              <Link href="#" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Legal</Link>
+              <Link href="/legal" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Legal</Link>
             </nav>
           </div>
 
