@@ -9,7 +9,7 @@ export default function CTASection() {
       <div className=" w-[60px] diagonal-lines border-x border-border-dark">
       </div>
       <AnimatedSectionWhileInView className=" flex-1 max-w-[1320px relative flex flex-col items-center text-center rounded-2xl overflow-hidden w-full md:w-[98vw] lg:w-[98vw] xl:w-[1220px] max-w-[1220px] " delay={0.2}>
-      
+
         <section className="w-full pt-20 md:pt-60 lg:pt-60 pb-10 md:pb-20 px-5 relative flex flex-col justify-center items-center overflow-visible">
           <div className="absolute inset-0 top-[-90px]">
             <svg
@@ -119,7 +119,8 @@ export default function CTASection() {
             </div>
             <Link href="/canvas">
               <Button
-                className="bg-white/10 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/20 px-8 py-3 rounded-full font-medium text-base shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-3"
+                variant="outline"
+                className="flex items-center"
                 size="lg"
               >
                 Get Started
@@ -131,7 +132,13 @@ export default function CTASection() {
       </AnimatedSectionWhileInView>
       <div className=" w-[60px] diagonal-lines border-x border-border-dark">
       </div>
-    </div>
-      )
+    </div >
+  )
 }
 
+
+//  <Link href="/canvas">
+//   <Button variant="outline" className="w-full justify-center">
+//     Get started
+//   </Button>
+// </Link>
