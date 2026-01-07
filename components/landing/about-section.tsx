@@ -81,13 +81,13 @@ export default function AboutSection() {
 
     return (
         <>
-            <div className="flex flex-row justify-center border border-border-dark ">
+            <div className="flex flex-row justify-center border-x border-border-dark ">
                 <div className=" w-[60px] diagonal-lines border-l border-border-dark">
                 </div>
                 <AnimatedSectionWhileInView className=" flex-1 max-w-[1320px relative flex flex-col items-center text-center overflow-hidden w-full md:w-[98vw] lg:w-[98vw] xl:w-[1220px] max-w-[1220px] " delay={0.2}>
                     <section id="about-section" className="w-full flex flex-col">
                         <div className=" flex flex-row w-full ">
-                            <div className="flex flex-[3.7] border-r border-border-dark diagonal-lines">
+                            <div className="flex flex-[3.7] border-r border-l border-b border-border-dark ">
 
                             </div>
                             <div className="flex flex-[8.3] justify-start items-center p-8 border-r border-b border-border-dark">
@@ -100,7 +100,7 @@ export default function AboutSection() {
 
                         <div className="flex justify-center items-center w-full diagonal-lines" ref={sectionRef}>
                             {/* Single Landscape Image Container with Founder Hover Areas */}
-                            <div className="relative w-full mt-8 rounded-2xl  shadow-lg">
+                            <div className="relative w-full mt-8  p-5 bg-background border border-border-dark">
                                 <div className="relative w-full aspect-[2.6/2]  ">
                                     {mounted && (
                                         <Image
@@ -110,7 +110,7 @@ export default function AboutSection() {
                                             }
                                             alt="Nicholas Tickle and Brighton Tandabantu - Co-founders of Project Machine"
                                             fill
-                                            className="object-cover object-center rounded-2xl"
+                                            className="object-cover object-center rounded-2xl shadow-lg"
                                         />
                                     )}
                                 </div>

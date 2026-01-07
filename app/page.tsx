@@ -7,6 +7,7 @@ import CTASection from "@/components/landing/cta-section"
 import FooterSection from "@/components/landing/footer-section"
 import Header from "@/components/landing/header"
 import SpacerElement from "@/components/landing/spacer-element"
+import FAQSection from "@/components/landing/faq-section"
 
 export default function Home() {
 
@@ -19,11 +20,13 @@ export default function Home() {
         <DashboardPreview />
         <SpacerElement height="500px" text="Project features" id="features-section" />
         <FeaturesSection />
-        <SpacerElement height="100px" text="Project about us section" id="about-section" />
+        <SpacerElement height="150px" text="Project about us section" id="about-section" />
         <AboutSection />
-        <SpacerElement height="100px" text="Project call to action" />
+        <SpacerElement height="150px" text="Project FAQ section" id="faq-section" />
+        <FAQSection />
+        <SpacerElement height="150px" text="Project call to action" />
         <CTASection />
-        <SpacerElement height="100px" text="Project footer" />
+        <SpacerElement height="150px" text="Project footer" />
         <FooterSection />
       </div>
     </>

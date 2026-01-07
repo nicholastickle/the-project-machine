@@ -8,7 +8,7 @@ import { Send } from "lucide-react"
 import { SubscribeButton } from "@/components/landing/subscribe-button"
 export default function HeroSection() {
   return (
-    <div className="flex flex-row justify-center border border-border-dark ">
+    <div className="flex flex-row justify-center border-x border-border-dark ">
       <div className=" w-[60px] diagonal-lines border-x border-border-dark">
 
       </div>
@@ -451,8 +451,8 @@ export default function HeroSection() {
                 className="flex flex-row justify-start gap-4 mb-8 h-10"
               >
 
-                <Link href="/canvas">
-                  <Button className="bg-transparent border border-border-dark text-foreground hover:bg-accent px-8 py-3 rounded-md font-medium flex items-center gap-3 h-full">
+                 <Link href="/canvas">
+                  <Button variant="outline" className="w-full justify-center">
                     Get started
                   </Button>
                 </Link>

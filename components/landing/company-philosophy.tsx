@@ -59,7 +59,7 @@ export function CompanyPhilosophy() {
                 <div className="grid lg:grid-cols-2 max-w-6xl mx-auto rounded-2xl">
 
                     {/* Left Column - Philosophies Card */}
-                    <div className="bg-background border border-border-dark overflow-hidden shadow-lg px-6">
+                    <div className="bg-background border-l border-b border-t border-border-dark overflow-hidden px-6">
                         <div className="py-6 border-b border-border-dark">
                             <h2 className="text-3xl text-foreground">Our Philosophies</h2>
                         </div>
@@ -93,10 +93,10 @@ export function CompanyPhilosophy() {
                     </div>
 
                     {/* Right Column - Description Card */}
-                    <div className="bg-background border border-border-dark  overflow-hidden shadow-lg p-8 flex items-center justify-start">
+                    <div className="bg-background border border-border-dark  overflow-hidden p-8 flex items-center justify-start">
 
                         <div key={selectedPhilosophy.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
-                            <p className="text-foreground text-lg leading-relaxed">
+                            <p className="text-muted-foreground text-lg leading-relaxed">
                                 {selectedPhilosophy.description}
                             </p>
 
