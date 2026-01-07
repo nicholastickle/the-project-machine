@@ -107,3 +107,6 @@ logs
 
 # usage tracking
 usage-log.json
+
+# Mock data for development (replace with real API calls in production)
+lib/mock-data.ts
