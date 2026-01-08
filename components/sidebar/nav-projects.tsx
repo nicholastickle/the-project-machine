@@ -60,9 +60,9 @@ export function NavProjects({
                   <NewProject onProjectCreated={onProjectCreated} />
 
                   {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title} className="relative group/menu-item flex items-center">
-                      <SidebarMenuSubButton 
-                        asChild 
+                    <SidebarMenuSubItem key={subItem.id || subItem.title} className="relative group/menu-item flex items-center">
+                      <SidebarMenuSubButton
+                        asChild
                         className="flex-1"
                         onClick={() => subItem.id && onProjectClick?.(subItem.id)}
                       >

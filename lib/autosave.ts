@@ -95,11 +95,18 @@ export async function loadLatestSnapshot(
     if (response.ok) {
       const data = await response.json()
       if (data.snapshots && data.snapshots.length > 0) {
-        const snapshotData = data.snapshots[0].snapshot_data
-        if (!snapshotData || !snapshotData.nodes) {
-          console.error('[Autosave] ❌ Snapshot data is missing or malformed:', data.snapshots[0])
-          return null
+        const snapshotData = data.snapshots[0]?.snapshot_data
+
+        if (!snapshotData) {
+          console.warn('[Autosave] No snapshot data found, returning clean state.')
+          return { nodes: [], edges: [] }
         }
+
+        if (!snapshotData.nodes) {
+          console.warn('[Autosave] Snapshot missing nodes, returning clean state.')
+          return { nodes: [], edges: [] }
+        }
+
         const snapshot = snapshotData as { nodes: Node[]; edges: Edge[] }
         console.log(`[Autosave] ✅ Snapshot loaded: nodes=${snapshot.nodes.length}, edges=${snapshot.edges.length}`)
         return snapshot
