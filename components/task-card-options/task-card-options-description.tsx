@@ -1,7 +1,7 @@
 import useStore from '@/stores/flow-store';
 import { TaskData } from '@/stores/types';
 import { useRef } from 'react';
-import { AlignLeft  } from 'lucide-react';
+import { AlignLeft } from 'lucide-react';
 
 interface TaskCardOptionsDescriptionProps {
     nodeId: string;
@@ -26,13 +26,13 @@ export default function TaskCardOptionsDescription({ nodeId, description }: Task
         <div className="w-full flex flex-col p-3">
             <div className="flex items-center gap-2 mb-1">
                 <AlignLeft size={16} className="text-muted-foreground" />
-                <span className="text-lg font-medium underline text-muted-foreground">Description:</span>
+                <span className="text-lg font-medium text-muted-foreground">Description:</span>
             </div>
             <textarea
                 ref={textareaRef}
                 value={description || ''}
                 onChange={handleInputChange}
-                className="w-full text-md placeholder:text-muted-foreground text-muted-foreground resize-none border-none outline-none p-2 rounded-md"
+                className="w-full text-md placeholder:text-muted-foreground text-muted-foreground resize-none border border-gray-200 outline-none p-2 rounded-md"
                 placeholder="Enter description..."
                 maxLength={1000}
                 autoComplete="off"
