@@ -1,9 +1,9 @@
 import { Play, Pause, X } from 'lucide-react';
-import TaskHandles from '@/components/task-card-node/task-handles';
-import EditableTitle from '@/components/task-card-node/editable-title';
-import EditableDescription from '@/components/task-card-node/editable-description';
-import SelectStatus from '@/components/task-card-node/status-options';
-import SubtaskTable from '@/components/task-card-node/subtask-table';
+import TaskHandles from '@/components/task-card-node-v1/task-handles';
+import EditableTitle from '@/components/task-card-node-v1/editable-title';
+import EditableDescription from '@/components/task-card-node-v1/editable-description';
+import SelectStatus from '@/components/task-card-node-v1/status-options';
+import SubtaskTable from '@/components/task-card-node-v1/subtask-table';
 import { useState, useEffect, useRef } from 'react';
 import useStore from '@/stores/flow-store';
 
