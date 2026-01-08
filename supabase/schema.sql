@@ -60,6 +60,7 @@ create table if not exists file_summaries (
 );
 
 -- Chat Messages: Conversation history with AI
+-- Chat Messages: Conversation history with AI
 create table if not exists chat_messages (
   id uuid primary key default uuid_generate_v4(),
   project_id uuid references projects(id) on delete cascade not null,
@@ -67,6 +68,88 @@ create table if not exists chat_messages (
   content text not null,
   created_at timestamptz default now(),
   created_by uuid references auth.users(id)
+);
+
+-- Chat Threads: Grouping for chat (NEW)
+create table if not exists chat_threads (
+  id uuid primary key default uuid_generate_v4(),
+  project_id uuid references projects(id) on delete cascade not null,
+  title text not null,
+  created_by uuid references auth.users(id),
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+-- Users: Public profile table (Synced with Auth)
+create table if not exists users (
+  id uuid primary key references auth.users(id) on delete cascade,
+  email text not null,
+  created_at timestamptz default now()
+);
+
+-- Tasks: Core unit of work
+create table if not exists tasks (
+  id uuid primary key default uuid_generate_v4(),
+  project_id uuid references projects(id) on delete cascade not null,
+  title text not null,
+  description text,
+  status text not null default 'Not started' check (status in ('Not started', 'On-going', 'Stuck', 'Complete', 'Abandoned')),
+  estimated_hours integer,
+  time_spent integer not null default 0,
+  sort_order integer not null default 0,
+  created_by uuid references auth.users(id) not null,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  deleted_at timestamptz
+);
+
+-- Subtasks: Granular work items
+create table if not exists subtasks (
+  id uuid primary key default uuid_generate_v4(),
+  task_id uuid references tasks(id) on delete cascade not null,
+  title text not null,
+  is_completed boolean not null default false,
+  estimated_duration integer default 0,
+  time_spent integer default 0,
+  sort_order integer default 0,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+-- Task Assignments: Who is doing what
+create table if not exists task_assignments (
+  id uuid primary key default uuid_generate_v4(),
+  task_id uuid references tasks(id) on delete cascade not null,
+  user_id uuid references auth.users(id) not null,
+  role text default 'assignee' check (role in ('assignee', 'reviewer')),
+  assigned_at timestamptz default now(),
+  assigned_by uuid references auth.users(id)
+);
+
+-- Task Comments: Discussion on tasks
+create table if not exists task_comments (
+  id uuid primary key default uuid_generate_v4(),
+  task_id uuid references tasks(id) on delete cascade not null,
+  user_id uuid references auth.users(id) not null,
+  content text not null,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  deleted_at timestamptz
+);
+
+-- Taskbook Entries: Templates
+create table if not exists taskbook_entries (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid references auth.users(id), -- Nullable for global templates
+  project_id uuid references projects(id) on delete cascade, -- Nullable
+  title text not null,
+  description text,
+  category text,
+  default_subtasks jsonb,
+  usage_count integer default 0,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  deleted_at timestamptz
 );
 
 -- Pending Invitations: Track project invites
@@ -106,6 +189,8 @@ create index if not exists idx_plan_snapshots_project on plan_snapshots(project_
 create index if not exists idx_reflections_project on reflections(project_id, created_at desc);
 create index if not exists idx_reference_notes_project on reference_notes(project_id);
 create index if not exists idx_chat_messages_project on chat_messages(project_id, created_at asc);
+create index if not exists idx_tasks_project on tasks(project_id);
+create index if not exists idx_subtasks_task on subtasks(task_id);
 create index if not exists idx_pending_invitations_token on pending_invitations(invite_token);
 create index if not exists idx_pending_invitations_email on pending_invitations(invited_email, accepted_at);
 create index if not exists idx_usage_logs_project on usage_logs(project_id, created_at desc);
@@ -128,6 +213,15 @@ create trigger update_projects_updated_at before update on projects
 create trigger update_reference_notes_updated_at before update on reference_notes
   for each row execute procedure update_updated_at_column();
 
+create trigger update_tasks_updated_at before update on tasks
+  for each row execute procedure update_updated_at_column();
+
+create trigger update_subtasks_updated_at before update on subtasks
+  for each row execute procedure update_updated_at_column();
+
+create trigger update_chat_threads_updated_at before update on chat_threads
+  for each row execute procedure update_updated_at_column();
+
 -- Enable Row Level Security
 alter table projects enable row level security;
 alter table plan_snapshots enable row level security;
@@ -135,9 +229,16 @@ alter table reflections enable row level security;
 alter table reference_notes enable row level security;
 alter table file_summaries enable row level security;
 alter table chat_messages enable row level security;
+alter table chat_threads enable row level security;
+alter table tasks enable row level security;
+alter table subtasks enable row level security;
+alter table task_assignments enable row level security;
+alter table task_comments enable row level security;
+alter table taskbook_entries enable row level security;
 alter table pending_invitations enable row level security;
 alter table project_members enable row level security;
 alter table usage_logs enable row level security;
+alter table users enable row level security;
 
 -- RLS Policies: Projects
 create policy "Users can view their projects"
@@ -286,7 +387,8 @@ create policy "Editors can create file summaries"
       where id = file_summaries.project_id and created_by = auth.uid()
     )
   );
-Chat Messages
+
+-- RLS Policies: Chat Messages
 create policy "Users can view chat messages"
   on chat_messages for select
   using (
@@ -322,7 +424,98 @@ create policy "Users can delete chat messages"
     )
   );
 
--- RLS Policies: 
+-- RLS Policies: Tasks (Mirrors Projects)
+create policy "Users can view tasks"
+  on tasks for select
+  using (
+    exists (
+      select 1 from project_members
+      where project_id = tasks.project_id and user_id = auth.uid()
+    ) or exists (
+      select 1 from projects
+      where id = tasks.project_id and created_by = auth.uid()
+    )
+  );
+
+create policy "Editors can create tasks"
+  on tasks for insert
+  with check (
+    exists (
+      select 1 from project_members
+      where project_id = tasks.project_id
+        and user_id = auth.uid()
+        and role = 'editor'
+    ) or exists (
+      select 1 from projects
+      where id = tasks.project_id and created_by = auth.uid()
+    )
+  );
+
+create policy "Editors can update tasks"
+  on tasks for update
+  using (
+    exists (
+      select 1 from project_members
+      where project_id = tasks.project_id
+        and user_id = auth.uid()
+        and role = 'editor'
+    ) or exists (
+      select 1 from projects
+      where id = tasks.project_id and created_by = auth.uid()
+    )
+  );
+
+create policy "Editors can delete tasks"
+  on tasks for delete
+  using (
+    exists (
+      select 1 from project_members
+      where project_id = tasks.project_id
+        and user_id = auth.uid()
+        and role = 'editor'
+    ) or exists (
+      select 1 from projects
+      where id = tasks.project_id and created_by = auth.uid()
+    )
+  );
+
+-- RLS Policies: Subtasks (Inherits from Tasks)
+create policy "Users can view subtasks"
+  on subtasks for select
+  using (
+    exists (
+      select 1 from tasks
+      where id = subtasks.task_id and (
+        exists (
+            select 1 from project_members
+            where project_id = tasks.project_id and user_id = auth.uid()
+        ) or exists (
+            select 1 from projects
+            where id = tasks.project_id and created_by = auth.uid()
+        )
+      )
+    )
+  );
+
+create policy "Editors can manage subtasks"
+  on subtasks for all
+  using (
+    exists (
+      select 1 from tasks
+      where id = subtasks.task_id and (
+        exists (
+            select 1 from project_members
+            where project_id = tasks.project_id
+             and user_id = auth.uid()
+             and role = 'editor'
+        ) or exists (
+            select 1 from projects
+            where id = tasks.project_id and created_by = auth.uid()
+        )
+      )
+    )
+  );
+
 -- RLS Policies: Project Members
 create policy "Users can view project members"
   on project_members for select
@@ -345,3 +538,12 @@ create policy "Editors can add project members"
 
 -- RLS Policies: Usage Logs (internal only - no RLS needed, use service role)
 -- Users should not see usage logs directly
+
+-- RLS Policies: Users (Public Profile)
+create policy "Users can view profiles"
+  on users for select
+  using (true);
+
+create policy "Users can update own profile"
+  on users for update
+  using (id = auth.uid());
