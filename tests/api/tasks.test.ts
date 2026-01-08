@@ -4,11 +4,22 @@ import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { tasks } from '@/lib/db/schema';
 import { eq, and, isNull } from 'drizzle-orm';
+import { AuthError } from '@/lib/auth/session';
 
-// Mock Supabase
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(),
-}));
+// Mock lib/auth/session
+class MockAuthError extends Error {
+  statusCode: number
+  constructor(message: string, statusCode: number) {
+    super(message)
+    this.statusCode = statusCode
+    this.name = 'AuthError'
+  }
+}
+
+vi.mock('@/lib/auth/session', () => ({
+  getCurrentUser: vi.fn(),
+  AuthError: MockAuthError,
+}))
 
 // Mock database
 vi.mock('@/lib/db', () => ({
@@ -18,25 +29,23 @@ vi.mock('@/lib/db', () => ({
   },
 }));
 
+// Mock Supabase to empty (since we use session.ts now)
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: vi.fn(),
+}));
+
 describe('GET /api/projects/[id]/tasks', () => {
   const mockProjectId = 'proj-123';
   const mockUserId = 'user-123';
-  
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('returns 401 when user is not authenticated', async () => {
-    const { createClient } = await import('@/lib/supabase/server');
-    
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: null },
-          error: { message: 'Unauthorized' },
-        }),
-      },
-    } as any);
+    const { getCurrentUser } = await import('@/lib/auth/session');
+
+    vi.mocked(getCurrentUser).mockRejectedValue(new AuthError('Unauthorized', 401));
 
     const request = new NextRequest(`http://localhost:3000/api/projects/${mockProjectId}/tasks`);
     const response = await GET(request, { params: { id: mockProjectId } });
@@ -47,16 +56,9 @@ describe('GET /api/projects/[id]/tasks', () => {
   });
 
   it('returns empty array when project has no tasks', async () => {
-    const { createClient } = await import('@/lib/supabase/server');
-    
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: mockUserId, email: 'test@test.com' } },
-          error: null,
-        }),
-      },
-    } as any);
+    const { getCurrentUser } = await import('@/lib/auth/session');
+
+    vi.mocked(getCurrentUser).mockResolvedValue({ id: mockUserId, email: 'test@test.com' } as any);
 
     const mockSelect = vi.fn().mockReturnValue({
       from: vi.fn().mockReturnValue({
@@ -75,15 +77,15 @@ describe('GET /api/projects/[id]/tasks', () => {
   });
 
   it('returns tasks for authenticated user with project access', async () => {
-    const { createClient } = await import('@/lib/supabase/server');
-    
+    const { getCurrentUser } = await import('@/lib/auth/session');
+
     const mockTasks = [
       {
         id: 'task-1',
         projectId: mockProjectId,
         title: 'Task 1',
         description: 'Description 1',
-        status: 'backlog',
+        status: 'Not started',
         createdBy: mockUserId,
         timeSpent: 0,
         sortOrder: 0,
@@ -96,7 +98,7 @@ describe('GET /api/projects/[id]/tasks', () => {
         projectId: mockProjectId,
         title: 'Task 2',
         description: null,
-        status: 'in_progress',
+        status: 'On-going',
         createdBy: mockUserId,
         timeSpent: 120,
         sortOrder: 1,
@@ -106,14 +108,7 @@ describe('GET /api/projects/[id]/tasks', () => {
       },
     ];
 
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: mockUserId, email: 'test@test.com' } },
-          error: null,
-        }),
-      },
-    } as any);
+    vi.mocked(getCurrentUser).mockResolvedValue({ id: mockUserId, email: 'test@test.com' } as any);
 
     const mockSelect = vi.fn().mockReturnValue({
       from: vi.fn().mockReturnValue({
@@ -134,26 +129,19 @@ describe('GET /api/projects/[id]/tasks', () => {
   });
 
   it('filters out soft-deleted tasks', async () => {
-    const { createClient } = await import('@/lib/supabase/server');
-    
+    const { getCurrentUser } = await import('@/lib/auth/session');
+
     const mockTasks = [
       {
         id: 'task-1',
         projectId: mockProjectId,
         title: 'Active Task',
-        status: 'backlog',
+        status: 'Not started',
         deletedAt: null,
       },
     ];
 
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: mockUserId, email: 'test@test.com' } },
-          error: null,
-        }),
-      },
-    } as any);
+    vi.mocked(getCurrentUser).mockResolvedValue({ id: mockUserId, email: 'test@test.com' } as any);
 
     const mockSelect = vi.fn().mockReturnValue({
       from: vi.fn().mockReturnValue({
@@ -182,22 +170,15 @@ describe('POST /api/projects/[id]/tasks', () => {
   });
 
   it('returns 401 when user is not authenticated', async () => {
-    const { createClient } = await import('@/lib/supabase/server');
-    
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: null },
-          error: { message: 'Unauthorized' },
-        }),
-      },
-    } as any);
+    const { getCurrentUser } = await import('@/lib/auth/session');
+
+    vi.mocked(getCurrentUser).mockRejectedValue(new AuthError('Unauthorized', 401));
 
     const request = new NextRequest(`http://localhost:3000/api/projects/${mockProjectId}/tasks`, {
       method: 'POST',
       body: JSON.stringify({ title: 'New Task' }),
     });
-    
+
     const response = await POST(request, { params: { id: mockProjectId } });
     const data = await response.json();
 
@@ -206,38 +187,31 @@ describe('POST /api/projects/[id]/tasks', () => {
   });
 
   it('returns 400 when title is missing', async () => {
-    const { createClient } = await import('@/lib/supabase/server');
-    
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: mockUserId, email: 'test@test.com' } },
-          error: null,
-        }),
-      },
-    } as any);
+    const { getCurrentUser } = await import('@/lib/auth/session');
+
+    vi.mocked(getCurrentUser).mockResolvedValue({ id: mockUserId, email: 'test@test.com' } as any);
 
     const request = new NextRequest(`http://localhost:3000/api/projects/${mockProjectId}/tasks`, {
       method: 'POST',
       body: JSON.stringify({ description: 'No title provided' }),
     });
-    
+
     const response = await POST(request, { params: { id: mockProjectId } });
     const data = await response.json();
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(400); // Validation failed
     expect(data.error).toBe('Title is required');
   });
 
   it('creates task with minimal fields', async () => {
-    const { createClient } = await import('@/lib/supabase/server');
-    
+    const { getCurrentUser } = await import('@/lib/auth/session');
+
     const mockNewTask = {
       id: 'task-new',
       projectId: mockProjectId,
       title: 'New Task',
       description: null,
-      status: 'backlog',
+      status: 'Not started',
       estimatedHours: null,
       timeSpent: 0,
       sortOrder: 0,
@@ -247,14 +221,7 @@ describe('POST /api/projects/[id]/tasks', () => {
       deletedAt: null,
     };
 
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: mockUserId, email: 'test@test.com' } },
-          error: null,
-        }),
-      },
-    } as any);
+    vi.mocked(getCurrentUser).mockResolvedValue({ id: mockUserId, email: 'test@test.com' } as any);
 
     const mockInsert = vi.fn().mockReturnValue({
       values: vi.fn().mockReturnValue({
@@ -268,25 +235,25 @@ describe('POST /api/projects/[id]/tasks', () => {
       method: 'POST',
       body: JSON.stringify({ title: 'New Task' }),
     });
-    
+
     const response = await POST(request, { params: { id: mockProjectId } });
     const data = await response.json();
 
     expect(response.status).toBe(201);
     expect(data.task.title).toBe('New Task');
-    expect(data.task.status).toBe('backlog');
+    expect(data.task.status).toBe('Not started');
     expect(data.task.createdBy).toBe(mockUserId);
   });
 
   it('creates task with all fields', async () => {
-    const { createClient } = await import('@/lib/supabase/server');
-    
+    const { getCurrentUser } = await import('@/lib/auth/session');
+
     const mockNewTask = {
       id: 'task-new',
       projectId: mockProjectId,
       title: 'Complex Task',
       description: 'Detailed description',
-      status: 'in_progress',
+      status: 'On-going',
       estimatedHours: 8,
       timeSpent: 0,
       sortOrder: 5,
@@ -296,14 +263,7 @@ describe('POST /api/projects/[id]/tasks', () => {
       deletedAt: null,
     };
 
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: mockUserId, email: 'test@test.com' } },
-          error: null,
-        }),
-      },
-    } as any);
+    vi.mocked(getCurrentUser).mockResolvedValue({ id: mockUserId, email: 'test@test.com' } as any);
 
     const mockInsert = vi.fn().mockReturnValue({
       values: vi.fn().mockReturnValue({
@@ -318,31 +278,31 @@ describe('POST /api/projects/[id]/tasks', () => {
       body: JSON.stringify({
         title: 'Complex Task',
         description: 'Detailed description',
-        status: 'in_progress',
+        status: 'On-going',
         estimatedHours: 8,
         sortOrder: 5,
       }),
     });
-    
+
     const response = await POST(request, { params: { id: mockProjectId } });
     const data = await response.json();
 
     expect(response.status).toBe(201);
     expect(data.task.title).toBe('Complex Task');
     expect(data.task.description).toBe('Detailed description');
-    expect(data.task.status).toBe('in_progress');
+    expect(data.task.status).toBe('On-going');
     expect(data.task.estimatedHours).toBe(8);
     expect(data.task.sortOrder).toBe(5);
   });
 
-  it('defaults status to backlog if not provided', async () => {
-    const { createClient } = await import('@/lib/supabase/server');
-    
+  it('defaults status to "Not started" if not provided', async () => {
+    const { getCurrentUser } = await import('@/lib/auth/session');
+
     const mockNewTask = {
       id: 'task-new',
       projectId: mockProjectId,
       title: 'Task with default status',
-      status: 'backlog',
+      status: 'Not started',
       createdBy: mockUserId,
       timeSpent: 0,
       sortOrder: 0,
@@ -351,14 +311,7 @@ describe('POST /api/projects/[id]/tasks', () => {
       deletedAt: null,
     };
 
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: mockUserId, email: 'test@test.com' } },
-          error: null,
-        }),
-      },
-    } as any);
+    vi.mocked(getCurrentUser).mockResolvedValue({ id: mockUserId, email: 'test@test.com' } as any);
 
     const mockInsert = vi.fn().mockReturnValue({
       values: vi.fn().mockReturnValue({
@@ -372,11 +325,11 @@ describe('POST /api/projects/[id]/tasks', () => {
       method: 'POST',
       body: JSON.stringify({ title: 'Task with default status' }),
     });
-    
+
     const response = await POST(request, { params: { id: mockProjectId } });
     const data = await response.json();
 
     expect(response.status).toBe(201);
-    expect(data.task.status).toBe('backlog');
+    expect(data.task.status).toBe('Not started');
   });
 });

@@ -3,7 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { extractUserFromCookies, createAuthenticatedClient } from '@/lib/supabase/auth-utils'
 import { db } from '@/lib/db'
 import { projects, projectMembers, usageLogs } from '@/lib/db/schema'
-import { isNull, desc } from 'drizzle-orm'
+import { isNull, desc, eq } from 'drizzle-orm'
+import { getCurrentUser, AuthError } from '@/lib/auth/session'
+import { createProjectSchema } from '@/lib/validation/schemas'
 
 // GET /api/projects - List user's projects
 export async function GET(request: NextRequest) {
@@ -13,18 +15,18 @@ export async function GET(request: NextRequest) {
       cookie: request.headers.get('cookie') ? 'set' : 'not set',
       authorization: request.headers.get('authorization') ? 'set' : 'not set',
     })
-    
+
     // Try the standard approach first
     const supabase = await createClient()
     let { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
     console.log('[GET /api/projects] Standard auth check:', {
       hasUser: !!user,
       userId: user?.id,
       userEmail: user?.email,
       authError: authError?.message
     })
-    
+
     // If standard auth fails, try extracting from cookies directly
     if (!user && authError) {
       console.log('[GET /api/projects] Standard auth failed, trying cookie extraction...')
@@ -44,21 +46,21 @@ export async function GET(request: NextRequest) {
         })
       }
     }
-    
+
     if (authError || !user) {
       console.error('[GET /api/projects] Authorization failed:', {
         authError: authError?.message,
         noUser: !user
       })
       return NextResponse.json(
-        { 
-          error: 'Unauthorized', 
+        {
+          error: 'Unauthorized',
           details: authError?.message || 'No user found in session',
           debug: {
             hasAuthError: !!authError,
             hasUser: !!user
           }
-        }, 
+        },
         { status: 401 }
       )
     }
@@ -80,10 +82,10 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Unexpected error:', error)
     return NextResponse.json(
-      { 
-        error: 'Internal server error', 
-        details: String(error) 
-      }, 
+      {
+        error: 'Internal server error',
+        details: String(error)
+      },
       { status: 500 }
     )
   }
@@ -92,61 +94,74 @@ export async function GET(request: NextRequest) {
 // POST /api/projects - Create new project
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-    
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    // 1. Strict Auth Check
+    const user = await getCurrentUser()
 
+    // 2. Input Validation
     const body = await request.json()
-    const { name, description } = body
+    const result = createProjectSchema.safeParse(body)
 
-    if (!name || typeof name !== 'string') {
-      return NextResponse.json({ error: 'Project name is required' }, { status: 400 })
+    if (!result.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: result.error.flatten() },
+        { status: 400 }
+      )
     }
 
-    // Use Drizzle to create project with RLS
+    const { name, description } = result.data
+
+    // 3. Database Operation (Transactional-ish)
+    // Drizzle doesn't support nested transactions easily with standard client, 
+    // so we sequence carefully: Project -> Member -> Usage.
+    // If Member fails, we should ideally rollback, but for now we'll just error hard.
+
     const [project] = await db
       .insert(projects)
       .values({
-        name: name.trim(),
-        description: description?.trim() || null,
+        name,
+        description: description || null,
         createdBy: user.id,
       })
       .returning();
 
-    console.log('[POST /api/projects] Project created:', {
-      projectId: project.id,
-      projectName: project.name,
-      createdBy: project.createdBy
-    })
+    if (!project) {
+      throw new Error('Failed to create project record')
+    }
 
-    // Add creator as project member with Drizzle
+    // Force add creator as editor
     try {
       await db.insert(projectMembers).values({
         projectId: project.id,
         userId: user.id,
         role: 'editor',
       });
-      console.log('[POST /api/projects] Creator added to project_members')
     } catch (memberError) {
-      console.error('[POST /api/projects] Failed to add creator to project_members:', memberError)
-      // Don't fail the request, but log it
+      console.error('[CRITICAL] Failed to add creator to project members:', memberError)
+      // Attempt cleanup (compensation action)
+      await db.delete(projects).where(eq(projects.id, project.id))
+      return NextResponse.json(
+        { error: 'Failed to initialize project membership. Please try again.' },
+        { status: 500 }
+      )
     }
 
-    // Log usage event with Drizzle
-    await db.insert(usageLogs).values({
-      projectId: project.id,
-      userId: user.id,
-      eventType: 'project_created',
-      eventData: { name: project.name },
-    });
+    // Log usage (fire and forget / non-critical)
+    try {
+      await db.insert(usageLogs).values({
+        projectId: project.id,
+        userId: user.id,
+        eventType: 'project_created',
+        eventData: { name: project.name },
+      });
+    } catch (e) { /* ignore usage logging failure */ }
 
     return NextResponse.json({ project }, { status: 201 })
+
   } catch (error) {
-    console.error('Unexpected error:', error)
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode })
+    }
+    console.error('[POST /api/projects] Unexpected error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { tasks } from '@/lib/db/schema';
 import { eq, and, isNull } from 'drizzle-orm';
+import { getCurrentUser, AuthError } from '@/lib/auth/session';
+import { createTaskSchema } from '@/lib/validation/schemas';
 
 export async function GET(
   request: NextRequest,
@@ -40,6 +42,7 @@ export async function GET(
   }
 }
 
+// POST /api/projects/:id/tasks - Create new task
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -47,37 +50,47 @@ export async function POST(
   const projectId = params.id;
 
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    // 1. Strict Auth Check
+    const user = await getCurrentUser()
 
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // 2. Input Validation
+    const body = await request.json()
+    const result = createTaskSchema.safeParse(body)
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: result.error.flatten() },
+        { status: 400 }
+      )
     }
 
-    const body = await request.json();
-    const { title, description, status = 'backlog', estimatedHours, sortOrder = 0 } = body;
+    const { title, description, status, estimatedHours, sortOrder } = result.data
 
-    if (!title) {
-      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
-    }
-
-    // Insert new task
+    // 3. Insert Task
     const [newTask] = await db
       .insert(tasks)
       .values({
         projectId,
         title,
-        description,
+        description: description || null,
         status,
-        estimatedHours,
-        sortOrder,
+        estimatedHours: estimatedHours || null,
+        sortOrder: sortOrder || 0,
         createdBy: user.id,
         timeSpent: 0,
       })
       .returning();
 
+    if (!newTask) {
+      throw new Error('Failed to create task record')
+    }
+
     return NextResponse.json({ task: newTask }, { status: 201 });
+
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode })
+    }
     console.error('[POST /api/projects/[id]/tasks] Error:', error);
     return NextResponse.json(
       { error: 'Failed to create task' },
