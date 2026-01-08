@@ -15,7 +15,14 @@ export interface TaskData {
   timeSpent?: number;
   estimatedHours?: number;
   description?: string;
-  comments?: string;
+  comments?: {
+    id: string;
+    memberId: string;
+    memberName: string;
+    comment: string;
+    createdDate: string;
+    editedDate?: string;
+  }[];
   subtasks?: {
     id: string;
     title: string;
@@ -23,19 +30,18 @@ export interface TaskData {
     estimatedDuration: number;
     timeSpent: number;
   }[];
-  members?: string[];
+  members?: {
+    memberId: string;
+    memberName: string;
+    addedDate: string;
+    removedDate?: string;
+  }[];
 }
 
 // Types for TaskCard component
 export interface TaskCardProps {
   id: string;
   data: TaskData;
-}
-
-// Types for EditableTitle component
-export interface TaskCardTitleProps {
-  nodeId: string;
-  title: string;
 }
 
 // Type for saved tasks that get stored in the task book

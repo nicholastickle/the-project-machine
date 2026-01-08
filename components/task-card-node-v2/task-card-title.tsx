@@ -1,120 +1,103 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import useStore from '@/stores/flow-store';
-import { TaskCardTitleProps } from '@/stores/types';
+import { TaskData } from '@/stores/types';
 
-export default function TaskCardTitle({ nodeId, title }: TaskCardTitleProps) {
+interface TaskCardTitleProps {
+    nodeId: string;
+    data: TaskData;
+}
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [editValue, setEditValue] = useState(title);
-    const inputRef = useRef<HTMLTextAreaElement>(null);
+export default function TaskCardTitle({ nodeId, data }: TaskCardTitleProps) {
+    const [value, setValue] = useState(data.title || '');
+    const [fontSize, setFontSize] = useState(48); // Starting font size
+    const textAreaRef = useRef<HTMLTextAreaElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const updateNodeData = useStore((state) => state.updateNodeData);
 
-    useEffect(() => {
-        if (isEditing && inputRef.current) {
-            inputRef.current.focus();
-            // Set initial height
-            inputRef.current.style.height = 'auto';
-            inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
-        }
-    }, [isEditing]);
+    const maxFontSize = 48;
+    const minFontSize = 12;
 
-    useEffect(() => {
-        if (!isEditing) {
-            setEditValue(title);
-        }
-    }, [title, isEditing]);
+    const adjustFontSize = useCallback(() => {
+        if (!textAreaRef.current || !containerRef.current) return;
 
-    const handleTitleClick = () => {
-        setIsEditing(true);
-        setEditValue(title);
-    };
+        const textarea = textAreaRef.current;
+        const container = containerRef.current;
 
-    const handleSave = () => {
-        const trimmedValue = editValue.trim();
+        // Get container dimensions
+        const containerHeight = container.clientHeight;
 
-        updateNodeData(nodeId, { title: trimmedValue });
+        // Start with max size
+        let currentSize = maxFontSize;
 
-        setIsEditing(false);
-    };
+        // Test if content fits at current size
+        textarea.style.fontSize = `${currentSize}px`;
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
 
-
-    const handleCancel = () => {
-        setEditValue(title);
-        setIsEditing(false);
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handleSave();
-        } else if (e.key === 'Escape') {
-            e.preventDefault();
-            handleCancel();
+        // Only reduce font size if content overflows the container height
+        while (currentSize > minFontSize && textarea.scrollHeight > containerHeight) {
+            currentSize -= 1;
+            textarea.style.fontSize = `${currentSize}px`;
+            textarea.style.height = 'auto';
+            textarea.style.height = `${textarea.scrollHeight}px`;
         }
 
-        e.stopPropagation();
+        setFontSize(currentSize);
+    }, [maxFontSize, minFontSize]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setValue(e.target.value);
+        requestAnimationFrame(adjustFontSize);
     };
 
     const handleBlur = () => {
-        handleSave();
+        updateNodeData(nodeId, { title: value.trim() });
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setEditValue(e.target.value);
+    const handleContainerClick = () => {
+        textAreaRef.current?.focus();
+    };
 
-        // Auto-resize the textarea
-        if (inputRef.current) {
-            inputRef.current.style.height = 'auto';
-            inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            textAreaRef.current?.blur();
         }
-    };
-
-    const handleInputClick = (e: React.MouseEvent<HTMLTextAreaElement>) => {
         e.stopPropagation();
     };
 
-    const handleParagraphClick = (e: React.MouseEvent<HTMLParagraphElement>) => {
-        e.stopPropagation();
-        handleTitleClick();
-    };
+    // Update value when data changes
+    useEffect(() => {
+        setValue(data.title || '');
+    }, [data.title]);
 
-    if (isEditing) {
-        return (
-            <textarea
-                ref={inputRef}
-                value={editValue}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                onBlur={handleBlur}
-                onClick={handleInputClick}
-                className={`
-          w-full bg-transparent resize-none
-          placeholder:text-task-card-placeholder border-none outline-none
-          
-        `}
-                placeholder="Enter task..."
-                maxLength={200}
-                autoComplete="off"
-                spellCheck={true}
-                rows={1}
-                style={{ minHeight: 'auto', height: 'auto' }}
-            />
-        );
-    }
+    // Adjust font size when value or container changes
+    useEffect(() => {
+        requestAnimationFrame(adjustFontSize);
+    }, [value, adjustFontSize]);
 
     return (
-        <p
-            onClick={handleParagraphClick}
-            className={`
-            cursor-text w-full overflow-hidden break-words
-        `}
-
+        <div
+            ref={containerRef}
+            onClick={handleContainerClick}
+            className="w-full h-[280px] flex flex-col items-center justify-center cursor-text"
         >
-            {title
-                ? title
-                : <span className="placeholder:text-task-card-placeholder text-task-card-placeholder">Enter task...</span>
-            }
-        </p>
+            <textarea
+                ref={textAreaRef}
+                value={value}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                onKeyDown={handleKeyDown}
+                placeholder="Enter task..."
+                rows={1}
+                className="w-full h-full bg-transparent resize-none border-none outline-none text-center font-soft text-task-card-foreground leading-tight overflow-hidden p-2"
+                style={{
+                    fontSize: `${fontSize}px`,
+                    lineHeight: '1.1',
+                }}
+                spellCheck={true}
+            />
+        </div>
     );
 }
