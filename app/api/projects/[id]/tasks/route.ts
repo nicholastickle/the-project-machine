@@ -13,12 +13,7 @@ export async function GET(
   const projectId = params.id;
 
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const user = await getCurrentUser();
 
     // Fetch all non-deleted tasks for this project
     // RLS will automatically filter to only tasks user has access to
@@ -34,11 +29,11 @@ export async function GET(
 
     return NextResponse.json({ tasks: projectTasks });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode })
+    }
     console.error('[GET /api/projects/[id]/tasks] Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch tasks' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch tasks' }, { status: 500 });
   }
 }
 

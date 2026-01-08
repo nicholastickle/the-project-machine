@@ -11,59 +11,7 @@ import { createProjectSchema } from '@/lib/validation/schemas'
 export async function GET(request: NextRequest) {
   try {
     console.log('[GET /api/projects] Starting request')
-    console.log('[GET /api/projects] Request headers:', {
-      cookie: request.headers.get('cookie') ? 'set' : 'not set',
-      authorization: request.headers.get('authorization') ? 'set' : 'not set',
-    })
-
-    // Try the standard approach first
-    const supabase = await createClient()
-    let { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    console.log('[GET /api/projects] Standard auth check:', {
-      hasUser: !!user,
-      userId: user?.id,
-      userEmail: user?.email,
-      authError: authError?.message
-    })
-
-    // If standard auth fails, try extracting from cookies directly
-    if (!user && authError) {
-      console.log('[GET /api/projects] Standard auth failed, trying cookie extraction...')
-      const userFromCookie = await extractUserFromCookies()
-      if (userFromCookie) {
-        user = {
-          id: userFromCookie.id!,
-          email: userFromCookie.email,
-          // @ts-ignore - just setting the fields we need
-          aud: 'authenticated',
-          role: 'authenticated',
-        }
-        authError = null
-        console.log('[GET /api/projects] Successfully extracted user from cookies:', {
-          userId: user.id,
-          userEmail: user.email
-        })
-      }
-    }
-
-    if (authError || !user) {
-      console.error('[GET /api/projects] Authorization failed:', {
-        authError: authError?.message,
-        noUser: !user
-      })
-      return NextResponse.json(
-        {
-          error: 'Unauthorized',
-          details: authError?.message || 'No user found in session',
-          debug: {
-            hasAuthError: !!authError,
-            hasUser: !!user
-          }
-        },
-        { status: 401 }
-      )
-    }
+    const user = await getCurrentUser()
 
     // Fetch projects with Drizzle (RLS will filter to user's projects)
     const projectsList = await db
@@ -80,6 +28,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ projects: projectsList })
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode })
+    }
     console.error('Unexpected error:', error)
     return NextResponse.json(
       {

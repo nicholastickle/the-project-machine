@@ -5,19 +5,21 @@ import { AuthError } from '@/lib/auth/session'
 import { db } from '@/lib/db'
 
 // Mock lib/auth/session
-class MockAuthError extends Error {
-  statusCode: number
-  constructor(message: string, statusCode: number) {
-    super(message)
-    this.statusCode = statusCode
-    this.name = 'AuthError'
+vi.mock('@/lib/auth/session', () => {
+  class MockAuthError extends Error {
+    statusCode: number
+    constructor(message: string, statusCode: number) {
+      super(message)
+      this.statusCode = statusCode
+      this.name = 'AuthError'
+    }
   }
-}
 
-vi.mock('@/lib/auth/session', () => ({
-  getCurrentUser: vi.fn(),
-  AuthError: MockAuthError,
-}))
+  return {
+    getCurrentUser: vi.fn(),
+    AuthError: MockAuthError,
+  }
+})
 
 // Mock database
 vi.mock('@/lib/db', () => ({

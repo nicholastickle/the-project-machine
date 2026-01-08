@@ -7,19 +7,21 @@ import { eq, and, isNull } from 'drizzle-orm';
 import { AuthError } from '@/lib/auth/session';
 
 // Mock lib/auth/session
-class MockAuthError extends Error {
-  statusCode: number
-  constructor(message: string, statusCode: number) {
-    super(message)
-    this.statusCode = statusCode
-    this.name = 'AuthError'
+vi.mock('@/lib/auth/session', () => {
+  class MockAuthError extends Error {
+    statusCode: number
+    constructor(message: string, statusCode: number) {
+      super(message)
+      this.statusCode = statusCode
+      this.name = 'AuthError'
+    }
   }
-}
 
-vi.mock('@/lib/auth/session', () => ({
-  getCurrentUser: vi.fn(),
-  AuthError: MockAuthError,
-}))
+  return {
+    getCurrentUser: vi.fn(),
+    AuthError: MockAuthError,
+  }
+})
 
 // Mock database
 vi.mock('@/lib/db', () => ({
@@ -43,6 +45,10 @@ describe('GET /api/projects/[id]/tasks', () => {
   });
 
   it('returns 401 when user is not authenticated', async () => {
+    console.log('TASKS IMPORT:', tasks ? 'Defined' : 'Undefined');
+    // Debug 500 error - allowing error to pass through
+    const consoleSpy = vi.spyOn(console, 'error');
+
     const { getCurrentUser } = await import('@/lib/auth/session');
 
     vi.mocked(getCurrentUser).mockRejectedValue(new AuthError('Unauthorized', 401));
@@ -50,6 +56,9 @@ describe('GET /api/projects/[id]/tasks', () => {
     const request = new NextRequest(`http://localhost:3000/api/projects/${mockProjectId}/tasks`);
     const response = await GET(request, { params: { id: mockProjectId } });
     const data = await response.json();
+
+    // restore
+    consoleSpy.mockRestore();
 
     expect(response.status).toBe(401);
     expect(data.error).toBe('Unauthorized');
@@ -199,8 +208,9 @@ describe('POST /api/projects/[id]/tasks', () => {
     const response = await POST(request, { params: { id: mockProjectId } });
     const data = await response.json();
 
-    expect(response.status).toBe(400); // Validation failed
-    expect(data.error).toBe('Title is required');
+    expect(response.status).toBe(400);
+    expect(data.error).toBe('Validation failed');
+    expect(data.details.fieldErrors.title).toBeDefined();
   });
 
   it('creates task with minimal fields', async () => {
