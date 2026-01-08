@@ -89,14 +89,15 @@ export default function TaskCardTitle({ nodeId, data }: TaskCardTitleProps) {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
-                placeholder="Enter task..."
-                rows={1}
+                maxLength={200}
+                autoComplete="off"
+                spellCheck={true}
                 className="w-full h-full bg-transparent resize-none border-none outline-none text-center font-soft text-task-card-foreground leading-tight overflow-hidden p-2"
                 style={{
                     fontSize: `${fontSize}px`,
                     lineHeight: '1.1',
                 }}
-                spellCheck={true}
+                
             />
         </div>
     );

@@ -1,4 +1,8 @@
-import { Textarea } from "@/components/ui/textarea";
+import TaskCardOptionsDescription from "@/components/task-card-options/task-card-options-description";
+import TaskCardOptionsSubtasks from "@/components/task-card-options/task-card-options-subtasks";
+import TaskCardOptionsComments from "@/components/task-card-options/task-card-options-comments";
+import TaskCardOptionsTitle from "@/components/task-card-options/task-card-options-title";
+import TaskCardMembersIcons from "./task-card-members-icons";
 
 import useStore from '@/stores/flow-store';
 import { TaskData } from '@/stores/types';
@@ -8,98 +12,64 @@ interface TaskCardOptionsPanelProps {
     data: TaskData;
 }
 
-import { Play } from 'lucide-react';
-
 export default function TaskCardOptionsPanel({ nodeId, data }: TaskCardOptionsPanelProps) {
 
-    const node = useStore((state) => state.nodes.find(n => n.id === nodeId));
-
-
     return (
-        <div className="flex flex-col border border-4 border-task-card-panel-border rounded-xl shadow-md h-full bg-task-card-panel-background text-task-card-panel-foreground p-3">
+        <div className="flex flex-row border border-4 border-task-card-panel-border rounded-xl h-full bg-task-card-panel-background text-task-card-panel-foreground p-1">
 
-            <div className="flex flex-col flex-[1.5]">
-                <div className="flex flex-[4] items-center ">
-                    <h2 className="text-3xl ">{data.title}</h2>
+            <div className="flex flex-col flex-[10]">
+                <div className="flex flex-row flex-[1.5]">
+                    <div className="flex flex-[8] border text-2xl p-3">
+                        <TaskCardOptionsTitle nodeId={nodeId} title={data.title} />
+                    </div>
+                    <div className="flex flex-row flex-[4] border items-center justify-end p-3">
+                        <TaskCardMembersIcons members={data.members} />
+                    </div>
                 </div>
-                <div className="flex flex-row flex-[8]">
 
-                    <div className="flex flex-col flex-[3] ">
-                        <div className="flex flex-[6] text-xs items-end">Start:</div>
-                        <div className="flex flex-[6] text-sm">12 June 2025</div>
-
-                    </div>
-                    <div className="flex flex-col flex-[3]">
-                        <div className="flex flex-[6] text-xs items-end">Duration:</div>
-                        <div className="flex flex-[6] text-sm">2 days</div>
-
-                    </div>
-                    <div className="flex flex-col flex-[3]">
-                        <div className="flex flex-[6] text-xs items-end">End:</div>
-                        <div className="flex flex-[6] text-sm">14 June 2025</div>
-
-                    </div>
-                    <div className="flex flex-row flex-[3]">
-                        <div className="flex flex-[6] flex-col">
-                            <div className="flex flex-[6] text-xs items-end">Timer:</div>
-                            <div className="flex flex-[6] text-sm">00:00:00</div>
+                <div className="flex flex-row flex-[10.5]">
+                    <div className="flex flex-col flex-[9]">
+                        <div className="flex flex-col">
+                            <TaskCardOptionsDescription nodeId={nodeId} description={data.description} />
                         </div>
-                        <div className="flex flex-[6] flex-col items-start justify-center ">
-                            <Play size={30} />
+                        <div className="flex flex-col">
+                            <TaskCardOptionsSubtasks nodeId={nodeId} subtasks={data.subtasks} />
+                        </div>
+                        <div className="flex flex-col">
+                            <TaskCardOptionsComments nodeId={nodeId} comments={data.comments} />
                         </div>
                     </div>
-
                 </div>
             </div>
-            <div className="flex flex-row flex-[11.5] mt-3">
-                <div className="flex flex-col flex-[9]">
-                    <div className="flex flex-col flex-[3.5]">
-                        <div className="flex flex-[2] items-center text-sm">Description</div>
-                        <div className="flex flex-[10]">
-                            <Textarea className="w-full bg-task-card-panel-background-accent focus:outline-none focus:ring-0 resize-none text-xs rounded-2xl" placeholder="Enter task description..." /> </div>
-                    </div>
-                    <div className="flex flex-col flex-[5] mt-1">
-                        <div className="flex flex-[1]">Checklist</div>
-                        <div className="flex flex-[1]">100% (Progress bar) </div>
-                        <div className="flex flex-[9]">Checklist items</div>
-                        <div className="flex flex-[1]">Add an item</div>
-                    </div>
-                    <div className="flex flex-col flex-[3.5] border">
 
-                        <div className="flex flex-[2] border">Activity:</div>
-                        <div className="flex flex-[3] border"><span>[A]</span> Write a comment</div>
-                        <div className="flex flex-[7] border"><span>[A]</span> Comment summary</div>
+            <div className="flex flex-col flex-[3] border">
+
+                <div className="flex flex-col flex-[4] border">
+
+                    <div className="flex flex-[2] border">Status:</div>
+                    <div className="flex flex-col flex-[10] border">
+
+                        <div className="flex flex-[2] border">Not Started</div>
+                        <div className="flex flex-[2] border">On-going</div>
+                        <div className="flex flex-[2] border">Stuck</div>
+                        <div className="flex flex-[2] border">Complete</div>
+                        <div className="flex flex-[2] border">Abandoned</div>
                     </div>
 
                 </div>
-                <div className="flex flex-col flex-[3] border">
-
-                    <div className="flex flex-col flex-[4] border">
-
-                        <div className="flex flex-[2] border">Status:</div>
-                        <div className="flex flex-col flex-[10] border">
-
-                            <div className="flex flex-[2] border">Not Started</div>
-                            <div className="flex flex-[2] border">On-going</div>
-                            <div className="flex flex-[2] border">Stuck</div>
-                            <div className="flex flex-[2] border">Complete</div>
-                            <div className="flex flex-[2] border">Abandoned</div>
-                        </div>
-
-                    </div>
-                    <div className="flex flex-col flex-[8] border">
-                        <div className="flex flex-[2] border">Actions</div>
-                        <div className="flex flex-col flex-[10] border">
-                            <div className="flex flex-[2] border">Attachments</div>
-                            <div className="flex flex-[2] border">Save as template</div>
-                            <div className="flex flex-[2] border">Archive</div>
-                        </div>
-
+                <div className="flex flex-col flex-[8] border">
+                    <div className="flex flex-[2] border">Actions</div>
+                    <div className="flex flex-col flex-[10] border">
+                        <div className="flex flex-[2] border">Members</div>
+                        <div className="flex flex-[2] border">Save as template</div>
+                        <div className="flex flex-[2] border">Archive</div>
                     </div>
 
                 </div>
+
             </div>
-        </div>
+
+        </div >
 
     );
 }
