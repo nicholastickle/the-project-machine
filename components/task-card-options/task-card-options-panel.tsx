@@ -3,6 +3,8 @@ import TaskCardOptionsSubtasks from "@/components/task-card-options/task-card-op
 import TaskCardOptionsComments from "@/components/task-card-options/task-card-options-comments";
 import TaskCardOptionsTitle from "@/components/task-card-options/task-card-options-title";
 import TaskCardMembersIcons from "./task-card-options-members-icons";
+import TaskCardOptionsStatus from "./task-card-options-status";
+import TaskCardOptionsActions from "./task-card-options-actions";
 
 import { TaskData } from '@/stores/types';
 
@@ -27,7 +29,7 @@ export default function TaskCardOptionsPanel({ nodeId, data }: TaskCardOptionsPa
                 </div>
 
                 <div className="flex flex-row flex-[10.5] min-h-0">
-                    <div className="flex flex-col flex-[9] overflow-y-scroll min-h-0 pr-2" style={{
+                    <div className="flex flex-col flex-[9] overflow-y-scroll min-h-0" style={{
                         scrollbarWidth: 'thin',
                         scrollbarColor: '#cbd5e1 transparent'
                     }}>
@@ -44,29 +46,21 @@ export default function TaskCardOptionsPanel({ nodeId, data }: TaskCardOptionsPa
                 </div>
             </div>
 
-            <div className="flex flex-col flex-[3] border">
-
-                <div className="flex flex-col flex-[4] border">
-
-                    <div className="flex flex-[2] border">Status:</div>
-                    <div className="flex flex-col flex-[10] border">
-
-                        <div className="flex flex-[2] border">Not Started</div>
-                        <div className="flex flex-[2] border">On-going</div>
-                        <div className="flex flex-[2] border">Stuck</div>
-                        <div className="flex flex-[2] border">Complete</div>
-                        <div className="flex flex-[2] border">Abandoned</div>
-                    </div>
-
+            <div className="flex flex-col flex-[3] border-r border-t border-b">
+                <div className="flex flex- col flex-[2]">
+                    
                 </div>
-                <div className="flex flex-col flex-[8] border">
-                    <div className="flex flex-[2] border">Actions</div>
-                    <div className="flex flex-col flex-[10] border">
-                        <div className="flex flex-[2] border">Members</div>
-                        <div className="flex flex-[2] border">Save as template</div>
-                        <div className="flex flex-[2] border">Archive</div>
-                    </div>
-
+                <div className="flex flex-col flex-[6]">
+                    <TaskCardOptionsStatus
+                        nodeId={nodeId}
+                        status={data.status}
+                    />
+                </div>
+                <div className="flex flex-col flex-[8] ">
+                    <TaskCardOptionsActions 
+                        nodeId={nodeId} 
+                        data={data} 
+                    />
                 </div>
 
             </div>

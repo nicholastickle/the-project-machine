@@ -14,10 +14,12 @@ export default function SubtaskCheckbox({ nodeId, subtaskId, isCompleted }: Subt
     };
 
     return (
-        <Checkbox
-            checked={isCompleted}
-            onCheckedChange={handleCheckedChange}
-            className="cursor-pointer"
-        />
+        <div className="flex justify-center items-center">
+            <Checkbox
+                checked={isCompleted}
+                onCheckedChange={handleCheckedChange}
+                className="cursor-pointer"
+            />
+        </div>
     );
 }

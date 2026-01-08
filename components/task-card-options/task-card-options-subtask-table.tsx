@@ -48,7 +48,7 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
             <tbody>
                 {subtasks.map((subtask) => (
                     <tr key={subtask.id} className="h-8 last:border-b-0">
-                        <td className="w-[30px] text-center align-middle">
+                        <td className="w-[30px] text-center">
                             <SubtaskCheckbox
                                 nodeId={nodeId}
                                 subtaskId={subtask.id}
@@ -99,7 +99,17 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
                             + Add subtask
                         </button>
                     </td>
-                    <td className="w-[100px] text-center text-sm">{totalEstimated} h</td>
+                    <td className="w-[100px] text-center text-sm">
+                        <div className="flex items-center justify-center text-sm">
+                            <input
+                                type="text"
+                                value={totalEstimated.toString()}
+                                readOnly
+                                className="w-8 text-center bg-transparent border-none outline-none text-sm cursor-default"
+                            />
+                            <span>h</span>
+                        </div>
+                    </td>
                     <td className="w-[160px] text-center text-sm">{formatTotalTime(totalTimeSpent)}</td>
                     <td className="w-[30px]"></td>
                 </tr>
