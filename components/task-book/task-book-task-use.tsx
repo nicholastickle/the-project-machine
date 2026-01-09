@@ -19,7 +19,7 @@ export default function TaskBookUse({ selectedTask, onClose }: TaskBookUseProps)
         addTaskNode({
             title: selectedTask.title,
             description: selectedTask.description || "",
-            status: selectedTask.status || "Backlog",
+            status: "Backlog",
             estimatedHours: selectedTask.estimatedHours || 0,
             timeSpent: selectedTask.timeSpent || 0,
             subtasks: selectedTask.subtasks || [],
