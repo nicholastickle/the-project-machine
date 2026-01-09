@@ -52,7 +52,7 @@ export type SavedTask = {
   timeSpent: number;
   estimatedHours?: number;
   description?: string;
-  comments?: string[];
+  comments?: string;
   subtasks?: Array<{
     id: string;
     title: string;

@@ -26,11 +26,6 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
         return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
     };
 
-    // Don't render table if no subtasks
-    if (subtasks.length === 0) {
-        return null;
-    }
-
     return (
         <table className="w-full border border-gray-200 rounded-lg overflow-hidden border-collapse">
             {/* Table Header */}

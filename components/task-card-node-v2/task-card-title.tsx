@@ -14,7 +14,6 @@ export default function TaskCardTitle({ nodeId, data }: TaskCardTitleProps) {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const updateNodeData = useStore((state) => state.updateNodeData);
-
     const maxFontSize = 48;
     const minFontSize = 12;
 
@@ -23,19 +22,14 @@ export default function TaskCardTitle({ nodeId, data }: TaskCardTitleProps) {
 
         const textarea = textAreaRef.current;
         const container = containerRef.current;
-
-        // Get container dimensions
         const containerHeight = container.clientHeight;
 
-        // Start with max size
         let currentSize = maxFontSize;
 
-        // Test if content fits at current size
         textarea.style.fontSize = `${currentSize}px`;
         textarea.style.height = 'auto';
         textarea.style.height = `${textarea.scrollHeight}px`;
 
-        // Only reduce font size if content overflows the container height
         while (currentSize > minFontSize && textarea.scrollHeight > containerHeight) {
             currentSize -= 1;
             textarea.style.fontSize = `${currentSize}px`;
@@ -60,19 +54,16 @@ export default function TaskCardTitle({ nodeId, data }: TaskCardTitleProps) {
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === 'Escape') {
+        if (e.key === 'Enter') {
             e.preventDefault();
-            textAreaRef.current?.blur();
+            e.currentTarget.blur();
         }
-        e.stopPropagation();
     };
 
-    // Update value when data changes
     useEffect(() => {
         setValue(data.title || '');
     }, [data.title]);
 
-    // Adjust font size when value or container changes
     useEffect(() => {
         requestAnimationFrame(adjustFontSize);
     }, [value, adjustFontSize]);
@@ -97,7 +88,7 @@ export default function TaskCardTitle({ nodeId, data }: TaskCardTitleProps) {
                     fontSize: `${fontSize}px`,
                     lineHeight: '1.1',
                 }}
-                
+
             />
         </div>
     );

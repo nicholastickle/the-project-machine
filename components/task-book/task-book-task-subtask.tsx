@@ -1,4 +1,3 @@
-import useTaskbookStore from '@/stores/taskbook-store';
 import { SavedTask } from '@/stores/types';
 import { CheckSquare } from 'lucide-react';
 import TaskBookTaskSubtaskTable from '@/components/task-book/task-book-task-subtask-table';
@@ -8,7 +7,6 @@ interface TaskBookTaskSubtaskProps {
 }
 
 export default function TaskBookTaskSubtask({ task }: TaskBookTaskSubtaskProps) {
-    const addSubtask = useTaskbookStore((state) => state.addSubtask);
 
     if (!task) {
         return null;
@@ -22,16 +20,7 @@ export default function TaskBookTaskSubtask({ task }: TaskBookTaskSubtaskProps) 
             </div>
             <div className='border border-gray-200 outline-none rounded-md bg-white'>
                 <TaskBookTaskSubtaskTable taskId={task.id} subtasks={task.subtasks || []} />
-                <div className=' ml-5 py-1'>
-                    {(!task.subtasks || task.subtasks.length === 0) && (
-                        <button
-                            onClick={() => addSubtask(task.id)}
-                            className="text-muted hover:text-muted-foreground cursor-pointer text-sm"
-                        >
-                            + Add subtask
-                        </button>
-                    )}
-                </div>
+                
             </div>
         </div>
     );

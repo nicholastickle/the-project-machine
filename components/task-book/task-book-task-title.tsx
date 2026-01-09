@@ -18,12 +18,6 @@ export default function TaskBookTaskTitle({ task }: TaskBookTaskTitleProps) {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setValue(e.target.value);
-
-        // Auto-resize the textarea
-        if (textAreaRef.current) {
-            textAreaRef.current.style.height = 'auto';
-            textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
-        }
     };
 
     const handleBlur = () => {
@@ -42,7 +36,7 @@ export default function TaskBookTaskTitle({ task }: TaskBookTaskTitleProps) {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            textAreaRef.current?.blur();
+            e.currentTarget.blur();
         }
     };
 
@@ -52,18 +46,17 @@ export default function TaskBookTaskTitle({ task }: TaskBookTaskTitleProps) {
 
     return (
         <textarea
-            ref={textAreaRef}
             value={value}
             onChange={handleInputChange}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
-            className="w-full bg-transparent resize-none border-none outline-none text-task-book-foreground font-semibold"
+            className="w-full bg-transparent resize-none overflow-hidden border-none outline-none text-task-book-foreground font-semibold"
             placeholder="Enter task title..."
             maxLength={200}
             autoComplete="off"
             spellCheck={true}
             rows={1}
-            style={{ minHeight: 'auto', height: 'auto' }}
+            style={{ fieldSizing: "content", height: 'auto' }}
         />
     );
 }

@@ -117,6 +117,7 @@ export default function TaskCardOptionsCommentsExisting({ nodeId, comments }: Ta
                             onKeyDown={editingCommentId === comment.id ? (e) => handleKeyDown(e, comment.id) : undefined}
                             onBlur={editingCommentId === comment.id ? () => handleBlur(comment.id) : undefined}
                             readOnly={editingCommentId !== comment.id}
+                            maxLength={1000}
                             className={`w-full text-sm bg-transparent border-none outline-none ${editingCommentId === comment.id ? 'bg-gray-50 rounded border' : ''
                                 }`}
                         />

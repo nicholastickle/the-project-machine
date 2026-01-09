@@ -25,14 +25,14 @@ export default function TaskCardOptionsSaveAction({ nodeId, data }: TaskCardOpti
 
     const handleSaveConfirm = () => {
         // Convert comments array to array of formatted strings
-        const convertCommentsToArray = (comments: TaskData['comments']) => {
-            if (!comments || comments.length === 0) return undefined;
+        const convertCommentsToString = (comments: TaskData['comments']) => {
+            if (!comments || comments.length === 0) return '';
 
             return comments.map(comment => {
                 const dateToUse = comment.editedDate || comment.createdDate;
                 const date = new Date(dateToUse).toLocaleDateString();
                 return `${comment.memberName}: ${comment.comment} - ${date}`;
-            });
+            }).join('\n\n'); // Double newline creates a space between comments
         };
 
         // Convert TaskData to SavedTask format
@@ -42,7 +42,7 @@ export default function TaskCardOptionsSaveAction({ nodeId, data }: TaskCardOpti
             timeSpent: data.timeSpent || 0,
             estimatedHours: data.estimatedHours,
             description: data.description,
-            comments: convertCommentsToArray(data.comments),
+            comments: convertCommentsToString(data.comments), // Now a string instead of array
             subtasks: data.subtasks
         };
 

@@ -6,15 +6,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+
 import TaskBookDelete from "@/components/task-book/task-book-task-delete"
 import TaskBookArrayOfTasks from "@/components/task-book/task-book-array-of-tasks"
 import TaskBookAddTask from "@/components/task-book/task-book-add-task"
@@ -22,6 +14,7 @@ import TaskBookUse from "@/components/task-book/task-book-task-use"
 import TaskBookTaskTitle from "@/components/task-book/task-book-task-title"
 import TaskBookTaskDescription from "@/components/task-book/task-book-task-description"
 import TaskBookTaskSubtask from "@/components/task-book/task-book-task-subtask"
+import TaskBookTaskComments from "@/components/task-book/task-book-task-comments"
 
 import { BookType } from "lucide-react"
 import { useState, useEffect } from 'react'
@@ -123,6 +116,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                     >
                                         <TaskBookTaskDescription task={selectedTask} />
                                         <TaskBookTaskSubtask task={selectedTask} />
+                                        <TaskBookTaskComments task={selectedTask} />
                                     </div>
                                 ) : (
                                     <div className="flex items-center justify-center h-full text-muted-foreground">
