@@ -27,7 +27,7 @@ export default function TaskCardPanelTitle({ nodeId, title }: TaskCardPanelTitle
             value={title || ''}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            className="w-full bg-transparent resize-none border-none outline-none"
+            className="w-full bg-transparent resize-none border-none outline-none overflow-hidden"
             placeholder="Enter task..."
             maxLength={200}
             autoComplete="off"
