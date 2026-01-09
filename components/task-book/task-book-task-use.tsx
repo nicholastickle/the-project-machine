@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Play } from "lucide-react"
 import { SavedTask } from '@/stores/types'
 import useStore from '@/stores/flow-store'
+import useTaskbookStore from '@/stores/taskbook-store'
 
 interface TaskBookUseProps {
     selectedTask: SavedTask | null;
@@ -10,6 +11,7 @@ interface TaskBookUseProps {
 
 export default function TaskBookUse({ selectedTask, onClose }: TaskBookUseProps) {
     const addTaskNode = useStore((state) => state.addTaskNode);
+    const updateSavedTask = useTaskbookStore((state) => state.updateSavedTask);
 
     const handleUse = () => {
         if (!selectedTask) return;
@@ -22,6 +24,10 @@ export default function TaskBookUse({ selectedTask, onClose }: TaskBookUseProps)
             timeSpent: selectedTask.timeSpent || 0,
             subtasks: selectedTask.subtasks || [],
         });
+
+        // Update the lastUsed timestamp
+        const now = new Date().toLocaleString();
+        updateSavedTask(selectedTask.id, { lastUsed: now });
 
         // Close the dialog after adding the task
         onClose?.();

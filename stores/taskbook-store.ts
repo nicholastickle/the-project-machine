@@ -9,6 +9,9 @@ interface TaskbookState {
     addSavedTask: (task: Omit<SavedTask, 'id' | 'savedAt' | 'lastUpdated'>) => void;
     removeTask: (taskId: string) => void;
     updateSavedTask: (taskId: string, updates: Partial<SavedTask>) => void;
+    addSubtask: (taskId: string) => void;
+    updateSubtask: (taskId: string, subtaskId: string, updates: Partial<SavedTask['subtasks'][0]>) => void;
+    deleteSubtask: (taskId: string, subtaskId: string) => void;
     clearNewTaskIndicator: () => void;
 }
 
@@ -43,10 +46,75 @@ const useTaskbookStore = create<TaskbookState>()(
 
             updateSavedTask: (taskId: string, updates: Partial<SavedTask>) => {
                 const now = new Date().toLocaleString();
+                const isOnlyLastUsedUpdate = Object.keys(updates).length === 1 && 'lastUsed' in updates;
+
                 set({
                     savedTasks: get().savedTasks.map(task =>
                         task.id === taskId
-                            ? { ...task, ...updates, lastUpdated: now }
+                            ? {
+                                ...task,
+                                ...updates,
+                                ...(isOnlyLastUsedUpdate ? {} : { lastUpdated: now })
+                            }
+                            : task
+                    )
+                });
+            },
+
+            addSubtask: (taskId: string) => {
+                const now = new Date().toLocaleString();
+                const newSubtask = {
+                    id: `subtask-${uuidv4()}`,
+                    title: '',
+                    isCompleted: false,
+                    estimatedDuration: 0,
+                    timeSpent: 0
+                };
+
+                set({
+                    savedTasks: get().savedTasks.map(task =>
+                        task.id === taskId
+                            ? {
+                                ...task,
+                                subtasks: [...(task.subtasks || []), newSubtask],
+                                lastUpdated: now
+                            }
+                            : task
+                    )
+                });
+            },
+
+            updateSubtask: (taskId: string, subtaskId: string, updates: Partial<SavedTask['subtasks'][0]>) => {
+                const now = new Date().toLocaleString();
+
+                set({
+                    savedTasks: get().savedTasks.map(task =>
+                        task.id === taskId
+                            ? {
+                                ...task,
+                                subtasks: (task.subtasks || []).map(subtask =>
+                                    subtask.id === subtaskId
+                                        ? { ...subtask, ...updates }
+                                        : subtask
+                                ),
+                                lastUpdated: now
+                            }
+                            : task
+                    )
+                });
+            },
+
+            deleteSubtask: (taskId: string, subtaskId: string) => {
+                const now = new Date().toLocaleString();
+
+                set({
+                    savedTasks: get().savedTasks.map(task =>
+                        task.id === taskId
+                            ? {
+                                ...task,
+                                subtasks: (task.subtasks || []).filter(subtask => subtask.id !== subtaskId),
+                                lastUpdated: now
+                            }
                             : task
                     )
                 });

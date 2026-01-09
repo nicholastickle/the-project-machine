@@ -21,6 +21,7 @@ import TaskBookAddTask from "@/components/task-book/task-book-add-task"
 import TaskBookUse from "@/components/task-book/task-book-task-use"
 import TaskBookTaskTitle from "@/components/task-book/task-book-task-title"
 import TaskBookTaskDescription from "@/components/task-book/task-book-task-description"
+import TaskBookTaskSubtask from "@/components/task-book/task-book-task-subtask"
 
 import { BookType } from "lucide-react"
 import { useState, useEffect } from 'react'
@@ -34,21 +35,22 @@ interface TaskBookDialogProps {
 }
 
 export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskBookDialogProps) {
-    const [selectedTask, setSelectedTask] = useState<SavedTask | null>(null);
+    const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
     const savedTasks = useTaskbookStore((state) => state.savedTasks);
+    const selectedTask = selectedTaskId ? savedTasks.find(task => task.id === selectedTaskId) || null : null;
 
     useEffect(() => {
         if (isOpen) {
-            setSelectedTask(null);
+            setSelectedTaskId(null);
         }
     }, [isOpen]);
 
     const handleTaskClick = (task: SavedTask) => {
-        setSelectedTask(task);
+        setSelectedTaskId(task.id);
     };
 
     const handleDeleteComplete = () => {
-        setSelectedTask(null);
+        setSelectedTaskId(null);
     };
 
     return (
@@ -68,7 +70,6 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                     </div>
                     <div className="flex flex-[11] flex-row">
                         <div className="flex flex-col flex-[3] " >
-
                             <div className="flex flex-col flex-[12]  bg-task-book-accent rounded-bl-2xl ">
                                 <div className="border-y flex border-task-book-border px-4 items-center justify-center">
                                     <TaskBookAddTask />
@@ -80,7 +81,6 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                         scrollbarColor: 'hsl(var(--border)) transparent'
                                     }}
                                 >
-
                                     <TaskBookArrayOfTasks
                                         tasks={savedTasks}
                                         selectedTask={selectedTask}
@@ -90,10 +90,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                             </div>
                         </div>
                         <div className="flex flex-col flex-[9]">
-
                             <div className="flex flex-row flex-[1.5] border-y border-task-book-border" >
-
-
                                 <div className="flex flex-[5] items-center px-4 py-3">
                                     <TaskBookTaskTitle task={selectedTask} />
                                 </div>
@@ -104,7 +101,6 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                     />
                                 </div>
                                 <div className="flex flex-col flex-[3]">
-
                                     <div className="flex flex-col flex-1 justify-center items-center px-2 py-1">
                                         <p className="text-xs text-muted-foreground">Last updated</p>
                                         <p className="text-xs text-task-book-foreground">{selectedTask ? selectedTask.lastUpdated : "-"}</p>
@@ -113,9 +109,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                         <p className="text-xs text-muted-foreground">Last used</p>
                                         <p className="text-xs text-task-book-foreground">{selectedTask ? selectedTask.lastUsed || "-" : "-"}</p>
                                     </div>
-
                                 </div>
-
                             </div>
 
                             <div className="flex flex-col flex-[9] max-h-[60vh] overflow-hidden">
@@ -128,77 +122,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                         }}
                                     >
                                         <TaskBookTaskDescription task={selectedTask} />
-
-                                        {selectedTask.estimatedHours && (
-                                            <p className="mb-3 text-sm">
-                                                <span className="font-semibold">Estimated Total Hours:</span> {selectedTask.estimatedHours}h
-                                            </p>
-                                        )}
-
-                                        {selectedTask.timeSpent !== undefined && (
-                                            <p className="mb-3 text-sm">
-                                                <span className="font-semibold">Total Time Spent:</span> {(() => {
-                                                    const seconds = selectedTask.timeSpent;
-                                                    const hours = Math.floor(seconds / 3600);
-                                                    const minutes = Math.floor((seconds % 3600) / 60);
-                                                    const secs = seconds % 60;
-                                                    return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
-                                                })()}
-                                            </p>
-                                        )}
-
-                                        {selectedTask.subtasks && selectedTask.subtasks.length > 0 && (
-                                            <>
-                                                <p className="text-sm font-semibold mb-2 mt-3">Subtasks</p>
-                                                <div className="border border-task-book-border rounded-md">
-                                                    <Table>
-                                                        <TableHeader>
-                                                            <TableRow className="hover:bg-transparent border-task-card-border">
-                                                                <TableHead className="w-auto">Subtasks</TableHead>
-                                                                <TableHead className="text-center w-[100px]">Duration Est.</TableHead>
-                                                                <TableHead className="text-center w-[160px]">Time Spent</TableHead>
-                                                            </TableRow>
-                                                        </TableHeader>
-                                                        <TableBody>
-                                                            {selectedTask.subtasks.map((subtask) => (
-                                                                <TableRow key={subtask.id} className="hover:bg-transparent border-task-card-border">
-                                                                    <TableCell className="w-auto">
-                                                                        {subtask.title}
-                                                                    </TableCell>
-                                                                    <TableCell className="text-center w-[100px]">{subtask.estimatedDuration} h</TableCell>
-                                                                    <TableCell className="text-center w-[160px]">
-                                                                        {(() => {
-                                                                            const seconds = subtask.timeSpent;
-                                                                            const hours = Math.floor(seconds / 3600);
-                                                                            const minutes = Math.floor((seconds % 3600) / 60);
-                                                                            const secs = seconds % 60;
-                                                                            return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
-                                                                        })()}
-                                                                    </TableCell>
-                                                                </TableRow>
-                                                            ))}
-                                                        </TableBody>
-                                                        <TableFooter className="bg-transparent border-task-card-border">
-                                                            <TableRow className="hover:bg-transparent border-task-card-border">
-                                                                <TableCell className="font-medium w-auto">Total</TableCell>
-                                                                <TableCell className="text-center font-medium w-[100px]">
-                                                                    {selectedTask.subtasks.reduce((sum, subtask) => sum + subtask.estimatedDuration, 0)} h
-                                                                </TableCell>
-                                                                <TableCell className="text-center font-medium w-[160px]">
-                                                                    {(() => {
-                                                                        const totalSeconds = selectedTask.subtasks.reduce((sum, subtask) => sum + subtask.timeSpent, 0);
-                                                                        const hours = Math.floor(totalSeconds / 3600);
-                                                                        const minutes = Math.floor((totalSeconds % 3600) / 60);
-                                                                        const secs = totalSeconds % 60;
-                                                                        return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
-                                                                    })()}
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        </TableFooter>
-                                                    </Table>
-                                                </div>
-                                            </>
-                                        )}
+                                        <TaskBookTaskSubtask task={selectedTask} />
                                     </div>
                                 ) : (
                                     <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -207,9 +131,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                 )}
                             </div>
                             <div className="flex flex-row flex-[0.5] border-t border-task-book-border">
-
                                 <div className="flex flex-[9]">
-
                                 </div>
                                 <div className="flex flex-[3] justify-center items-center py-3">
                                     <TaskBookDelete
@@ -218,17 +140,11 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                         onDeleteComplete={handleDeleteComplete}
                                     />
                                 </div>
-
                             </div>
-
-
-
                         </div>
                     </div>
                 </div>
             </DialogContent>
-
-
         </Dialog>
     );
 }
