@@ -87,7 +87,7 @@ const useTaskbookStore = create<TaskbookState>()(
                 });
             },
 
-            updateSubtask: (taskId: string, subtaskId: string, updates: Partial<SavedTask['subtasks'][0]>) => {
+            updateSubtask: (taskId: string, subtaskId: string, updates: Partial<SubtaskType>) => {
                 const now = new Date().toLocaleString();
 
                 set({
