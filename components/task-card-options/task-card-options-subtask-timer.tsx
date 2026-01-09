@@ -15,18 +15,18 @@ export default function SubtaskTimer({ nodeId, subtaskId, timeSpent }: SubtaskTi
 
     const updateSubtask = useStore((state) => state.updateSubtask);
 
-    // Update currentTime when timeSpent changes externally
+ 
     useEffect(() => {
         setCurrentTime(timeSpent);
     }, [timeSpent]);
 
-    // Time tracking logic
+ 
     useEffect(() => {
         if (isTracking) {
             intervalRef.current = setInterval(() => {
                 setCurrentTime(prev => {
                     const newTime = prev + 1;
-                    // Use setTimeout to avoid setState during render
+                  
                     setTimeout(() => {
                         updateSubtask(nodeId, subtaskId, { timeSpent: newTime });
                     }, 0);
@@ -47,7 +47,7 @@ export default function SubtaskTimer({ nodeId, subtaskId, timeSpent }: SubtaskTi
         };
     }, [isTracking, nodeId, subtaskId, updateSubtask]);
 
-    // Format seconds to h:m:s
+   
     const formatTime = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);

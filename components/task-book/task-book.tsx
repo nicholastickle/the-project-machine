@@ -33,5 +33,3 @@ export default function TaskBook() {
         </div>
     );
 }
-
-// ${!isMobile && open ? 'left-[275px]' : 'left-[55px]'}`

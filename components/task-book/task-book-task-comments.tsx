@@ -1,6 +1,5 @@
 import useTaskbookStore from '@/stores/taskbook-store';
 import { SavedTask } from '@/stores/types';
-import { useState, useEffect } from 'react';
 import { MessageSquare } from 'lucide-react';
 
 interface TaskBookTaskCommentsProps {
@@ -8,22 +7,11 @@ interface TaskBookTaskCommentsProps {
 }
 
 export default function TaskBookTaskComments({ task }: TaskBookTaskCommentsProps) {
-    const [value, setValue] = useState(task?.description || '');
     const updateSavedTask = useTaskbookStore((state) => state.updateSavedTask);
 
-    useEffect(() => {
-        setValue(task?.comments || '');
-    }, [task?.comments]);
-
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setValue(e.target.value);
-    };
-
-    const handleBlur = () => {
         if (!task) return;
-        if (value !== task.comments) {
-            updateSavedTask(task.id, { comments: value });
-        }
+        updateSavedTask(task.id, { comments: e.target.value });
     };
 
     if (!task) {
@@ -37,9 +25,8 @@ export default function TaskBookTaskComments({ task }: TaskBookTaskCommentsProps
                 <span className="text-lg font-medium text-muted-foreground">Comments & Notes:</span>
             </div>
             <textarea
-                value={value}
+                value={task?.comments || ''}
                 onChange={handleInputChange}
-                onBlur={handleBlur}
                 className="w-full text-md placeholder:text-muted-foreground text-muted-foreground resize-none overflow-hidden border border-gray-200 outline-none p-2 rounded-md"
                 placeholder="Enter comments or notes..."
                 maxLength={1000}

@@ -1,7 +1,6 @@
 import { TaskData } from '@/stores/types';
 
 export default function TaskCardMembersIcons({ members }: { members?: TaskData['members'] }) {
-    // Only render if members exist, array is not empty, and members are not removed
     const activeMembers = members?.filter(member => !member.removedDate) || [];
 
     if (activeMembers.length === 0) {

@@ -42,26 +42,22 @@ export default function TaskCardOptionsMembersAction({ nodeId, data }: TaskCardO
         let updatedMembers = [...currentMembers];
 
         if (isMemberSelected(member.memberId)) {
-            // Remove member by setting removedDate
             updatedMembers = updatedMembers.map(m =>
                 m.memberId === member.memberId
                     ? { ...m, removedDate: currentTime }
                     : m
             );
         } else {
-            // Check if member exists but was removed
             const existingMemberIndex = updatedMembers.findIndex(
                 m => m.memberId === member.memberId
             );
 
             if (existingMemberIndex !== -1) {
-                // Re-add existing member by removing removedDate
                 updatedMembers[existingMemberIndex] = {
                     ...updatedMembers[existingMemberIndex],
                     removedDate: undefined
                 };
             } else {
-                // Add new member
                 updatedMembers.push({
                     memberId: member.memberId,
                     memberName: member.memberName,

@@ -1,6 +1,5 @@
 import useStore from '@/stores/flow-store';
 import { TaskData } from '@/stores/types';
-import { useRef, useEffect, useState } from 'react';
 import { AlignLeft } from 'lucide-react';
 
 interface TaskCardOptionsDescriptionProps {

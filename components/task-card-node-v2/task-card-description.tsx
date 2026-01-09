@@ -1,7 +1,6 @@
 import { AlignLeft } from 'lucide-react';
 
 export default function TaskCardDescription({ description }: { description?: string }) {
-  // Only render if description exists and is not empty
   if (!description || description.trim() === '') {
     return null;
   }

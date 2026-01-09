@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import useTaskbookStore from '@/stores/taskbook-store';
 import { SavedTask } from '@/stores/types';
 
@@ -8,10 +8,8 @@ interface TaskBookTaskTitleProps {
 
 export default function TaskBookTaskTitle({ task }: TaskBookTaskTitleProps) {
     const [value, setValue] = useState(task?.title || '');
-    const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const updateSavedTask = useTaskbookStore((state) => state.updateSavedTask);
 
-    // Update value when task changes
     useEffect(() => {
         setValue(task?.title || '');
     }, [task?.title]);
@@ -27,7 +25,6 @@ export default function TaskBookTaskTitle({ task }: TaskBookTaskTitleProps) {
         if (trimmedValue !== task.title && trimmedValue.length > 0) {
             updateSavedTask(task.id, { title: trimmedValue });
         } else if (trimmedValue.length === 0) {
-            // Reset to original title if empty
             setValue(task.title);
             updateSavedTask(task.id, { title: task.title });
         }

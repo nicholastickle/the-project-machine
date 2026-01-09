@@ -12,12 +12,12 @@ interface SubtaskTableProps {
 }
 
 export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
-    // Calculate totals
+
     const totalEstimated = subtasks.reduce((sum, subtask) => sum + subtask.estimatedDuration, 0);
     const totalTimeSpent = subtasks.reduce((sum, subtask) => sum + subtask.timeSpent, 0);
     const addSubtask = useStore((state) => state.addSubtask);
 
-    // Format seconds to h:m:s for totals
+
     const formatTotalTime = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -28,7 +28,7 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
 
     return (
         <table className="w-full border border-gray-200 rounded-lg overflow-hidden border-collapse">
-            {/* Table Header */}
+     
             <thead >
                 <tr className="h-7 text-muted-foreground">
                     <th className="w-[30px] "></th>
@@ -39,7 +39,7 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
                 </tr>
             </thead>
 
-            {/* Table Body */}
+        
             <tbody>
                 {subtasks.map((subtask) => (
                     <tr key={subtask.id} className="h-8 last:border-b-0">
@@ -82,7 +82,7 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
                 ))}
             </tbody>
 
-            {/* Table Footer */}
+        
             <tfoot className="">
                 <tr className="border-t border-gray-200">
                     <td className="w-[30px] h-8"></td>
@@ -100,7 +100,7 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
                                 type="text"
                                 value={totalEstimated.toString()}
                                 readOnly
-                                className="w-8 text-center bg-transparent border-none outline-none text-sm cursor-default"
+                                className="w-9 text-center bg-transparent border-none outline-none text-sm cursor-default"
                             />
                             <span>h</span>
                         </div>

@@ -2,7 +2,6 @@ import { CheckSquare } from 'lucide-react';
 import { TaskData } from '@/stores/types';
 
 export default function TaskCardSubtask({ subtasks }: { subtasks?: TaskData['subtasks'] }) {
-    // Only render if subtasks exist and array is not empty
     if (!subtasks || subtasks.length === 0) {
         return null;
     }

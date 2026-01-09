@@ -1,6 +1,5 @@
 import { useRef } from 'react';
 import useStore from '@/stores/flow-store';
-import { TaskData } from '@/stores/types';
 
 interface SubtaskDurationProps {
     nodeId: string;
@@ -28,7 +27,7 @@ export default function SubtaskDuration({ nodeId, subtaskId, duration }: Subtask
                 type="text"
                 value={duration.toString()}
                 onChange={handleInputChange}
-                className="w-8 text-center bg-transparent border-none outline-none text-sm"
+                className="w-9 text-center bg-transparent border-none outline-none text-sm"
                 placeholder="0"
                 maxLength={5}
                 autoComplete="off"

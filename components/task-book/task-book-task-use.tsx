@@ -24,12 +24,8 @@ export default function TaskBookUse({ selectedTask, onClose }: TaskBookUseProps)
             timeSpent: selectedTask.timeSpent || 0,
             subtasks: selectedTask.subtasks || [],
         });
-
-        // Update the lastUsed timestamp
         const now = new Date().toLocaleString();
         updateSavedTask(selectedTask.id, { lastUsed: now });
-
-        // Close the dialog after adding the task
         onClose?.();
     };
 

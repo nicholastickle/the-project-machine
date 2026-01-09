@@ -5,7 +5,7 @@ import useTaskbookStore from '@/stores/taskbook-store';
 interface TaskBookTaskSubtaskTimeSpentProps {
     taskId: string;
     subtaskId: string;
-    timeSpent: number; // in seconds
+    timeSpent: number;
 }
 
 export default function TaskBookTaskSubtaskTimeSpent({ taskId, subtaskId, timeSpent }: TaskBookTaskSubtaskTimeSpentProps) {
@@ -15,18 +15,15 @@ export default function TaskBookTaskSubtaskTimeSpent({ taskId, subtaskId, timeSp
 
     const updateSubtask = useTaskbookStore((state) => state.updateSubtask);
 
-    // Update currentTime when timeSpent changes externally
     useEffect(() => {
         setCurrentTime(timeSpent);
     }, [timeSpent]);
 
-    // Time tracking logic
     useEffect(() => {
         if (isTracking) {
             intervalRef.current = setInterval(() => {
                 setCurrentTime(prev => {
                     const newTime = prev + 1;
-                    // Use setTimeout to avoid setState during render
                     setTimeout(() => {
                         updateSubtask(taskId, subtaskId, { timeSpent: newTime });
                     }, 0);
@@ -47,7 +44,6 @@ export default function TaskBookTaskSubtaskTimeSpent({ taskId, subtaskId, timeSp
         };
     }, [isTracking, taskId, subtaskId, updateSubtask]);
 
-    // Format seconds to h:m:s
     const formatTime = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);

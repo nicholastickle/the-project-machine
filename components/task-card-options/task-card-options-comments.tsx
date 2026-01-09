@@ -1,4 +1,3 @@
-import useStore from '@/stores/flow-store';
 import { TaskData } from '@/stores/types';
 import { MessageSquare } from 'lucide-react';
 import TaskCardOptionsCommentsNew from './task-card-options-comments-new';
@@ -10,7 +9,7 @@ interface TaskCardOptionsCommentsProps {
 }
 
 export default function TaskCardOptionsComments({ nodeId, comments }: TaskCardOptionsCommentsProps) {
-    const node = useStore((state) => state.nodes.find(n => n.id === nodeId));
+
 
     return (
         <div className="w-full flex flex-col p-3">
