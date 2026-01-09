@@ -3,6 +3,9 @@ import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
 import type { SavedTask } from './types';
 
+// Extract the subtask type for better type safety
+type SubtaskType = NonNullable<SavedTask['subtasks']>[number];
+
 interface TaskbookState {
     savedTasks: SavedTask[];
     hasNewTask: boolean;
@@ -10,7 +13,7 @@ interface TaskbookState {
     removeTask: (taskId: string) => void;
     updateSavedTask: (taskId: string, updates: Partial<SavedTask>) => void;
     addSubtask: (taskId: string) => void;
-    updateSubtask: (taskId: string, subtaskId: string, updates: Partial<SavedTask['subtasks'][0]>) => void;
+    updateSubtask: (taskId: string, subtaskId: string, updates: Partial<SubtaskType>) => void;
     deleteSubtask: (taskId: string, subtaskId: string) => void;
     clearNewTaskIndicator: () => void;
 }
