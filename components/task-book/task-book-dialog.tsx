@@ -1,6 +1,7 @@
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -14,12 +15,14 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
 import TaskBookDelete from "@/components/task-book/task-book-task-delete"
 import TaskBookArrayOfTasks from "@/components/task-book/task-book-array-of-tasks"
 import TaskBookAddTask from "@/components/task-book/task-book-add-task"
+import TaskBookUse from "@/components/task-book/task-book-task-use"
+import TaskBookTaskTitle from "@/components/task-book/task-book-task-title"
+import TaskBookTaskDescription from "@/components/task-book/task-book-task-description"
 
-import { Play, BookType } from "lucide-react"
+import { BookType } from "lucide-react"
 import { useState, useEffect } from 'react'
 import useTaskbookStore from '@/stores/taskbook-store'
 import { SavedTask } from '@/stores/types'
@@ -34,9 +37,6 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
     const [selectedTask, setSelectedTask] = useState<SavedTask | null>(null);
     const savedTasks = useTaskbookStore((state) => state.savedTasks);
 
-    // Use only saved tasks from the taskbook store (which includes seed data)
-    const allTasks = savedTasks;
-
     useEffect(() => {
         if (isOpen) {
             setSelectedTask(null);
@@ -47,12 +47,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
         setSelectedTask(task);
     };
 
-    const handleUse = () => {
-        alert('Use functionality will be implemented in a future version. This will populate the canvas with this task structure.');
-    };
-
     const handleDeleteComplete = () => {
-        // Clear selected task when deleted
         setSelectedTask(null);
     };
 
@@ -65,19 +60,17 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
 
             <DialogContent className="border-none p-0 max-w-4xl w-full h-[90vh] max-h-[90vh] focus:outline-none outline-none rounded-2xl">
                 <div className="flex flex-col h-full  text-task-book-foreground border bg-task-book-background border-task-book-border rounded-2xl">
-                    <div className="flex flex-col flex-[1] bg-task-book-accent">
-                        <DialogHeader className="p-6">
+                    <div className="flex flex-col flex-[1] bg-task-book-accent rounded-t-2xl">
+                        <DialogHeader className="p-6  ">
                             <DialogTitle className="text-3xl font-bold text-left w-full flex flex-row items-center gap-2 "><span><BookType size={36} /></span>Task book</DialogTitle>
-                            <p className="text-xs text-task-book-foreground">All your saved tasks are stored here for you and your AI. Create new tasks, manage existing ones, import a task into your canvas</p>
+                            <DialogDescription className="text-xs text-task-book-foreground">All your saved tasks are stored here for you and your AI. Create new tasks, manage existing ones, import a task into your canvas</DialogDescription>
                         </DialogHeader>
                     </div>
                     <div className="flex flex-[11] flex-row">
-                        <div className="flex flex-col flex-[3] border-r border-task-book-border" >
-                            <div className="flex flex-[0.5] justify-center items-center border-y border-task-book-border py-1 bg-task-book-accent">
-                                <p className="text-task-book-foreground font-semibold">Saved Tasks</p>
-                            </div>
-                            <div className="flex flex-col flex-[11.5]  bg-task-book-accent rounded-bl-2xl ">
-                                <div className="border-b flex border-task-book-border px-4 items-center justify-center">
+                        <div className="flex flex-col flex-[3] " >
+
+                            <div className="flex flex-col flex-[12]  bg-task-book-accent rounded-bl-2xl ">
+                                <div className="border-y flex border-task-book-border px-4 items-center justify-center">
                                     <TaskBookAddTask />
                                 </div>
                                 <div
@@ -89,7 +82,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                 >
 
                                     <TaskBookArrayOfTasks
-                                        tasks={allTasks}
+                                        tasks={savedTasks}
                                         selectedTask={selectedTask}
                                         onTaskClick={handleTaskClick}
                                     />
@@ -102,20 +95,13 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
 
 
                                 <div className="flex flex-[5] items-center px-4 py-3">
-                                    <h2 className="text-task-book-foreground font-semibold">{selectedTask ? selectedTask.title : "No task selected"}</h2>
+                                    <TaskBookTaskTitle task={selectedTask} />
                                 </div>
                                 <div className="flex flex-[3] justify-center items-center gap-2 px-2">
-
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleUse}
-                                        disabled={!selectedTask}
-                                        className="bg-task-book-background text-task-book-foreground hover:bg-task-book-accent hover:text-task-book-accent-foreground border-task-book-border"
-                                    >
-                                        <Play size={14} className="mr-1" />
-                                        Use
-                                    </Button>
+                                    <TaskBookUse
+                                        selectedTask={selectedTask}
+                                        onClose={() => onOpenChange?.(false)}
+                                    />
                                 </div>
                                 <div className="flex flex-col flex-[3]">
 
@@ -141,8 +127,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                             scrollbarColor: 'hsl(var(--border)) transparent'
                                         }}
                                     >
-                                        <p className="text-sm font-semibold mb-2">Description</p>
-                                        <p className="mb-4 text-sm">{selectedTask.description || "No description available"}</p>
+                                        <TaskBookTaskDescription task={selectedTask} />
 
                                         {selectedTask.estimatedHours && (
                                             <p className="mb-3 text-sm">

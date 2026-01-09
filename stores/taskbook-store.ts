@@ -8,6 +8,7 @@ interface TaskbookState {
     hasNewTask: boolean;
     addSavedTask: (task: Omit<SavedTask, 'id' | 'savedAt' | 'lastUpdated'>) => void;
     removeTask: (taskId: string) => void;
+    updateSavedTask: (taskId: string, updates: Partial<SavedTask>) => void;
     clearNewTaskIndicator: () => void;
 }
 
@@ -37,6 +38,17 @@ const useTaskbookStore = create<TaskbookState>()(
             removeTask: (taskId: string) => {
                 set({
                     savedTasks: get().savedTasks.filter(task => task.id !== taskId)
+                });
+            },
+
+            updateSavedTask: (taskId: string, updates: Partial<SavedTask>) => {
+                const now = new Date().toLocaleString();
+                set({
+                    savedTasks: get().savedTasks.map(task =>
+                        task.id === taskId
+                            ? { ...task, ...updates, lastUpdated: now }
+                            : task
+                    )
                 });
             },
 
