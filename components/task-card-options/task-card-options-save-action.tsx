@@ -24,13 +24,25 @@ export default function TaskCardOptionsSaveAction({ nodeId, data }: TaskCardOpti
     };
 
     const handleSaveConfirm = () => {
-        // Convert TaskData to SavedTask format (without comments for now)
+        // Convert comments array to array of formatted strings
+        const convertCommentsToArray = (comments: TaskData['comments']) => {
+            if (!comments || comments.length === 0) return undefined;
+
+            return comments.map(comment => {
+                const dateToUse = comment.editedDate || comment.createdDate;
+                const date = new Date(dateToUse).toLocaleDateString();
+                return `${comment.memberName}: ${comment.comment} - ${date}`;
+            });
+        };
+
+        // Convert TaskData to SavedTask format
         const savedTask = {
-            title: data.title,
+            title: data.title && data.title.trim() ? data.title : "New saved task",
             status: data.status,
             timeSpent: data.timeSpent || 0,
             estimatedHours: data.estimatedHours,
             description: data.description,
+            comments: convertCommentsToArray(data.comments),
             subtasks: data.subtasks
         };
 

@@ -131,7 +131,7 @@ const useStore = create<AppState>()(
                         position: position,
                         data: {
                             title: nodeData?.title ?? "",
-                            status: nodeData?.status ?? 'Not started',
+                            status: nodeData?.status ?? 'Backlog',
                             estimatedHours: nodeData?.estimatedHours,
                             timeSpent: nodeData?.timeSpent ?? 0,
                             description: nodeData?.description ?? "",

@@ -79,9 +79,9 @@
 
     --task-book: 0 0% 97%;
     --task-book-background: 0 0% 97%;
-    --task-book-foreground: 240 5.3% 26.1%;
-    --task-book-accent: 240 4.8% 94%;
-    --task-book-accent-foreground: 240 5.9% 10%;
+    --task-book-foreground: 210 11% 7%;
+    --task-book-accent: 240 4.8% 90%;
+    --task-book-accent-foreground: 240 4.8% 85%;
     --task-book-border: 210 17% 6% / 0.15;
     --task-book-icon-background: 0 0% 97%;
     --task-book-icon-foreground: 240 5.3% 50%;
@@ -106,13 +106,13 @@
 
     --task-card-background: 0 0% 100%;
     --task-card-background-accent: 240 4.8% 94%;
-    --task-card-foreground: 240 5.3% 26.1%;
+    --task-card-foreground: 210 11% 7%;
     --task-card-placeholder: 240 5% 60%;
     --task-card-border: 210 17% 6% / 0.2;
     --task-card-border-accent: 25 95% 53%/0.5;
-    --task-card-icon-foreground: 240 5.3% 26.1%;
+    --task-card-icon-foreground: 210 11% 7%;
     --task-card-accent: 240 4.8% 94%;
-    --task-card-accent-foreground: 240 5.3% 26.1%;
+    --task-card-accent-foreground: 210 11% 7%;
 
     --task-card-status-options-background: 0 0% 100%;
     --task-card-status-options-foreground: 210 11% 7%;

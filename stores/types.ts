@@ -52,7 +52,7 @@ export type SavedTask = {
   timeSpent: number;
   estimatedHours?: number;
   description?: string;
-  comments?: string;
+  comments?: string[];
   subtasks?: Array<{
     id: string;
     title: string;
@@ -87,8 +87,6 @@ export type AppState = {
   deleteNode: (nodeId: string) => void;
 
   connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => void;
-
-  
 
   updateNodeData: (id: string, data: Partial<TaskData>, saveToHistory?: boolean) => void;
 
