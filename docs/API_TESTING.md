@@ -2,7 +2,26 @@
 
 ## Quick Start
 
-### Option 1: REST Client (Recommended for VS Code)
+### Option 1: Swagger UI (Recommended for Exploration)
+
+1. **Start Development Server**
+   ```bash
+   npm run dev
+   ```
+
+2. **Open Swagger UI**
+   - Navigate to: http://localhost:3000/api-docs
+   - Interactive documentation with "Try it out" buttons
+   - No authentication required for viewing
+   - For testing authenticated endpoints, copy session cookie from browser
+
+3. **Advantages**
+   - Visual, interactive interface
+   - See all endpoints, schemas, and examples
+   - Test directly in browser
+   - Auto-generated from OpenAPI spec
+
+### Option 2: REST Client (Recommended for Automated Testing)
 
 1. **Install Extension**
    - Open VS Code Extensions (Ctrl+Shift+X)
@@ -18,8 +37,9 @@
    - Click "Send Request" above any request
    - Results appear in split pane
    - Cookies are automatically handled
+   - Save tests for regression testing
 
-### Option 2: curl Commands
+### Option 3: curl Commands
 
 ```bash
 # Get all projects
@@ -39,12 +59,9 @@ curl -X POST http://localhost:3000/api/projects/PROJECT_ID/files \
   -F "extractStructure=true"
 ```
 
-### Option 3: Postman/Insomnia
+**Recommendation:** Start with Swagger UI for exploration, then create REST Client tests for regression testing.
 
-1. Import `api-tests.http` or manually create requests
-2. Set base URL: `http://localhost:3000`
-3. Authentication: Copy cookies from browser after login
-4. Test endpoints one by one
+---
 
 ## Authentication Setup
 
