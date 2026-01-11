@@ -14,7 +14,7 @@ interface ThemeChangerProps {
     children: React.ReactNode
 }
 
-export function ThemeChanger({ children }: ThemeChangerProps) {
+export default function SidebarThemeChanger({ children }: ThemeChangerProps) {
     const { theme, setTheme } = useTheme()
     const { isMobile } = useSidebar()
 

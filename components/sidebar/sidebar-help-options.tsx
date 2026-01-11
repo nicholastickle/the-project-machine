@@ -4,6 +4,8 @@ import {
 
 } from "lucide-react"
 
+import Link from "next/link"
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,23 +21,11 @@ interface OptionsHelpProps {
     children: React.ReactNode
 }
 
-export function OptionsHelp({ children }: OptionsHelpProps) {
+export default function SidebarHelpOptions({ children }: OptionsHelpProps) {
     const { isMobile } = useSidebar()
 
     const handleUserManual = () => {
         console.log("User Manual clicked")
-    }
-
-    const handleFeedback = () => {
-        console.log("Feedback clicked")
-    }
-
-    const handleLegalSummary = () => {
-        console.log("Legal Summary clicked")
-    }
-
-    const handleManageCookies = () => {
-        console.log("Manage Cookies clicked")
     }
 
     return (
@@ -52,16 +42,13 @@ export function OptionsHelp({ children }: OptionsHelpProps) {
                     <BookOpen className="text-muted-foreground" />
                     <span>User Manual</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleFeedback} className="focus:bg-sidebar-accent focus:text-foreground text-xs">
+                <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                     <MessageSquare className="text-muted-foreground" />
-                    <span>Feedback</span>
+                    <Link href="https://www.featurebase.app/" target="_blank" rel="noopener noreferrer">Give feedback</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-sidebar-border" />
-                <DropdownMenuItem onClick={handleLegalSummary} className="focus:bg-sidebar-accent focus:text-foreground text-xs">
-                    <span>Legal Summary</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleManageCookies} className="focus:bg-sidebar-accent focus:text-foreground text-xs">
-                    <span>Manage Cookies</span>
+                <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
+                    <Link href="/legal">Legal Summary</Link>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

@@ -1,8 +1,5 @@
 import {
-    Folder,
-    Forward,
-    MoreHorizontal,
-    Trash2,
+    MoreHorizontal
 } from "lucide-react"
 
 import {
@@ -21,15 +18,15 @@ interface OptionsProjectProps {
     projectName: string
 }
 
-export function OptionsProject({ projectName }: OptionsProjectProps) {
+export default function SidebarProjectsOptions({ projectName }: OptionsProjectProps) {
     const { isMobile } = useSidebar()
 
-    const handleViewProject = () => {
-        console.log(`View Project clicked: ${projectName}`)
+    const handleRenameProject = () => {
+        console.log(`Rename Project clicked: ${projectName}`)
     }
 
-    const handleShareProject = () => {
-        console.log(`Share Project clicked: ${projectName}`)
+    const handleDuplicateProject = () => {
+        console.log(`Duplicate Project clicked: ${projectName}`)
     }
 
     const handleDeleteProject = () => {
@@ -45,22 +42,19 @@ export function OptionsProject({ projectName }: OptionsProjectProps) {
                 </SidebarMenuAction>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                className="w-48 rounded-lg bg-sidebar-options-background shadow-md border border-sidebar-border text-foreground"
+                className="w-24 rounded-lg bg-sidebar-options-background shadow-md border border-sidebar-border text-foreground"
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
             >
-                <DropdownMenuItem onClick={handleViewProject}  className="focus:bg-sidebar-accent focus:text-foreground text-xs">
-                    <Folder className="text-muted-foreground" />
-                    <span>View Project</span>
+                <DropdownMenuItem onClick={handleRenameProject}  className="focus:bg-sidebar-accent focus:text-foreground text-xs">
+                    Rename
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleShareProject} className="focus:bg-sidebar-accent focus:text-foreground text-xs">
-                    <Forward className="text-muted-foreground" />
-                    <span>Share Project</span>
+                <DropdownMenuItem onClick={handleDuplicateProject} className="focus:bg-sidebar-accent focus:text-foreground text-xs">
+                    Duplicate
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-sidebar-border" />
                 <DropdownMenuItem onClick={handleDeleteProject} className="focus:bg-sidebar-accent focus:text-foreground text-xs">
-                    <Trash2 className="text-muted-foreground" />
-                    <span>Delete Project</span>
+                    Delete
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
