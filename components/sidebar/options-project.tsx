@@ -19,10 +19,9 @@ import {
 
 interface OptionsProjectProps {
     projectName: string
-    projectId?: string
 }
 
-export function OptionsProject({ projectName, projectId }: OptionsProjectProps) {
+export function OptionsProject({ projectName }: OptionsProjectProps) {
     const { isMobile } = useSidebar()
 
     const handleViewProject = () => {
@@ -33,21 +32,8 @@ export function OptionsProject({ projectName, projectId }: OptionsProjectProps) 
         console.log(`Share Project clicked: ${projectName}`)
     }
 
-    const handleDeleteProject = async () => {
-        if (!projectId) return
-        
-        if (confirm(`Delete project "${projectName}"? This cannot be undone.`)) {
-            try {
-                const response = await fetch(`/api/projects/${projectId}`, {
-                    method: 'DELETE',
-                })
-                if (response.ok) {
-                    window.location.reload() // Reload to refresh project list
-                }
-            } catch (error) {
-                console.error('Error deleting project:', error)
-            }
-        }
+    const handleDeleteProject = () => {
+        console.log(`Delete Project clicked: ${projectName}`)
     }
 
     return (

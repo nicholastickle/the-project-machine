@@ -1,31 +1,32 @@
-'use client'
 
-import { useEffect } from 'react'
 import HeroSection from "@/components/landing/hero-section"
 import DashboardPreview from "@/components/landing/dashboard-preview"
-import BentoSection from "@/components/landing/bento-section"
+import FeaturesSection from "@/components/landing/features-section"
 import AboutSection from "@/components/landing/about-section"
 import CTASection from "@/components/landing/cta-section"
 import FooterSection from "@/components/landing/footer-section"
-import { trackEvent } from '@/lib/analytics/posthog'
+import Header from "@/components/landing/header"
+import SpacerElement from "@/components/landing/spacer-element"
+import FAQSection from "@/components/landing/faq-section"
 
 export default function Home() {
-  useEffect(() => {
-    // Track landing page view
-    trackEvent('landing_page_view', {
-      page: 'home',
-      timestamp: new Date().toISOString()
-    })
-  }, [])
 
   return (
     <>
       <div className="min-h-screen bg-background relative pb-0">
+        <Header />
+        <SpacerElement height="80px" text="Project hero" />
         <HeroSection />
         <DashboardPreview />
-        <BentoSection />
+        <SpacerElement height="500px" text="Project features" id="features-section" />
+        <FeaturesSection />
+        <SpacerElement height="150px" text="Project about us section" id="about-section" />
         <AboutSection />
+        <SpacerElement height="150px" text="Project FAQ section" id="faq-section" />
+        <FAQSection />
+        <SpacerElement height="150px" text="Project call to action" />
         <CTASection />
+        <SpacerElement height="150px" text="Project footer" />
         <FooterSection />
       </div>
     </>

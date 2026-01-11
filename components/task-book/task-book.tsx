@@ -5,8 +5,6 @@ import useTaskbookStore from '@/stores/taskbook-store';
 
 import { useSidebar } from "@/components/ui/sidebar"
 
-// 🧟 ZOMBIE COMPONENT: This mimics a "global task list" but is not connected to Snapshots.
-// Do not expand. Will be replaced by a Snapshot-derived view in v2.
 export default function TaskBook() {
     const [isTaskBookOpen, setIsTaskBookOpen] = useState(false);
     const { open, isMobile } = useSidebar()

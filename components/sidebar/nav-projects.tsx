@@ -19,8 +19,6 @@ import { OptionsProject } from "@/components/sidebar/options-project"
 
 export function NavProjects({
   items,
-  onProjectClick,
-  onProjectCreated,
 }: {
   items: {
     title: string
@@ -28,13 +26,10 @@ export function NavProjects({
     icon?: LucideIcon
     isActive?: boolean
     items?: {
-      id?: string
       title: string
       url: string
     }[]
   }[]
-  onProjectClick?: (projectId: string) => void
-  onProjectCreated?: () => void
 }) {
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -57,20 +52,16 @@ export function NavProjects({
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
-                  <NewProject onProjectCreated={onProjectCreated} />
+                  <NewProject />
 
                   {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.id || subItem.title} className="relative group/menu-item flex items-center">
-                      <SidebarMenuSubButton
-                        asChild
-                        className="flex-1"
-                        onClick={() => subItem.id && onProjectClick?.(subItem.id)}
-                      >
+                    <SidebarMenuSubItem key={subItem.title} className="relative group/menu-item flex items-center">
+                      <SidebarMenuSubButton asChild className="flex-1">
                         <a href={subItem.url}>
                           <span>{subItem.title}</span>
                         </a>
                       </SidebarMenuSubButton>
-                      <OptionsProject projectName={subItem.title} projectId={subItem.id} />
+                      <OptionsProject projectName={subItem.title} />
                     </SidebarMenuSubItem>
                   ))}
 

@@ -3,11 +3,10 @@ import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider/theme-provider'
-import { PostHogProvider } from '@/components/analytics/posthog-provider'
 
 export const metadata: Metadata = {
   title: 'Project Machine',
-  description: 'Turn conversations into actionable project plans. AI project manager that creates tasks, estimates time, and organizes workflows through natural voice interaction.',
+  description: 'Turn conversations into actionable project plans. AI project manager that creates tasks, estimates time, and organizes workflows.',
 }
 
 export const viewport: Viewport = {
@@ -34,16 +33,14 @@ html {
         <meta name="apple-mobile-web-app-title" content="Project Machine" />
       </head>
       <body>
-        <PostHogProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-        </PostHogProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

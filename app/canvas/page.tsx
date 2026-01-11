@@ -8,28 +8,23 @@ import CanvasToolbar from "@/components/toolbar/canvas-toolbar"
 import CanvasSidebarTrigger from "@/components/sidebar/sidebar-trigger"
 import ExportButtons from "@/components/export/export-buttons"
 import TaskBook from "@/components/task-book/task-book"
-import AuthProvider from "@/components/auth/auth-provider"
+import { bridgeDesignTasks } from "@/components/chat/chat-mock-data"
 import useStore from "@/stores/flow-store"
 import { useEffect, useRef, useState } from "react"
 import type { ReactFlowInstance } from "@xyflow/react"
-import { useAutosave, loadLatestSnapshot } from "@/lib/autosave"
 
 export default function CanvasPage() {
     const reactFlowInstance = useRef<ReactFlowInstance | null>(null)
     const [isChatVisible, setIsChatVisible] = useState(true)
+    const [isChatDocked, setIsChatDocked] = useState(false)
     const undo = useStore((state) => state.undo)
     const redo = useStore((state) => state.redo)
+    const addTaskNode = useStore((state) => state.addTaskNode)
     const nodes = useStore((state) => state.nodes)
-    const projectId = useStore((state) => state.projectId)
-    const setNodes = useStore((state) => state.setNodes)
-    const setEdges = useStore((state) => state.setEdges)
-    const markClean = useStore((state) => state.markClean)
-    
-    const { performAutosave } = useAutosave(120000)
 
     const setReactFlowInstance = (instance: ReactFlowInstance) => {
         reactFlowInstance.current = instance
-        // Center on canvas without animation
+        // Center on logo without animation
         instance.setCenter(600, 300, { zoom: 0.8 })
     }
 
@@ -41,43 +36,6 @@ export default function CanvasPage() {
             saveHistory()
         }
     }, [])
-
-    // Load latest snapshot when project changes
-    useEffect(() => {
-        if (!projectId) {
-            console.log('[Canvas] No projectId, skipping snapshot load')
-            return
-        }
-
-        console.log('[Canvas] Loading snapshot for project:', projectId)
-        loadLatestSnapshot(projectId).then((snapshot) => {
-            if (snapshot) {
-                console.log('[Canvas] Snapshot loaded:', {
-                    nodeCount: snapshot.nodes.length,
-                    edgeCount: snapshot.edges.length
-                })
-                setNodes(snapshot.nodes)
-                setEdges(snapshot.edges)
-                markClean()
-                useStore.setState({ lastSavedAt: new Date().toISOString() })
-            } else {
-                console.log('[Canvas] No snapshot found for project, starting with empty canvas')
-            }
-        }).catch((error) => {
-            console.error('[Canvas] Error loading snapshot:', error)
-        })
-    }, [projectId])
-
-    // Autosave interval
-    useEffect(() => {
-        if (!projectId) return
-
-        const interval = setInterval(() => {
-            performAutosave()
-        }, 120000) // 2 minutes
-
-        return () => clearInterval(interval)
-    }, [projectId, performAutosave])
 
     // Keyboard shortcuts
     useEffect(() => {
@@ -95,27 +53,52 @@ export default function CanvasPage() {
         return () => window.removeEventListener('keydown', handleKeyDown)
     }, [undo, redo])
 
+    // Handle confirmation from chat - add scripted tasks to canvas
+    const handleChatConfirm = () => {
+        // Sprint 2: Add 13 pre-defined bridge design tasks when user confirms
+        const scriptedTasks = bridgeDesignTasks
+
+        // Add tasks sequentially with animation (one at a time)
+        scriptedTasks.forEach((task, index) => {
+            setTimeout(() => {
+                addTaskNode(task)
+
+                // Fit view after last task is added
+                if (index === scriptedTasks.length - 1) {
+                    setTimeout(() => {
+                        if (reactFlowInstance.current) {
+                            reactFlowInstance.current.fitView({
+                                padding: 0.3,
+                                duration: 1000,
+                                maxZoom: 0.8,
+                            })
+                        }
+                    }, 200)
+                }
+            }, index * 400) // 400ms delay between each task
+        })
+    }
+
     // Handle chat visibility changes
-    const handleChatVisibilityChange = (isVisible: boolean) => {
+    const handleChatVisibilityChange = (isVisible: boolean, isDocked: boolean) => {
         setIsChatVisible(isVisible)
+        setIsChatDocked(isDocked)
     }
 
     return (
-        <AuthProvider>
-            <SidebarProvider defaultOpen={false}>
-                <div className="fixed inset-0 h-screen w-screen overflow-hidden">
-                    <Canvas onInit={setReactFlowInstance} />
-                    <ChatPanel
-                        projectId={projectId ?? undefined}
-                        onVisibilityChange={handleChatVisibilityChange}
-                    />
-                    <ExportButtons isChatVisible={isChatVisible} />
-                    <TaskBook />
-                    <CanvasSidebar />
-                    <CanvasToolbar />
-                    <CanvasSidebarTrigger />
-                </div>
-            </SidebarProvider>
-        </AuthProvider>
+        <SidebarProvider defaultOpen={false}>
+            <div className="fixed inset-0 h-screen w-screen overflow-hidden">
+                <Canvas onInit={setReactFlowInstance} />
+                <ChatPanel
+                    onConfirm={handleChatConfirm}
+                    onVisibilityChange={handleChatVisibilityChange}
+                />
+                <ExportButtons isChatVisible={isChatDocked} />
+                <TaskBook />
+                <CanvasSidebar />
+                <CanvasToolbar />
+                <CanvasSidebarTrigger />
+            </div>
+        </SidebarProvider>
     )
 }

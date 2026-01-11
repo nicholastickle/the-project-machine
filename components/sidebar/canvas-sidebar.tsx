@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { LayoutDashboard } from "lucide-react"
+import {
+    LayoutDashboard,
+} from "lucide-react"
 
 import { NavProjects } from "@/components/sidebar/nav-projects"
+
 import { NavUser } from "@/components/sidebar/nav-user"
 import { NavHelp } from "@/components/sidebar/nav-help"
-import FileUploadPanel from "@/components/files/file-upload-panel"
 import { ProjectMachineLogo } from "@/components/logo/project-machine-logo"
 import {
     Sidebar,
@@ -14,111 +15,53 @@ import {
     SidebarFooter,
     SidebarHeader,
     SidebarRail,
-    SidebarGroup,
-    SidebarGroupLabel,
 } from "@/components/ui/sidebar"
-import { createClient } from "@/lib/supabase/client"
-import type { User } from "@supabase/supabase-js"
-import useStore from "@/stores/flow-store"
 
-type Project = {
-    id: string
-    name: string
-    description: string | null
-}
+const data = {
+    user: {
+        name: "Project User",
+        email: "user@projectmachine.com",
+        avatar: "/images/avatars/robert-fox.png",
+    },
 
-export default function CanvasSidebar(props: React.ComponentProps<typeof Sidebar>) {
-    const [user, setUser] = useState<User | null>(null)
-    const [projects, setProjects] = useState<Project[]>([])
-    const [isLoading, setIsLoading] = useState(true)
-    const setProjectId = useStore((state) => state.setProjectId)
-
-    useEffect(() => {
-        const supabase = createClient()
-
-        // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setUser(session?.user ?? null)
-        })
-
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null)
-        })
-
-        return () => subscription.unsubscribe()
-    }, [])
-
-    const loadProjects = async () => {
-        try {
-            setIsLoading(true)
-            const response = await fetch('/api/projects')
-            if (response.ok) {
-                const data = await response.json()
-                const loadedProjects = data.projects || []
-                setProjects(loadedProjects)
-                
-                // Auto-select first project if none selected
-                const currentProjectId = useStore.getState().projectId
-                if (!currentProjectId && loadedProjects.length > 0) {
-                    console.log('[CanvasSidebar] Auto-selecting first project:', loadedProjects[0].id)
-                    setProjectId(loadedProjects[0].id)
-                }
-            }
-        } catch (error) {
-            console.error('[CanvasSidebar] Error loading projects:', error)
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        if (user) {
-            loadProjects()
-        }
-    }, [user])
-
-    // Extract name from email (before @)
-    const userName = user?.email?.split('@')[0] || 'User'
-
-    // Format projects for NavProjects component
-    const projectsData = [
+    projects: [
         {
             title: "Projects",
             url: "#",
             icon: LayoutDashboard,
             isActive: true,
-            items: projects.map(project => ({
-                id: project.id,
-                title: project.name,
-                url: "#",
-            })),
+            items: [
+                {
+                    title: "Board 1",
+                    url: "#",
+                },
+                {
+                    title: "Board 2",
+                    url: "#",
+                },
+                {
+                    title: "Board 3",
+                    url: "#",
+                },
+            ],
         },
-    ]
+    ],
+    
+}
 
+export default function CanvasSidebar(props: React.ComponentProps<typeof Sidebar>) {
     return (
         <Sidebar collapsible="icon" className="z-40" {...props}>
             <SidebarHeader>
                 <ProjectMachineLogo size="md" href="/" />
             </SidebarHeader>
             <SidebarContent>
-                <NavProjects 
-                    items={projectsData} 
-                    onProjectClick={(projectId) => setProjectId(projectId)}
-                    onProjectCreated={loadProjects}
-                />
-                <SidebarGroup>
-                    <SidebarGroupLabel>Reference Files</SidebarGroupLabel>
-                    <FileUploadPanel />
-                </SidebarGroup>
+                <NavProjects items={data.projects} />
+                
             </SidebarContent>
             <SidebarFooter>
                 <div className="flex items-center justify-between w-full">
-                    <NavUser user={{
-                        name: userName,
-                        email: user?.email || 'loading...',
-                        avatar: '/images/avatars/robert-fox.png'
-                    }} />
+                    <NavUser user={data.user} />
                     <NavHelp />
                 </div>
             </SidebarFooter>
