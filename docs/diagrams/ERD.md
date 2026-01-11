@@ -151,10 +151,10 @@ erDiagram
     REFLECTION {
         uuid id PK
         uuid project_id FK
-        uuid user_id FK
-        string reflection_type "start_of_day | end_of_day"
+        text reflection_type
         text content
         timestamp created_at
+        uuid created_by FK
     }
 TASK {
         uuid id PK
