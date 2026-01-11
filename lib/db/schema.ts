@@ -200,8 +200,9 @@ export const pendingInvitations = pgTable('pending_invitations', {
 export const usageLogs = pgTable('usage_logs', {
   id: uuid('id').primaryKey().defaultRandom(),
   projectId: uuid('project_id').references(() => projects.id, { onDelete: 'cascade' }),
-  userId: uuid('user_id').notNull(),
-  eventType: text('event_type').notNull(), // 'project_created' | 'snapshot_saved' | 'task_added' | 'task_commented'
+  userId: uuid('user_id'), // nullable - allows tracking before login
+  anonymousId: text('anonymous_id'), // PostHog distinct_id for anonymous users
+  eventType: text('event_type').notNull(), // 'page_view' | 'landing_cta_click' | 'project_created' | etc.
   eventData: jsonb('event_data'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });

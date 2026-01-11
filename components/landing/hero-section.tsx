@@ -1,10 +1,22 @@
+'use client'
+
 import React from "react"
 import { Button } from "@/components/ui/button"
 import Header from "@/components/landing/header"
 import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 import { TypewriterSubheadline } from "@/components/landing/typewriter-subheadline"
 import Link from "next/link"
+import { trackEvent } from "@/lib/analytics/posthog"
+
 export default function HeroSection() {
+  const handleCTAClick = () => {
+    trackEvent('landing_cta_clicked', {
+      location: 'hero_section',
+      button: 'start',
+      timestamp: new Date().toISOString()
+    })
+  }
+
   return (
     <main
       className="max-w-[1320px] mx-auto relative flex flex-col items-center text-center rounded-2xl overflow-hidden mb-6 py-0 px-4 w-full h-[400px] sm:h-[450px] md:w-[98vw] md:h-[500px] lg:w-[98vw] lg:h-[600px] xl:w-[1220px] xl:h-[810px] md:px-0 max-w-[1220px]"
@@ -504,7 +516,7 @@ export default function HeroSection() {
 
 
           <div className="flex justify-center mt-8">
-            <Link href="/canvas">
+            <Link href="/canvas" onClick={handleCTAClick}>
               <div className="relative group">
                 <div className="absolute -inset-0.5 rounded-full overflow-hidden">
                   <div className="w-full h-full rounded-full animate-spin"

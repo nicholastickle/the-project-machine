@@ -12,6 +12,7 @@ import {
   startAbandonmentTimer,
   cancelAbandonmentTimer
 } from '@/lib/analytics/events'
+import { identifyUser } from '@/lib/analytics/posthog'
 
 const SESSION_STORAGE_KEY = 'pm_last_session'
 const DAILY_STORAGE_KEY = 'pm_last_daily_visit'
@@ -31,6 +32,13 @@ export function useSessionTracking() {
 
   useEffect(() => {
     if (!user || hasTrackedSession.current) return
+
+    // Identify user in PostHog (links anonymous session to user)
+    identifyUser(user.id, {
+      email: user.email,
+      created_at: user.created_at,
+      last_sign_in: user.last_sign_in_at
+    })
 
     const now = Date.now()
     const lastSession = localStorage.getItem(SESSION_STORAGE_KEY)

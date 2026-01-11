@@ -9,25 +9,28 @@ export async function POST(request: Request) {
   try {
     const supabase = await createClient();
     
-    // Get current user (optional - usage can be logged without auth for some events)
+    // Get current user (optional for pre-login tracking)
     const { data: { user } } = await supabase.auth.getUser();
 
     const body = await request.json();
-    const { event_type, project_id, event_data } = body;
+    const { event_type, project_id, event_data, anonymous_id } = body;
 
     if (!event_type || typeof event_type !== 'string') {
       return NextResponse.json({ error: 'event_type is required' }, { status: 400 });
     }
 
-    // userId is required for usage logging
-    if (!user?.id) {
-      return NextResponse.json({ error: 'Authentication required for usage logging' }, { status: 401 });
+    // Require either userId or anonymousId
+    if (!user?.id && !anonymous_id) {
+      return NextResponse.json({ 
+        error: 'Either authenticated user or anonymous_id required' 
+      }, { status: 400 });
     }
 
     await db.insert(usageLogs).values({
       eventType: event_type,
       projectId: project_id || undefined,
-      userId: user.id,
+      userId: user?.id || undefined,
+      anonymousId: anonymous_id || undefined,
       eventData: event_data || null
     });
 

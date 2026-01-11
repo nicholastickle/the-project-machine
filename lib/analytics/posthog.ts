@@ -36,6 +36,7 @@ export const initPostHog = () => {
 /**
  * Track event to both PostHog (analytics) and usage_logs (debugging)
  * This dual tracking ensures we have analytics insights + raw data for debugging
+ * Works for both authenticated and anonymous users
  */
 export const trackEvent = async (
   eventName: string,
@@ -48,6 +49,8 @@ export const trackEvent = async (
 
   // Also send to our usage_logs API for debugging/redundancy
   try {
+    const anonymousId = typeof window !== 'undefined' ? posthog.get_distinct_id() : undefined
+    
     await fetch('/api/usage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -55,6 +58,7 @@ export const trackEvent = async (
         event_type: eventName,
         project_id: properties?.project_id || null,
         event_data: properties || null,
+        anonymous_id: anonymousId,
       })
     })
   } catch (error) {

@@ -1,8 +1,19 @@
+'use client'
 
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
+import { trackEvent } from "@/lib/analytics/posthog"
+
 export default function CTASection() {
+  const handleCTAClick = () => {
+    trackEvent('landing_cta_clicked', {
+      location: 'cta_section',
+      button: 'start',
+      timestamp: new Date().toISOString()
+    })
+  }
+
   return (
     <AnimatedSectionWhileInView className="relative z-10 max-w-[1320px] mx-auto mt-8 md:mt-16" delay={0.2}>
       <section className="w-full pt-20 md:pt-60 lg:pt-60 pb-10 md:pb-20 px-5 relative flex flex-col justify-center items-center overflow-visible">
@@ -112,7 +123,7 @@ export default function CTASection() {
               Start today to visualize every step, build your library of proven task templates, and best of all... the more you plan, the smarter it gets.
             </p>
           </div>
-          <Link href="/canvas">
+          <Link href="/canvas" onClick={handleCTAClick}>
             <Button
               className="bg-white/10 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/20 px-8 py-3 rounded-full font-medium text-base shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-3"
               size="lg"
