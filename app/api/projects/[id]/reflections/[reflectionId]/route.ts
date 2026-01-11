@@ -108,11 +108,6 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
         )
       );
 
-    if (error) {
-      console.error('Error deleting reflection:', error)
-      return NextResponse.json({ error: 'Failed to delete reflection' }, { status: 500 })
-    }
-
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Unexpected error:', error)

@@ -6,11 +6,15 @@ import { eq, and, isNull } from 'drizzle-orm';
 import { getCurrentUser, AuthError } from '@/lib/auth/session';
 import { createTaskSchema } from '@/lib/validation/schemas';
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
-  const projectId = params.id;
+  const { id: projectId } = await context.params;
 
   try {
     const user = await getCurrentUser();
@@ -40,9 +44,9 @@ export async function GET(
 // POST /api/projects/:id/tasks - Create new task
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
-  const projectId = params.id;
+  const { id: projectId } = await context.params;
 
   try {
     // 1. Strict Auth Check

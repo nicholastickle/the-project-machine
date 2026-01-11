@@ -14,7 +14,7 @@ export const initPostHog = () => {
             console.log('PostHog initialized with session recording + autocapture')
           }
         },
-        capture_pageviews: true,
+        capture_pageview: true,
         capture_pageleave: true,
         // Enable session recording - invaluable with <100 users
         session_recording: {

@@ -19,10 +19,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'event_type is required' }, { status: 400 });
     }
 
+    // userId is required for usage logging
+    if (!user?.id) {
+      return NextResponse.json({ error: 'Authentication required for usage logging' }, { status: 401 });
+    }
+
     await db.insert(usageLogs).values({
       eventType: event_type,
-      projectId: project_id || null,
-      userId: user?.id || null,
+      projectId: project_id || undefined,
+      userId: user.id,
       eventData: event_data || null
     });
 

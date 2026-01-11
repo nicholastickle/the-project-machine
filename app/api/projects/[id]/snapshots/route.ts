@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { db } from '@/lib/db'
 import { planSnapshots, usageLogs } from '@/lib/db/schema'
-import { eq, desc } from 'drizzle-orm'
+import { eq, desc, and } from 'drizzle-orm'
 
 type RouteContext = {
   params: Promise<{ id: string }>
@@ -25,18 +25,18 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const limit = parseInt(searchParams.get('limit') || '50')
     const type = searchParams.get('type') // 'manual' | 'autosave' | 'ai_generated'
 
-    let query = db
-      .select()
-      .from(planSnapshots)
-      .where(eq(planSnapshots.projectId, projectId))
-      .orderBy(desc(planSnapshots.createdAt))
-      .limit(limit)
-
+    // Build where conditions
+    const conditions = [eq(planSnapshots.projectId, projectId)]
     if (type) {
-      query = query.where(eq(planSnapshots.snapshotType, type))
+      conditions.push(eq(planSnapshots.snapshotType, type))
     }
 
-    const snapshots = await query
+    const snapshots = await db
+      .select()
+      .from(planSnapshots)
+      .where(and(...conditions))
+      .orderBy(desc(planSnapshots.createdAt))
+      .limit(limit)
 
     return NextResponse.json({ snapshots })
   } catch (error) {

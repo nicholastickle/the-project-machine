@@ -4,11 +4,15 @@ import { db } from '@/lib/db';
 import { tasks } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
-  const taskId = params.id;
+  const { id: taskId } = await context.params;
 
   try {
     const supabase = await createClient();
@@ -53,9 +57,9 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
-  const taskId = params.id;
+  const { id: taskId } = await context.params;
 
   try {
     const supabase = await createClient();

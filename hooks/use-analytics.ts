@@ -3,8 +3,9 @@
  * Handles session tracking, return detection, and abandonment monitoring
  */
 
-import { useEffect, useRef } from 'react'
-import { useUser } from '@supabase/auth-helpers-react'
+import { useEffect, useRef, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
 import { 
   trackSessionStarted, 
   trackReturnedSession,
@@ -16,8 +17,17 @@ const SESSION_STORAGE_KEY = 'pm_last_session'
 const DAILY_STORAGE_KEY = 'pm_last_daily_visit'
 
 export function useSessionTracking() {
-  const { user } = useUser()
+  const [user, setUser] = useState<User | null>(null)
   const hasTrackedSession = useRef(false)
+
+  useEffect(() => {
+    const supabase = createClient()
+    
+    // Get current user
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user)
+    })
+  }, [])
 
   useEffect(() => {
     if (!user || hasTrackedSession.current) return
@@ -58,7 +68,7 @@ export function useSessionTracking() {
 }
 
 export function useAbandonmentTracking(projectId?: string) {
-  const abandonmentTimer = useRef<NodeJS.Timeout>()
+  const abandonmentTimer = useRef<NodeJS.Timeout>(undefined)
   const sessionStartTime = useRef(Date.now())
 
   useEffect(() => {
