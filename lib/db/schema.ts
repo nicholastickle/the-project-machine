@@ -19,10 +19,11 @@ export const projects = pgTable('projects', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
   description: text('description'),
-  createdBy: uuid('created_by').notNull().references(() => users.id),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-  archivedAt: timestamp('archived_at'),
+  createdBy: uuid('created_by').references(() => users.id),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+  archivedAt: timestamp('archived_at', { withTimezone: true }),
+  deletedAt: timestamp('deleted_at'), // Soft delete support
 });
 
 export const projectMembers = pgTable('project_members', {
@@ -68,6 +69,7 @@ export const subtasks = pgTable('subtasks', {
   sortOrder: integer('sort_order').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at'), // Soft delete support
 });
 
 export const taskAssignments = pgTable('task_assignments', {
@@ -150,10 +152,10 @@ export const chatMessages = pgTable('chat_messages', {
 export const reflections = pgTable('reflections', {
   id: uuid('id').primaryKey().defaultRandom(),
   projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
-  userId: uuid('user_id').notNull(),
-  reflectionType: reflectionTypeEnum('reflection_type').notNull(),
+  reflectionType: text('reflection_type').notNull(), // TEXT instead of ENUM to match DB
   content: text('content').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  createdBy: uuid('created_by'), // Added to match DB schema
 });
 
 export const referenceNotes = pgTable('reference_notes', {

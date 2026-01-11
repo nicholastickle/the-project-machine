@@ -64,7 +64,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .insert(reflections)
       .values({
         projectId,
-        userId: user.id,
+        createdBy: user.id, // Changed from userId to match schema
         reflectionType: reflection_type,
         content: content.trim(),
       })
