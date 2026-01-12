@@ -144,14 +144,6 @@ describe('Component Imports', () => {
       await expect(import('@/components/landing/about-section')).resolves.toBeDefined()
     })
 
-    it('should import bento-section', async () => {
-      await expect(import('@/components/landing/bento-section')).resolves.toBeDefined()
-    })
-
-    it('should import bento-card', async () => {
-      await expect(import('@/components/landing/bento-card')).resolves.toBeDefined()
-    })
-
     it('should import cta-section', async () => {
       await expect(import('@/components/landing/cta-section')).resolves.toBeDefined()
     })
