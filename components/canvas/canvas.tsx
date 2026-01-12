@@ -19,9 +19,9 @@ import CanvasBackground from '@/components/canvas/background';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
 import TaskCard from '@/components/task-card-node-v2/task-card-node';
 import LogoNode from '@/components/logo/logo-node';
-import InstructionNode from '@/components/instruction-node/instruction-node';
 
-const nodeTypes = { taskCardNode: TaskCard, canvasLogo: LogoNode, instructionNode: InstructionNode };
+
+const nodeTypes = { taskCardNode: TaskCard, canvasLogo: LogoNode };
 const panOnDrag = [1, 2];
 
 const selector = (state: AppState) => ({
