@@ -94,7 +94,7 @@ describe('GET /api/projects/[id]/tasks', () => {
         projectId: mockProjectId,
         title: 'Task 1',
         description: 'Description 1',
-        status: 'Not started',
+        status: 'Backlog',
         createdBy: mockUserId,
         timeSpent: 0,
         sortOrder: 0,
@@ -107,7 +107,7 @@ describe('GET /api/projects/[id]/tasks', () => {
         projectId: mockProjectId,
         title: 'Task 2',
         description: null,
-        status: 'On-going',
+        status: 'In Progress',
         createdBy: mockUserId,
         timeSpent: 120,
         sortOrder: 1,
@@ -145,7 +145,7 @@ describe('GET /api/projects/[id]/tasks', () => {
         id: 'task-1',
         projectId: mockProjectId,
         title: 'Active Task',
-        status: 'Not started',
+        status: 'Backlog',
         deletedAt: null,
       },
     ];
@@ -221,7 +221,7 @@ describe('POST /api/projects/[id]/tasks', () => {
       projectId: mockProjectId,
       title: 'New Task',
       description: null,
-      status: 'Not started',
+      status: 'Backlog',
       estimatedHours: null,
       timeSpent: 0,
       sortOrder: 0,
@@ -251,7 +251,7 @@ describe('POST /api/projects/[id]/tasks', () => {
 
     expect(response.status).toBe(201);
     expect(data.task.title).toBe('New Task');
-    expect(data.task.status).toBe('Not started');
+    expect(data.task.status).toBe('Backlog');
     expect(data.task.createdBy).toBe(mockUserId);
   });
 
@@ -263,7 +263,7 @@ describe('POST /api/projects/[id]/tasks', () => {
       projectId: mockProjectId,
       title: 'Complex Task',
       description: 'Detailed description',
-      status: 'On-going',
+      status: 'In Progress',
       estimatedHours: 8,
       timeSpent: 0,
       sortOrder: 5,
@@ -288,7 +288,7 @@ describe('POST /api/projects/[id]/tasks', () => {
       body: JSON.stringify({
         title: 'Complex Task',
         description: 'Detailed description',
-        status: 'On-going',
+        status: 'In Progress',
         estimatedHours: 8,
         sortOrder: 5,
       }),
@@ -300,19 +300,19 @@ describe('POST /api/projects/[id]/tasks', () => {
     expect(response.status).toBe(201);
     expect(data.task.title).toBe('Complex Task');
     expect(data.task.description).toBe('Detailed description');
-    expect(data.task.status).toBe('On-going');
+    expect(data.task.status).toBe('In Progress');
     expect(data.task.estimatedHours).toBe(8);
     expect(data.task.sortOrder).toBe(5);
   });
 
-  it('defaults status to "Not started" if not provided', async () => {
+  it('defaults status to "Backlog" if not provided', async () => {
     const { getCurrentUser } = await import('@/lib/auth/session');
 
     const mockNewTask = {
       id: 'task-new',
       projectId: mockProjectId,
       title: 'Task with default status',
-      status: 'Not started',
+      status: 'Backlog',
       createdBy: mockUserId,
       timeSpent: 0,
       sortOrder: 0,
@@ -340,6 +340,6 @@ describe('POST /api/projects/[id]/tasks', () => {
     const data = await response.json();
 
     expect(response.status).toBe(201);
-    expect(data.task.status).toBe('Not started');
+    expect(data.task.status).toBe('Backlog');
   });
 });

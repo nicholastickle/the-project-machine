@@ -14,7 +14,7 @@ export const updateProjectSchema = z.object({
 export const createTaskSchema = z.object({
     title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
     description: z.string().optional(),
-    status: z.enum(['Not started', 'On-going', 'Stuck', 'Complete', 'Abandoned']).default('Not started'),
+    status: z.enum(['Backlog', 'Planned', 'In Progress', 'Stuck', 'Completed', 'Cancelled']).default('Backlog'),
     priority: z.enum(['low', 'medium', 'high']).optional(), // Optional if not in DB yet
     estimatedHours: z.number().min(0).optional(),
     sortOrder: z.number().int().optional(),
@@ -23,7 +23,7 @@ export const createTaskSchema = z.object({
 export const updateTaskSchema = z.object({
     title: z.string().min(1).max(200).optional(),
     description: z.string().optional(),
-    status: z.enum(['Not started', 'On-going', 'Stuck', 'Complete', 'Abandoned']).optional(),
+    status: z.enum(['Backlog', 'Planned', 'In Progress', 'Stuck', 'Completed', 'Cancelled']).optional(),
     estimatedHours: z.number().min(0).optional(),
     timeSpent: z.number().min(0).optional(),
 })

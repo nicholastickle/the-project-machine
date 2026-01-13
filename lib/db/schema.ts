@@ -6,7 +6,7 @@ import { relations } from 'drizzle-orm';
 // ==========================================
 
 export const projectRoleEnum = pgEnum('project_role', ['editor', 'viewer']);
-export const taskStatusEnum = pgEnum('task_status', ['Not started', 'On-going', 'Stuck', 'Complete', 'Abandoned']);
+export const taskStatusEnum = pgEnum('task_status', ['Backlog', 'Planned', 'In Progress', 'Stuck', 'Completed', 'Cancelled']);
 export const reflectionTypeEnum = pgEnum('reflection_type', ['start_of_day', 'end_of_day']);
 export const chatRoleEnum = pgEnum('chat_role', ['user', 'assistant', 'system']);
 export const assignmentRoleEnum = pgEnum('assignment_role', ['assignee', 'reviewer']);
@@ -49,7 +49,7 @@ export const tasks = pgTable('tasks', {
   projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   description: text('description'),
-  status: taskStatusEnum('status').notNull().default('Not started'),
+  status: taskStatusEnum('status').notNull().default('Backlog'),
   estimatedHours: integer('estimated_hours'),
   timeSpent: integer('time_spent').notNull().default(0),
   sortOrder: integer('sort_order').notNull().default(0),

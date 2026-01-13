@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { taskComments } from '@/lib/db/schema';
 import { eq, and, isNull } from 'drizzle-orm';
+import { asc } from 'drizzle-orm';
 
 type RouteContext = {
   params: Promise<{ id: string }>
@@ -32,7 +33,7 @@ export async function GET(
           isNull(taskComments.deletedAt)
         )
       )
-      .orderBy(taskComments.createdAt);
+      .orderBy(asc(taskComments.createdAt));
 
     return NextResponse.json({ comments });
   } catch (error) {

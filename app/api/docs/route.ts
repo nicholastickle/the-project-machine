@@ -336,7 +336,7 @@ const openApiSpec = {
                 properties: {
                   title: { type: 'string' },
                   description: { type: 'string', nullable: true },
-                  status: { type: 'string', enum: ['Not started', 'On-going', 'Stuck', 'Complete', 'Abandoned'] },
+                  status: { type: 'string', enum: ['Backlog', 'Planned', 'In Progress', 'Stuck', 'Completed', 'Cancelled'], default: 'Backlog' },
                   estimatedHours: { type: 'integer', nullable: true },
                 },
               },
@@ -815,7 +815,7 @@ const openApiSpec = {
           projectId: { type: 'string', format: 'uuid' },
           title: { type: 'string' },
           description: { type: 'string', nullable: true },
-          status: { type: 'string', enum: ['Not started', 'On-going', 'Stuck', 'Complete', 'Abandoned'] },
+          status: { type: 'string', enum: ['Backlog', 'Planned', 'In Progress', 'Stuck', 'Completed', 'Cancelled'] },
           estimatedHours: { type: 'integer', nullable: true },
           timeSpent: { type: 'integer' },
           sortOrder: { type: 'integer' },

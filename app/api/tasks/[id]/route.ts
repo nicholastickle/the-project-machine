@@ -2,10 +2,45 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { tasks } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and, isNull } from 'drizzle-orm';
+import { getCurrentUser, AuthError } from '@/lib/auth/session';
 
 type RouteContext = {
   params: Promise<{ id: string }>
+}
+
+export async function GET(
+  request: NextRequest,
+  context: RouteContext
+) {
+  const { id: taskId } = await context.params;
+
+  try {
+    const user = await getCurrentUser();
+
+    // Fetch task by ID (RLS will automatically filter)
+    const [task] = await db
+      .select()
+      .from(tasks)
+      .where(
+        and(
+          eq(tasks.id, taskId),
+          isNull(tasks.deletedAt)
+        )
+      );
+
+    if (!task) {
+      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ task });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode });
+    }
+    console.error('[GET /api/tasks/[id]] Error:', error);
+    return NextResponse.json({ error: 'Failed to fetch task' }, { status: 500 });
+  }
 }
 
 export async function PATCH(

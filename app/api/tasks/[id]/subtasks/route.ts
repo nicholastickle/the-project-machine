@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { subtasks } from '@/lib/db/schema';
 import { eq, and, isNull } from 'drizzle-orm';
+import { asc } from 'drizzle-orm';
 
 type RouteContext = {
   params: Promise<{ id: string }>
@@ -27,7 +28,7 @@ export async function GET(
       .select()
       .from(subtasks)
       .where(eq(subtasks.taskId, taskId))
-      .orderBy(subtasks.sortOrder);
+      .orderBy(asc(subtasks.sortOrder));
 
     return NextResponse.json({ subtasks: taskSubtasks });
   } catch (error) {

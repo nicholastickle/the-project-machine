@@ -15,6 +15,13 @@
       "when": 1768159329445,
       "tag": "0001_whole_xorn",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1768290885116,
+      "tag": "0002_quiet_zodiak",
+      "breakpoints": true
     }
   ]
 }

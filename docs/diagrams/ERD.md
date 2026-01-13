@@ -50,7 +50,7 @@ erDiagram
         uuid project_id FK
         string title
         text description
-        string status "backlog | in_progress | blocked | done"
+        string status "Backlog | Planned | In Progress | Stuck | Completed | Cancelled"
         integer estimated_hours
         integer time_spent
         integer sort_order
@@ -161,7 +161,7 @@ TASK {
         uuid project_id FK
         string title
         text description
-        string status "backlog | in_progress | blocked | done"
+        string status "Backlog | Planned | In Progress | Stuck | Completed | Cancelled"
         integer estimated_hours
         integer time_spent
         integer sort_order
