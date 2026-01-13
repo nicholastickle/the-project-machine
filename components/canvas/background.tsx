@@ -27,31 +27,31 @@ export default function CanvasBackground() {
             // Very zoomed in - show fine grid + medium grid (20px + 100px = 5:1 ratio)
             return {
                 primary: { gap: 20, lineWidth: 0.5, color: 'hsl(var(--grid-secondary))' },
-                secondary: { gap: 100, lineWidth: 1, color: 'hsl(var(--grid-primary))' },
+                secondary: { gap: 100, lineWidth: 1.3, color: 'hsl(var(--grid-primary))' },
             };
         } else if (zoom >= 0.8) {
             // Medium zoom - show medium grid + coarse grid (40px + 200px = 5:1 ratio)
             return {
                 primary: { gap: 40, lineWidth: 0.5, color: 'hsl(var(--grid-secondary))' },
-                secondary: { gap: 200, lineWidth: 1, color: 'hsl(var(--grid-primary))' },
+                secondary: { gap: 200, lineWidth: 1.3, color: 'hsl(var(--grid-primary))' },
             };
         } else if (zoom >= 0.4) {
             // Zoomed out - show coarse grid (80px + 400px = 5:1 ratio)
             return {
                 primary: { gap: 80, lineWidth: 0.5, color: 'hsl(var(--grid-secondary))' },
-                secondary: { gap: 400, lineWidth: 1, color: 'hsl(var(--grid-primary))' },
+                secondary: { gap: 400, lineWidth: 1.3, color: 'hsl(var(--grid-primary))' },
             };
         } else if (zoom >= 0.1) {
             // Zoomed out - show coarse grid (80px + 400px = 5:1 ratio)
             return {
                 primary: { gap: 160, lineWidth: 0.5, color: 'hsl(var(--grid-secondary))' },
-                secondary: { gap: 800, lineWidth: 1, color: 'hsl(var(--grid-primary))' },
+                secondary: { gap: 800, lineWidth: 1.3, color: 'hsl(var(--grid-primary))' },
             };
         } else {
             // Very zoomed out - show very coarse grid (160px + 800px = 5:1 ratio)
             return {
                 primary: { gap: 200, lineWidth: 0.5, color: 'hsl(var(--grid-secondary))' },
-                secondary: { gap: 1000, lineWidth: 1, color: 'hsl(var(--grid-primary))' },
+                secondary: { gap: 1000, lineWidth: 1.3, color: 'hsl(var(--grid-primary))' },
             };
         }
     };

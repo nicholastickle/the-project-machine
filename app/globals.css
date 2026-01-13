@@ -7,7 +7,7 @@
 @layer base {
   :root {
 
-    --background: 0 0% 98%;
+    --background: 0 0% 96%;
     --foreground: 210 11% 7%;
 
     --muted: 240 2% 40%;
@@ -139,8 +139,8 @@
     --canvas-buttons-accent: 240 4.8% 94%;
     --canvas-buttons-accent-foreground: 240 5.3% 26.1%;
 
-    --grid-primary: 220 10% 90%;
-    --grid-secondary: 220 10% 91%;
+    --grid-primary: 220 10% 92%;
+    --grid-secondary: 220 10% 92%;
 
 
   }
