@@ -249,6 +249,74 @@ const openApiSpec = {
         },
       },
     },
+    '/api/projects/{id}/snapshots/{snapshotId}': {
+      get: {
+        tags: ['Snapshots'],
+        summary: 'Get specific snapshot',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+          },
+          {
+            name: 'snapshotId',
+            in: 'path',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Snapshot details',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/Snapshot' },
+              },
+            },
+          },
+          404: { description: 'Snapshot not found' },
+        },
+      },
+    },
+    '/api/projects/{id}/snapshots/{snapshotId}/restore': {
+      post: {
+        tags: ['Snapshots'],
+        summary: 'Restore project to snapshot state',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+          },
+          {
+            name: 'snapshotId',
+            in: 'path',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Project restored successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean' },
+                    snapshot_data: { type: 'object' },
+                  },
+                },
+              },
+            },
+          },
+          404: { description: 'Snapshot not found' },
+        },
+      },
+    },
     '/api/usage': {
       post: {
         tags: ['Analytics'],
