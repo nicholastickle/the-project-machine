@@ -11,11 +11,11 @@ import { Button } from "@/components/ui/button";
 
 
 export default function TaskCardOptionsDeleteAction({ task }: { task: Task }) {
-    const deleteNode = useStore((state) => state.deleteNode);
+    const deleteTaskNode = useStore((state) => state.deleteTaskNode);
     const [isOpen, setIsOpen] = useState(false);
 
     const handleDeleteConfirm = () => {
-        deleteNode(task.node_id);
+        deleteTaskNode(task.node_id);
         setIsOpen(false);
     };
 

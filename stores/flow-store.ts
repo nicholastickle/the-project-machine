@@ -59,9 +59,34 @@ const useStore = create<AppState>()(
                 },
 
                 onNodesChange: (changes) => {
-                    set({
-                        nodes: applyNodeChanges(changes, get().nodes),
+                    const currentState = get();
+                    const deletedTaskIds: string[] = [];
+                    changes.forEach(change => {
+                        if (change.type === 'remove') {
+                            const nodeToDelete = currentState.nodes.find(node => node.id === change.id);
+                            if (nodeToDelete?.content_id) {
+                                deletedTaskIds.push(nodeToDelete.content_id);
+                                console.log('ReactFlow deletion - removing task:', nodeToDelete.content_id, 'for node:', change.id);
+                            }
+                        }
                     });
+
+                    
+                    const updatedNodes = applyNodeChanges(changes, currentState.nodes);
+                    const updatedTasks = deletedTaskIds.length > 0
+                        ? currentState.tasks.filter(task => !deletedTaskIds.includes(task.id))
+                        : currentState.tasks;
+
+                    set({
+                        nodes: updatedNodes,
+                        tasks: updatedTasks,
+                    });
+
+                   
+                    if (deletedTaskIds.length > 0) {
+                        console.log('Tasks removed via ReactFlow deletion:', deletedTaskIds.length);
+                        get().saveHistory();
+                    }
                 },
 
                 onEdgesChange: (changes) => {
@@ -123,25 +148,21 @@ const useStore = create<AppState>()(
                             y: START_Y
                         };
                     }
-
-                    // Generate IDs
                     const nodeId = nodeOptions?.id || `node-${uuidv4()}`;
                     const taskId = `task-${uuidv4()}`;
-
-                    // Create the node (canvas/positioning data)
                     const newNode: Node = {
                         id: nodeId,
                         type: 'task',
                         position: position,
                         project_id: 'p1', // TODO: Get from current project context
-                        content_id: taskId, // Links to the task
-                        data: {}, // Node data is now minimal - just for ReactFlow compatibility
+                        content_id: taskId, 
+                        data: {}, 
                     };
 
-                    // Create the task (content data)
+                   
                     const newTask: Task = {
                         id: taskId,
-                        node_id: nodeId, // Links back to the node
+                        node_id: nodeId, 
                         project_id: 'p1', // TODO: Get from current project context
                         title: task?.title ?? "",
                         status: task?.status ?? 'backlog',
@@ -162,7 +183,7 @@ const useStore = create<AppState>()(
                         tasks: [...get().tasks, newTask]
                     });
 
-                    // Save history AFTER the change
+                  
                     get().saveHistory();
 
                     return newNode.id;
@@ -177,13 +198,13 @@ const useStore = create<AppState>()(
                         )
                     });
 
-                    // Only save history for user-initiated changes (not time tracking ticks)
+                   
                     if (saveToHistory) {
                         get().saveHistory();
                     }
                 },
 
-                // Helper methods
+            
                 getTaskByNodeId: (nodeId: string) => {
                     const node = get().nodes.find(n => n.id === nodeId);
                     if (!node) return undefined;
@@ -194,7 +215,7 @@ const useStore = create<AppState>()(
                     return get().nodes.find(n => n.content_id === taskId);
                 },
 
-                // New task update method
+               
                 updateTask: (taskId: string, data: Partial<Task>, saveToHistory: boolean = true) => {
                     set({
                         tasks: get().tasks.map(task =>
@@ -209,16 +230,27 @@ const useStore = create<AppState>()(
                     }
                 },
 
-                deleteNode: (nodeId: string) => {
-                    const nodeToDelete = get().nodes.find(node => node.id === nodeId);
+                deleteTaskNode: (nodeId: string) => {
+                    const currentState = get();
+                    const nodeToDelete = currentState.nodes.find(node => node.id === nodeId);
+
+                  
+
+                    
+                    const filteredNodes = currentState.nodes.filter(node => node.id !== nodeId);
+                    const filteredEdges = currentState.edges.filter(edge =>
+                        edge.source !== nodeId && edge.target !== nodeId
+                    );
+
+                    let filteredTasks = currentState.tasks;
+                    if (nodeToDelete?.content_id) {
+                        filteredTasks = currentState.tasks.filter(task => task.id !== nodeToDelete.content_id);
+                    }
 
                     set({
-                        nodes: get().nodes.filter(node => node.id !== nodeId),
-                        edges: get().edges.filter(edge => edge.source !== nodeId && edge.target !== nodeId),
-                        // Also delete the associated task if it exists
-                        tasks: nodeToDelete?.content_id
-                            ? get().tasks.filter(task => task.id !== nodeToDelete.content_id)
-                            : get().tasks
+                        nodes: filteredNodes,
+                        edges: filteredEdges,
+                        tasks: filteredTasks
                     });
 
                     get().saveHistory();
@@ -237,7 +269,6 @@ const useStore = create<AppState>()(
                 },
 
                 resetCanvas: () => {
-                    // Clear persisted data from localStorage
                     localStorage.removeItem('canvas-storage');
                     localStorage.removeItem('taskbook-storage');
 
@@ -250,7 +281,6 @@ const useStore = create<AppState>()(
                     get().saveHistory();
                 },
 
-                // Development helper method to load mock data
                 loadMockData: () => {
                     const { mockNodes, mockEdges, mockTasks } = require('@/lib/mock-data');
                     set({
@@ -261,7 +291,6 @@ const useStore = create<AppState>()(
                     get().saveHistory();
                 },
 
-                // Development helper to quickly add a sample task
                 addSampleTask: () => {
                     get().addTaskNode({
                         title: "Sample Task",
@@ -287,11 +316,8 @@ const useStore = create<AppState>()(
                         tasks: get().tasks.map(task => {
                             if (task.id === taskId) {
                                 const updatedSubtasks = [...(task.subtasks || []), newSubtask];
-
-                                // Calculate totals from subtasks
                                 const totalEstimated = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.estimated_duration || 0), 0);
                                 const totalTimeSpent = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.time_spent || 0), 0);
-
                                 return {
                                     ...task,
                                     subtasks: updatedSubtasks,
@@ -317,7 +343,7 @@ const useStore = create<AppState>()(
                                         : subtask
                                 );
 
-                                // Calculate totals from subtasks
+            
                                 const totalEstimated = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.estimated_duration || 0), 0);
                                 const totalTimeSpent = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.time_spent || 0), 0);
 

@@ -2,7 +2,7 @@
 import useStore from '@/stores/flow-store';
 import { Task } from '@/stores/types';
 
-export default function TaskCardPanelTitle({ task }: { task: Task }) {
+export default function TaskCardOptionsTitle({ task }: { task: Task }) {
     const updateTask = useStore((state) => state.updateTask);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

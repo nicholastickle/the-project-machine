@@ -19,8 +19,7 @@ export default function TaskBookTaskSubtaskTitle({ taskId, subtaskId, title, isC
         <textarea
             value={title || ''}
             onChange={handleInputChange}
-            className={`w-full bg-transparent border-none outline-none text-sm resize-none overflow-hidden flex items-center justify-start ${isCompleted && title ? 'line-through text-muted-foreground' : ''
-                }`}
+            className={"w-full bg-transparent border-none outline-none text-sm resize-none overflow-hidden flex items-center justify-start "}
             placeholder="Enter subtask..."
             maxLength={200}
             autoComplete="off"

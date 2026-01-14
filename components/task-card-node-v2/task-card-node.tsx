@@ -1,5 +1,4 @@
 import TaskHandles from '@/components/task-card-node-v2/task-card-handles';
-import { Task } from '@/stores/types';
 import TaskCardTitle from '@/components/task-card-node-v2/task-card-title';
 import TaskCardStatus from '@/components/task-card-node-v2/task-card-status';
 import TaskCardDescription from '@/components/task-card-node-v2/task-card-description';
@@ -13,10 +12,13 @@ import { type NodeProps } from '@xyflow/react';
 import useStore from '@/stores/flow-store';
 
 export default function TaskCard({ id }: NodeProps)  {
-    const getTaskByNodeId = useStore((state) => state.getTaskByNodeId);
-    const task = getTaskByNodeId(id);
-    
-    // If no task found, render empty or loading state
+
+    const task = useStore((state) => {
+        const node = state.nodes.find(n => n.id === id);
+        if (!node) return undefined;
+        return state.tasks.find(t => t.id === node.content_id);
+    });
+   
     if (!task) {
         return (
             <div className="group relative w-[400px] min-h-[400px] border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center rounded-sm shadow-lg m-5">

@@ -25,7 +25,7 @@ export default function TaskCardOptionsCommentsExisting({ task }: { task: Task }
 
         const updatedComments = task.comments?.map(comment =>
             comment.id === commentId
-                ? { ...comment, content: editValue.trim(), editedDate: new Date().toISOString() }
+                ? { ...comment, content: editValue.trim(), updated_at: new Date().toISOString() }
                 : comment
         );
 
@@ -73,7 +73,7 @@ export default function TaskCardOptionsCommentsExisting({ task }: { task: Task }
         });
     };
 
-    // Sort comments by date, latest first
+
     const sortedComments = task.comments ? [...task.comments].reverse() : [];
 
     if (!task.comments || task.comments.length === 0) {
@@ -97,7 +97,7 @@ export default function TaskCardOptionsCommentsExisting({ task }: { task: Task }
                             <span className="text-sm font-medium">{comment.user_name}</span>
                             <span className="text-xs text-gray-500">
                                 {formatDate(comment.created_at)}
-                                {comment.updated_at && ' (edited)'}
+                                {comment.updated_at !== comment.created_at && ' (edited)'}
                             </span>
                         </div>
                     </div>

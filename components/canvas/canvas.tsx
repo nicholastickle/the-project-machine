@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react';
+
 import { useShallow } from 'zustand/react/shallow';
 
 
@@ -19,6 +19,7 @@ import CanvasBackground from '@/components/canvas/background';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
 import TaskCard from '@/components/task-card-node-v2/task-card-node';
 
+// Define nodeTypes outside component to prevent recreation
 const nodeTypes = { task: TaskCard };
 const panOnDrag = [1, 2];
 

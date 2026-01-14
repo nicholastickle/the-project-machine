@@ -57,7 +57,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                 <div className="flex flex-col h-full  text-task-book-foreground border bg-task-book-background border-task-book-border rounded-2xl">
                     <div className="flex flex-col flex-[1] bg-task-book-accent rounded-t-2xl">
                         <DialogHeader className="p-6  ">
-                            <DialogTitle className="text-3xl font-bold text-left w-full flex flex-row items-center gap-2 "><span><BookType size={36} /></span>Task book</DialogTitle>
+                            <DialogTitle className="text-3xl font-bold text-left w-full flex flex-row items-center gap-2 "><span><BookType size={36} /></span>Task Library</DialogTitle>
                             <DialogDescription className="text-xs text-task-book-foreground">All your saved tasks are stored here for you and your AI. Create new tasks, manage existing ones, import a task into your canvas</DialogDescription>
                         </DialogHeader>
                     </div>

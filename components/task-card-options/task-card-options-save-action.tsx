@@ -56,7 +56,7 @@ export default function TaskCardOptionsSaveAction({ task }: { task: Task }) {
                 className="flex items-center space-x-2 p-2 rounded-md text-sm transition-all duration-200 hover:bg-gray-100 border "
             >
                 <Save className="w-4 h-4 text-muted-foreground" />
-                <span className="flex-1 text-left">Save to task book</span>
+                <span className="flex-1 text-left">Save to task library</span>
             </button>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

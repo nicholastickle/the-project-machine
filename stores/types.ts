@@ -157,7 +157,7 @@ export type AppState = {
     position?: { x: number; y: number };
     id?: string;
   }) => string;
-  deleteNode: (nodeId: string) => void;
+  deleteTaskNode: (nodeId: string) => void;
   connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => void;
 
   // Task management methods
