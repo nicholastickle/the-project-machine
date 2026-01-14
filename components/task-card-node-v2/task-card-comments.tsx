@@ -1,7 +1,7 @@
 import { MessageSquare } from 'lucide-react';
-import { TaskData } from '@/stores/types';
+import { Task } from '@/stores/types';
 
-export default function TaskCardComments({ comments }: { comments?: TaskData['comments'] }) {
+export default function TaskCardComments({ comments }: { comments?: Task['comments'] }) {
     if (!comments || comments.length === 0) {
         return null;
     }

@@ -3,20 +3,21 @@ import {
   mockUsers, 
   mockProjects, 
   mockTasks, 
-  mockSubtasks, 
   mockNodes, 
   mockEdges, 
-  mockTaskComments, 
-  mockTaskbookEntries,
-  User,
-  Project,
-  Task,
-  Subtask,
-  Node,
-  Edge,
-  TaskComment,
-  TaskbookEntry
+  mockTaskbookEntries
 } from './mock-data';
+
+import {
+  type User,
+  type Project,
+  type Task,
+  type Node,
+  type Edge,
+  type TaskbookEntry,
+  type Subtask,
+  type TaskComment
+} from '../stores/types';
 
 /**
  * SYNCHRONOUS HELPERS
@@ -32,11 +33,15 @@ export const getMockProjectById = (id: string): Project | undefined =>
 export const getMockTasksByProjectId = (projectId: string): Task[] => 
   mockTasks.filter((t: Task) => t.project_id === projectId);
 
-export const getMockSubtasksByTaskId = (taskId: string): Subtask[] => 
-  mockSubtasks.filter((s: Subtask) => s.task_id === taskId);
+export const getMockSubtasksByTaskId = (taskId: string): Subtask[] => {
+  const task = mockTasks.find((t: Task) => t.id === taskId);
+  return task?.subtasks || [];
+};
 
-export const getMockCommentsByTaskId = (taskId: string): TaskComment[] => 
-  mockTaskComments.filter((c: TaskComment) => c.task_id === taskId);
+export const getMockCommentsByTaskId = (taskId: string): TaskComment[] => {
+  const task = mockTasks.find((t: Task) => t.id === taskId);
+  return task?.comments || [];
+};
 
 export const getMockNodesByProjectId = (projectId: string): Node[] => 
   mockNodes.filter((n: Node) => n.project_id === projectId);

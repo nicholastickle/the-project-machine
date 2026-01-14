@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import { addEdge, applyNodeChanges, applyEdgeChanges, type Node } from '@xyflow/react';
+import { addEdge, applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
 import { initialNodes } from '@/components/canvas/initial-nodes';
 import { initialEdges } from '@/components/canvas/initial-edges';
-import { type AppState } from './types';
+import { type AppState, type Node, type Edge, type Task } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 const MAX_HISTORY = 50;
@@ -62,16 +62,16 @@ const useStore = create<AppState>()(
 
                 onEdgesChange: (changes) => {
                     set({
-                        edges: applyEdgeChanges(changes, get().edges),
+                        edges: applyEdgeChanges(changes, get().edges) as Edge[],
                     });
                 },
 
                 onConnect: (connection) => {
-                    // Check if vertical connection (bottom to top)
-                    const isVertical = connection.sourceHandle === 'bottom' && connection.targetHandle === 'top';
+
 
                     const newEdge = {
                         ...connection,
+                        project_id: 'p1', // TODO: Get from current project context
                         type: 'smoothstep',
                         markerEnd: {
                             type: 'arrowclosed',
@@ -86,7 +86,7 @@ const useStore = create<AppState>()(
                         },
                     };
                     set({
-                        edges: addEdge(newEdge, get().edges),
+                        edges: addEdge(newEdge, get().edges) as Edge[],
                     });
                 },
 
@@ -98,25 +98,20 @@ const useStore = create<AppState>()(
                     set({ edges });
                 },
 
-                addTaskNode: (nodeData?: {
-                    title?: string;
-                    position?: { x: number; y: number }
-                    status?: string;
-                    estimatedHours?: number;
-                    timeSpent?: number;
-                    description?: string;
-                    subtasks?: { id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }[];
+                addTaskNode: (task?: Partial<Task>, nodeOptions?: {
+                    position?: { x: number; y: number };
+                    id?: string;
                 }) => {
                     const nodes = get().nodes;
-                    let position = nodeData?.position || { x: 200, y: 200 };
+                    let position = nodeOptions?.position || { x: 200, y: 200 };
 
                     // Horizontal layout - cards placed side by side
-                    if (!nodeData?.position) {
+                    if (!nodeOptions?.position) {
                         const HORIZONTAL_SPACING = 700; // Space between cards horizontally
                         const START_X = -500;
                         const START_Y = 200;
 
-                        const taskNodes = nodes.filter(n => n.type === 'taskCardNode');
+                        const taskNodes = nodes.filter(n => n.type === 'task');
                         const cardIndex = taskNodes.length;
 
                         position = {
@@ -126,16 +121,18 @@ const useStore = create<AppState>()(
                     }
 
                     const newNode: Node = {
-                        id: `task-${uuidv4()}`,
-                        type: 'taskCardNode',
+                        id: nodeOptions?.id || `task-${uuidv4()}`,
+                        type: 'task',
                         position: position,
+                        project_id: 'p1', // TODO: Get from current project context
+                        content_id: `task-${uuidv4()}`, // TODO: Create actual task in database
                         data: {
-                            title: nodeData?.title ?? "",
-                            status: nodeData?.status ?? 'Backlog',
-                            estimatedHours: nodeData?.estimatedHours,
-                            timeSpent: nodeData?.timeSpent ?? 0,
-                            description: nodeData?.description ?? "",
-                            subtasks: nodeData?.subtasks ?? [],
+                            title: task?.title ?? "",
+                            status: task?.status ?? 'backlog',
+                            estimatedHours: task?.estimated_hours ?? 0,
+                            timeSpent: task?.time_spent ?? 0,
+                            description: task?.description ?? "",
+                            subtasks: task?.subtasks ?? [],
                         },
                     };
 
@@ -149,11 +146,11 @@ const useStore = create<AppState>()(
                     return newNode.id;
                 },
 
-                updateNodeData: (nodeId: string, newData: Partial<{ title: string; status: string; timeSpent: number; estimatedHours: number; description: string; subtasks: { id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }[] }>, saveToHistory: boolean = true) => {
+                updateNodeData: (id: string, data: Partial<Task>, saveToHistory: boolean = true) => {
                     set({
                         nodes: get().nodes.map(node =>
-                            node.id === nodeId
-                                ? { ...node, data: { ...node.data, ...newData } }
+                            node.id === id
+                                ? { ...node, data: { ...node.data, ...data } }
                                 : node
                         )
                     });

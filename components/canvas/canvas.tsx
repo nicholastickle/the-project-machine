@@ -9,18 +9,17 @@ import {
     SelectionMode,
     ConnectionMode,
     ConnectionLineType,
-    type ReactFlowInstance,
 } from '@xyflow/react';
 
 
 import useStore from '@/stores/flow-store';
-import { type AppState } from '@/stores/types';
+import { type AppState, type CanvasProps } from '@/stores/types';
 
 import CanvasBackground from '@/components/canvas/background';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
 import TaskCard from '@/components/task-card-node-v2/task-card-node';
 
-const nodeTypes = { taskCardNode: TaskCard };
+const nodeTypes = { task: TaskCard };
 const panOnDrag = [1, 2];
 
 const selector = (state: AppState) => ({
@@ -30,10 +29,6 @@ const selector = (state: AppState) => ({
     onEdgesChange: state.onEdgesChange,
     onConnect: state.onConnect,
 });
-
-interface CanvasProps {
-    onInit?: (instance: ReactFlowInstance) => void;
-}
 
 export default function Canvas({ onInit }: CanvasProps) {
     const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(

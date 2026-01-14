@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button"
 import { Play } from "lucide-react"
-import { SavedTask } from '@/stores/types'
+import { TaskbookEntry } from '@/stores/types'
 import useStore from '@/stores/flow-store'
 import useTaskbookStore from '@/stores/taskbook-store'
 
 interface TaskBookUseProps {
-    selectedTask: SavedTask | null;
+    selectedTask: TaskbookEntry | null;
     onClose?: () => void;
 }
 
@@ -19,13 +19,13 @@ export default function TaskBookUse({ selectedTask, onClose }: TaskBookUseProps)
         addTaskNode({
             title: selectedTask.title,
             description: selectedTask.description || "",
-            status: "Backlog",
-            estimatedHours: selectedTask.estimatedHours || 0,
-            timeSpent: selectedTask.timeSpent || 0,
+            status: "backlog",
+            estimated_hours: 0, // Default value since TaskbookEntry doesn't have this
+            time_spent: 0, // Default value since TaskbookEntry doesn't have this
             subtasks: selectedTask.subtasks || [],
         });
-        const now = new Date().toLocaleString();
-        updateSavedTask(selectedTask.id, { lastUsed: now });
+        const now = new Date().toISOString();
+        updateSavedTask(selectedTask.id, { used_at: now, usage_count: (selectedTask.usage_count || 0) + 1 });
         onClose?.();
     };
 

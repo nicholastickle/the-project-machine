@@ -1,9 +1,9 @@
 import useTaskbookStore from '@/stores/taskbook-store';
-import { SavedTask } from '@/stores/types';
+import { TaskbookEntry } from '@/stores/types';
 import { MessageSquare } from 'lucide-react';
 
 interface TaskBookTaskCommentsProps {
-    task: SavedTask | null;
+    task: TaskbookEntry | null;
 }
 
 export default function TaskBookTaskComments({ task }: TaskBookTaskCommentsProps) {

@@ -1,17 +1,19 @@
-export default function TaskCardStatus({ status }: { status: string }) {
-    const getStatusColor = (status: string) => {
+import { Task } from "@/stores/types";
+
+export default function TaskCardStatus({ status }: { status: Task['status'] }) {
+    const getStatusColor = (status: Task['status']) => {
         switch (status) {
-            case 'Backlog':
+            case 'backlog':
                 return 'bg-task-card-backlog';
-            case 'Planned':
+            case 'planned':
                 return 'border-task-card-planned border-2 bg-transparent';
-            case 'In Progress':
+            case 'in_progress':
                 return 'bg-task-card-in-progress';
-            case 'Stuck':
+            case 'stuck':
                 return 'bg-task-card-stuck';
-            case 'Completed':
+            case 'completed':
                 return 'bg-task-card-complete';
-            case 'Cancelled':
+            case 'cancelled':
                 return 'bg-task-card-cancelled';
             default:
                 return 'bg-gray-300';

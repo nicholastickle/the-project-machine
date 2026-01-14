@@ -6,13 +6,13 @@ export default function TaskBookAddTask() {
 
     const handleAddNewTask = () => {
         const newTask = {
+            user_id: 'u1', // TODO: Replace with actual current user ID
             title: "New task",
-            status: "",
-            timeSpent: 0,
-            estimatedHours: undefined,
             description: undefined,
+            category: undefined,
             comments: undefined,
-            subtasks: undefined
+            subtasks: undefined,
+            usage_count: 0
         };
 
         addSavedTask(newTask);

@@ -1,14 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import useStore from '@/stores/flow-store';
-import { TaskData } from '@/stores/types';
+import { Task } from '@/stores/types';
 
-interface TaskCardTitleProps {
-    nodeId: string;
-    data: TaskData;
-}
-
-export default function TaskCardTitle({ nodeId, data }: TaskCardTitleProps) {
-    const [value, setValue] = useState(data.title || '');
+export default function TaskCardTitle({ task }: { task: Task }) {
+    const [value, setValue] = useState(task.title || '');
     const [fontSize, setFontSize] = useState(48); // Starting font size
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -46,7 +41,7 @@ export default function TaskCardTitle({ nodeId, data }: TaskCardTitleProps) {
     };
 
     const handleBlur = () => {
-        updateNodeData(nodeId, { title: value.trim() });
+        updateNodeData(task.id, { task: { title: value.trim() } } as Partial<Task>);
     };
 
     const handleContainerClick = () => {
@@ -61,8 +56,8 @@ export default function TaskCardTitle({ nodeId, data }: TaskCardTitleProps) {
     };
 
     useEffect(() => {
-        setValue(data.title || '');
-    }, [data.title]);
+        setValue(task.title || '');
+    }, [task.title]);
 
     useEffect(() => {
         requestAnimationFrame(adjustFontSize);

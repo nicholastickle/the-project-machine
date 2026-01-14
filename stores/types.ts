@@ -4,9 +4,8 @@ import {
   type OnNodesChange,
   type OnEdgesChange,
   type OnConnect,
+  type OnInit,
 } from '@xyflow/react';
-
-
 
 // --- Interfaces based on the ERD ---
 
@@ -17,6 +16,7 @@ export interface User {
 }
 
 export interface Project {
+
   id: string; // uuid (PK)
   name: string;
   created_by: string; // uuid (FK)
@@ -29,7 +29,9 @@ export interface Project {
 export interface ProjectMember {
   project_id: string; // uuid (FK)
   user_id: string; // uuid (FK)
+  name?: string;
   role: 'viewer' | 'editor' | 'admin';
+
 }
 
 export interface PendingInvitation {
@@ -77,11 +79,10 @@ export interface AIChatMessage {
 }
 
 export interface Node extends ReactFlowNode {
-  id: string; // React Flow Node ID
   project_id: string;
-  type: 'task' | 'chart' | 'note';
-  position: { x: number; y: number }; // JSONB
   content_id: string; // FK to tasks.id
+
+  //React Flow data already includes id, type, position, and data, so these are excluded from the above.
 }
 
 export interface Edge extends ReactFlowEdge {
@@ -94,6 +95,7 @@ export interface Edge extends ReactFlowEdge {
 
 export interface Task {
   id: string;
+  node_id: string;
   project_id: string;
   title?: string;
   description?: string;
@@ -132,46 +134,42 @@ export interface TaskComment {
   id: string;
   task_id: string;
   user_id: string;
+  user_name: string;
   content: string;
   created_at: string;
   updated_at: string;
 }
 
 export type AppState = {
-
   nodes: Node[];
   edges: Edge[];
-
   history: { nodes: Node[]; edges: Edge[] }[];
   historyIndex: number;
-
   onNodesChange: OnNodesChange<Node>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
 
+  // Method types
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
-
-  addTaskNode: (nodeData?: Partial<Task> & {
+  addTaskNode: (taskData?: Partial<Task>, nodeOptions?: {
+    position?: { x: number; y: number };
+    id?: string;
   }) => string;
 
   deleteNode: (nodeId: string) => void;
   connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => void;
   updateNodeData: (id: string, data: Partial<Task>, saveToHistory?: boolean) => void;
   addSubtask: (nodeId: string) => void;
-  updateSubtask: (nodeId: string, subtaskId: string, data: Partial<{
-    id: string;
-    title: string;
-    isCompleted: boolean;
-    estimatedDuration: number;
-    timeSpent: number;
-  }>) => void;
-
+  updateSubtask: (nodeId: string, subtaskId: string, data: Partial<Subtask>) => void;
   deleteSubtask: (nodeId: string, subtaskId: string) => void;
-
   saveHistory: () => void;
   resetCanvas: () => void;
-
   undo: () => void;
   redo: () => void;
+};
+
+// Canvas component props
+export interface CanvasProps {
+  onInit?: OnInit<Node, Edge>;
 };

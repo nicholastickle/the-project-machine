@@ -1,14 +1,9 @@
 import useStore from '@/stores/flow-store';
-import { TaskData } from '@/stores/types';
+import { Task } from '@/stores/types';
 import { User} from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
-interface TaskCardOptionsCommentsExistingProps {
-    nodeId: string;
-    comments?: TaskData['comments'];
-}
-
-export default function TaskCardOptionsCommentsExisting({ nodeId, comments }: TaskCardOptionsCommentsExistingProps) {
+export default function TaskCardOptionsCommentsExisting({ task }: { task: Task }) {
     const updateNodeData = useStore((state) => state.updateNodeData);
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
     const [editValue, setEditValue] = useState('');
@@ -20,21 +15,21 @@ export default function TaskCardOptionsCommentsExisting({ nodeId, comments }: Ta
         }
     }, [editingCommentId]);
 
-    const handleEdit = (comment: NonNullable<TaskData['comments']>[0]) => {
+    const handleEdit = (comment: NonNullable<Task['comments']>[0]) => {
         setEditingCommentId(comment.id);
-        setEditValue(comment.comment);
+        setEditValue(comment.content);
     };
 
     const handleSave = (commentId: string) => {
         if (!editValue.trim()) return;
 
-        const updatedComments = comments?.map(comment =>
+        const updatedComments = task.comments?.map(comment =>
             comment.id === commentId
-                ? { ...comment, comment: editValue.trim(), editedDate: new Date().toISOString() }
+                ? { ...comment, content: editValue.trim(), editedDate: new Date().toISOString() }
                 : comment
         );
 
-        updateNodeData(nodeId, { comments: updatedComments });
+        updateNodeData(task.id, { comments: updatedComments });
         setEditingCommentId(null);
         setEditValue('');
     };
@@ -45,8 +40,8 @@ export default function TaskCardOptionsCommentsExisting({ nodeId, comments }: Ta
     };
 
     const handleDelete = (commentId: string) => {
-        const updatedComments = comments?.filter(comment => comment.id !== commentId);
-        updateNodeData(nodeId, { comments: updatedComments });
+        const updatedComments = task.comments?.filter(comment => comment.id !== commentId);
+        updateNodeData(task.id, { comments: updatedComments });
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, commentId: string) => {
@@ -79,9 +74,9 @@ export default function TaskCardOptionsCommentsExisting({ nodeId, comments }: Ta
     };
 
     // Sort comments by date, latest first
-    const sortedComments = comments ? [...comments].reverse() : [];
+    const sortedComments = task.comments ? [...task.comments].reverse() : [];
 
-    if (!comments || comments.length === 0) {
+    if (!task.comments || task.comments.length === 0) {
         return (
             <div className="text-center text-gray-500 py-4">
                 No comments yet
@@ -99,10 +94,10 @@ export default function TaskCardOptionsCommentsExisting({ nodeId, comments }: Ta
                             <User size={16} className="text-gray-600" />
                         </div>
                         <div className="flex-1 flex items-center justify-start gap-2">
-                            <span className="text-sm font-medium">{comment.memberName}</span>
+                            <span className="text-sm font-medium">{comment.user_name}</span>
                             <span className="text-xs text-gray-500">
-                                {formatDate(comment.createdDate)}
-                                {comment.editedDate && ' (edited)'}
+                                {formatDate(comment.created_at)}
+                                {comment.updated_at && ' (edited)'}
                             </span>
                         </div>
                     </div>
@@ -112,7 +107,7 @@ export default function TaskCardOptionsCommentsExisting({ nodeId, comments }: Ta
                         <input
                             ref={editingCommentId === comment.id ? inputRef : undefined}
                             type="text"
-                            value={editingCommentId === comment.id ? editValue : comment.comment}
+                            value={editingCommentId === comment.id ? editValue : comment.content}
                             onChange={editingCommentId === comment.id ? (e) => setEditValue(e.target.value) : undefined}
                             onKeyDown={editingCommentId === comment.id ? (e) => handleKeyDown(e, comment.id) : undefined}
                             onBlur={editingCommentId === comment.id ? () => handleBlur(comment.id) : undefined}

@@ -1,6 +1,6 @@
 import { Ellipsis } from 'lucide-react';
 import TaskCardOptionsPanel from '@/components/task-card-options/task-card-options-panel';
-import { TaskData } from '@/stores/types';
+import { Task } from '@/stores/types';
 import {
     Dialog,
     DialogContent,
@@ -10,12 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
-interface TaskCardOptionsBadgeProps {
-    nodeId: string;
-    data: TaskData;
-}
-
-export default function TaskCardOptionsBadge({ nodeId, data }: TaskCardOptionsBadgeProps) {
+export default function TaskCardOptionsBadge({ task }: { task: Task }) {
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -27,14 +22,13 @@ export default function TaskCardOptionsBadge({ nodeId, data }: TaskCardOptionsBa
             </DialogTrigger>
             <DialogContent className="border-none p-0 max-w-3xl w-full h-[85vh] focus:outline-none">
                 <VisuallyHidden>
-                    <DialogTitle>Task Options for {data.title}</DialogTitle>
+                    <DialogTitle>Task Options for {task.title}</DialogTitle>
                     <DialogDescription>
                         Configure task settings, manage subtasks, and update task details
                     </DialogDescription>
                 </VisuallyHidden>
                 <TaskCardOptionsPanel
-                    nodeId={nodeId}
-                    data={data}
+                    task={task}
                 />
             </DialogContent>
         </Dialog>

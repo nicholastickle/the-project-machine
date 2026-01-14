@@ -25,7 +25,7 @@ export default function TaskBookTaskSubtaskTimeSpent({ taskId, subtaskId, timeSp
                 setCurrentTime(prev => {
                     const newTime = prev + 1;
                     setTimeout(() => {
-                        updateSubtask(taskId, subtaskId, { timeSpent: newTime });
+                        updateSubtask(taskId, subtaskId, { time_spent: newTime });
                     }, 0);
                     return newTime;
                 });

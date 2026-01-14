@@ -1,50 +1,45 @@
 import { Check } from 'lucide-react';
 import useStore from '@/stores/flow-store';
-import { TaskData } from '@/stores/types';
+import { Task } from '@/stores/types';
 
-interface TaskCardOptionsStatusProps {
-    nodeId: string;
-    status: TaskData['status'];
-}
-
-export default function TaskCardOptionsStatus({ nodeId, status }: TaskCardOptionsStatusProps) {
+export default function TaskCardOptionsStatus({ task }: { task: Task }) {
     const updateNodeData = useStore((state) => state.updateNodeData);
 
     const statusOptions = [
         {
-            value: 'Backlog',
+            value: 'backlog',
             label: 'Backlog',
             color: 'bg-task-card-backlog'
         },
         {
-            value: 'Planned',
+            value: 'planned',
             label: 'Planned',
             color: 'border-task-card-planned border-2 bg-transparent'
         },
         {
-            value: 'In Progress',
+            value: 'in_progress',
             label: 'In Progress',
             color: 'bg-task-card-in-progress'
         },
         {
-            value: 'Stuck',
+            value: 'stuck',
             label: 'Stuck',
             color: 'bg-task-card-stuck'
         },
         {
-            value: 'Completed',
+            value: 'completed',
             label: 'Completed',
             color: 'bg-task-card-complete'
         },
         {
-            value: 'Cancelled',
+            value: 'cancelled',
             label: 'Cancelled',
             color: 'bg-task-card-cancelled'
         }
     ];
 
     const handleStatusChange = (newStatus: string) => {
-        updateNodeData(nodeId, { status: newStatus });
+        updateNodeData(task.id, { task: { status: newStatus } } as Partial<Task>);
     };
 
     return (
@@ -55,7 +50,7 @@ export default function TaskCardOptionsStatus({ nodeId, status }: TaskCardOption
                     <button
                         key={option.value}
                         onClick={() => handleStatusChange(option.value)}
-                        className={`flex items-center gap-2 p-2 border rounded-md text-sm transition-all duration-200 hover:bg-gray-100 ${status === option.value
+                        className={`flex items-center gap-2 p-2 border rounded-md text-sm transition-all duration-200 hover:bg-gray-100 ${task.status === option.value
                                 ? 'border-1 border-black-500'
                                 : 'border'
                             }`}
@@ -64,7 +59,7 @@ export default function TaskCardOptionsStatus({ nodeId, status }: TaskCardOption
                             className={`w-3 h-3 rounded-full ${option.color}`}
                         />
                         <span className="flex-1 text-left">{option.label}</span>
-                        {status === option.value && (
+                        {task.status === option.value && (
                             <Check className="w-4 h-4 text-blue-500" />
                         )}
                     </button>

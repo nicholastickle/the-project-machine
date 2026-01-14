@@ -2,18 +2,19 @@ import TaskBookTaskSubtaskDelete from "@/components/task-book/task-book-task-sub
 import TaskBookTaskSubtaskDurations from "@/components/task-book/task-book-task-subtask-durations";
 import TaskBookTaskSubtaskTimeSpent from "@/components/task-book/task-book-task-subtask-time-spent";
 import TaskBookTaskSubtaskTitle from "@/components/task-book/task-book-task-subtask-title";
+import { Subtask } from '@/stores/types';
 
 import useTaskbookStore from '@/stores/taskbook-store';
 
 interface TaskBookTaskSubtaskTableProps {
     taskId: string;
-    subtasks: { id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }[];
+    subtasks: Subtask[];
 }
 
 export default function TaskBookTaskSubtaskTable({ taskId, subtasks }: TaskBookTaskSubtaskTableProps) {
 
-    const totalEstimated = subtasks.reduce((sum, subtask) => sum + subtask.estimatedDuration, 0);
-    const totalTimeSpent = subtasks.reduce((sum, subtask) => sum + subtask.timeSpent, 0);
+    const totalEstimated = subtasks.reduce((sum, subtask) => sum + (subtask.estimated_duration || 0), 0);
+    const totalTimeSpent = subtasks.reduce((sum, subtask) => sum + (subtask.time_spent || 0), 0);
     const addSubtask = useTaskbookStore((state) => state.addSubtask);
 
 
@@ -46,22 +47,22 @@ export default function TaskBookTaskSubtaskTable({ taskId, subtasks }: TaskBookT
                             <TaskBookTaskSubtaskTitle
                                 taskId={taskId}
                                 subtaskId={subtask.id}
-                                title={subtask.title}
-                                isCompleted={subtask.isCompleted}
+                                title={subtask.title || ''}
+                                isCompleted={subtask.is_completed || false}
                             />
                         </td>
                         <td className="w-[100px] text-center">
                             <TaskBookTaskSubtaskDurations
                                 taskId={taskId}
                                 subtaskId={subtask.id}
-                                duration={subtask.estimatedDuration}
+                                duration={subtask.estimated_duration || 0}
                             />
                         </td>
                         <td className="w-[80px] text-left">
                             <TaskBookTaskSubtaskTimeSpent
                                 taskId={taskId}
                                 subtaskId={subtask.id}
-                                timeSpent={subtask.timeSpent}
+                                timeSpent={subtask.time_spent || 0}
                             />
                         </td>
                         <td className="w-[30px] text-center">

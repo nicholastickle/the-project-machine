@@ -1,9 +1,9 @@
 import useTaskbookStore from '@/stores/taskbook-store';
-import { SavedTask } from '@/stores/types';
+import { TaskbookEntry } from '@/stores/types';
 import { AlignLeft } from 'lucide-react';
 
 interface TaskBookTaskDescriptionProps {
-    task: SavedTask | null;
+    task: TaskbookEntry | null;
 }
 
 export default function TaskBookTaskDescription({ task }: TaskBookTaskDescriptionProps) {
