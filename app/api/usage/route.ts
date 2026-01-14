@@ -13,24 +13,23 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
 
     const body = await request.json();
-    const { event_type, project_id, event_data, anonymous_id } = body;
+    const { event_type, project_id, event_data } = body;
 
     if (!event_type || typeof event_type !== 'string') {
       return NextResponse.json({ error: 'event_type is required' }, { status: 400 });
     }
 
-    // Require either userId or anonymousId
-    if (!user?.id && !anonymous_id) {
+    // Require authenticated user
+    if (!user?.id) {
       return NextResponse.json({ 
-        error: 'Either authenticated user or anonymous_id required' 
-      }, { status: 400 });
+        error: 'Authentication required' 
+      }, { status: 401 });
     }
 
     await db.insert(usageLogs).values({
       eventType: event_type,
       projectId: project_id || undefined,
-      userId: user?.id || undefined,
-      anonymousId: anonymous_id || undefined,
+      userId: user.id,
       eventData: event_data || null
     });
 
