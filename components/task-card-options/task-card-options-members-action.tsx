@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function TaskCardOptionsMembersAction({ task }: { task: Task }) {
-    const updateNodeData = useStore((state) => state.updateNodeData);
+    const updateTask = useStore((state) => state.updateTask);
 
     // Dummy users
     const availableMembers = [
@@ -49,7 +49,7 @@ export default function TaskCardOptionsMembersAction({ task }: { task: Task }) {
             updatedMembers.push(newMember);
         }
 
-        updateNodeData(task.id, { members: updatedMembers });
+        updateTask(task.id, { members: updatedMembers });
     };
 
     return (

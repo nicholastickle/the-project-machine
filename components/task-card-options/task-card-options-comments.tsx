@@ -6,7 +6,6 @@ import TaskCardOptionsCommentsExisting from './task-card-options-comments-existi
 
 export default function TaskCardOptionsComments({ task }: { task: Task }) {
 
-
     return (
         <div className="w-full flex flex-col p-3">
             <div className="flex items-center gap-2 mb-1">

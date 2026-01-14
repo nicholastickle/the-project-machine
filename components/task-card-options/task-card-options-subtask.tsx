@@ -10,7 +10,7 @@ export default function TaskCardOptionsSubtasks({ task }: { task: Task }) {
                 <span className="text-lg font-medium text-muted-foreground">Subtasks:</span>
             </div>
             <div className='border border-gray-200 outline-none rounded-md bg-white'>
-                < SubtaskTable task={task} />
+                <SubtaskTable task={task} />
             </div>
         </div >
     );

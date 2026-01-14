@@ -26,7 +26,7 @@ export default function SubtaskTable({ task }: { task: Task }) {
 
     return (
         <table className="w-full border border-gray-200 rounded-lg overflow-hidden border-collapse">
-     
+
             <thead >
                 <tr className="h-7 text-muted-foreground">
                     <th className="w-[30px] "></th>
@@ -37,7 +37,7 @@ export default function SubtaskTable({ task }: { task: Task }) {
                 </tr>
             </thead>
 
-        
+
             <tbody>
                 {subtasks.map((subtask) => (
                     <tr key={subtask.id} className="h-8 last:border-b-0">
@@ -80,7 +80,7 @@ export default function SubtaskTable({ task }: { task: Task }) {
                 ))}
             </tbody>
 
-        
+
             <tfoot className="">
                 <tr className="border-t border-gray-200">
                     <td className="w-[30px] h-8"></td>

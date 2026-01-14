@@ -32,7 +32,7 @@ export default function TaskCardOptionsPanel({ task }: { task: Task }) {
                             <TaskCardOptionsDescription task={task} />
                         </div>
                         <div className="flex flex-col flex-shrink-0">
-                            <TaskCardOptionsSubtasks task={task}  />
+                            <TaskCardOptionsSubtasks task={task} />
                         </div>
                         <div className="flex flex-col flex-shrink-0">
                             <TaskCardOptionsComments task={task} />
@@ -52,7 +52,7 @@ export default function TaskCardOptionsPanel({ task }: { task: Task }) {
                 </div>
                 <div className="flex flex-col flex-[8] ">
                     <TaskCardOptionsActions 
-                        task={task} 
+                        task={task}
                     />
                 </div>
 

@@ -3,10 +3,10 @@ import useStore from '@/stores/flow-store';
 import { Task } from '@/stores/types';
 
 export default function TaskCardPanelTitle({ task }: { task: Task }) {
-    const updateNodeData = useStore((state) => state.updateNodeData);
+    const updateTask = useStore((state) => state.updateTask);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        updateNodeData(task.id, { title: e.target.value });
+        updateTask(task.id, { title: e.target.value });
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

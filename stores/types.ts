@@ -143,28 +143,41 @@ export interface TaskComment {
 export type AppState = {
   nodes: Node[];
   edges: Edge[];
-  history: { nodes: Node[]; edges: Edge[] }[];
+  tasks: Task[];
+  history: { nodes: Node[]; edges: Edge[]; tasks: Task[] }[];
   historyIndex: number;
   onNodesChange: OnNodesChange<Node>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
 
-  // Method types
+  // Node management methods
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
   addTaskNode: (taskData?: Partial<Task>, nodeOptions?: {
     position?: { x: number; y: number };
     id?: string;
   }) => string;
-
   deleteNode: (nodeId: string) => void;
   connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => void;
+
+  // Task management methods
+  updateTask: (taskId: string, data: Partial<Task>, saveToHistory?: boolean) => void;
+  addSubtask: (taskId: string) => void;
+  updateSubtask: (taskId: string, subtaskId: string, data: Partial<Subtask>) => void;
+  deleteSubtask: (taskId: string, subtaskId: string) => void;
+
+  // Helper methods
+  getTaskByNodeId: (nodeId: string) => Task | undefined;
+  getNodeByTaskId: (taskId: string) => Node | undefined;
+
+  // Legacy method (will be removed after refactor)
   updateNodeData: (id: string, data: Partial<Task>, saveToHistory?: boolean) => void;
-  addSubtask: (nodeId: string) => void;
-  updateSubtask: (nodeId: string, subtaskId: string, data: Partial<Subtask>) => void;
-  deleteSubtask: (nodeId: string, subtaskId: string) => void;
+
+  // History and utility methods
   saveHistory: () => void;
   resetCanvas: () => void;
+  loadMockData: () => void; // Development helper
+  addSampleTask: () => void; // Development helper
   undo: () => void;
   redo: () => void;
 };

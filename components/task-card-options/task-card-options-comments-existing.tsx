@@ -1,10 +1,10 @@
 import useStore from '@/stores/flow-store';
 import { Task } from '@/stores/types';
-import { User} from 'lucide-react';
+import { User } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 export default function TaskCardOptionsCommentsExisting({ task }: { task: Task }) {
-    const updateNodeData = useStore((state) => state.updateNodeData);
+    const updateTask = useStore((state) => state.updateTask);
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
     const [editValue, setEditValue] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
@@ -29,7 +29,7 @@ export default function TaskCardOptionsCommentsExisting({ task }: { task: Task }
                 : comment
         );
 
-        updateNodeData(task.id, { comments: updatedComments });
+        updateTask(task.id, { comments: updatedComments });
         setEditingCommentId(null);
         setEditValue('');
     };
@@ -41,7 +41,7 @@ export default function TaskCardOptionsCommentsExisting({ task }: { task: Task }
 
     const handleDelete = (commentId: string) => {
         const updatedComments = task.comments?.filter(comment => comment.id !== commentId);
-        updateNodeData(task.id, { comments: updatedComments });
+        updateTask(task.id, { comments: updatedComments });
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, commentId: string) => {

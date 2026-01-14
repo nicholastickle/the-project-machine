@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 
 export default function TaskCardOptionsCommentsNew({ task }: { task: Task }) {
-    const updateNodeData = useStore((state) => state.updateNodeData);
+    const updateTask = useStore((state) => state.updateTask);
     const [newComment, setNewComment] = useState('');
 
     const handleAddComment = () => {
@@ -22,7 +22,7 @@ export default function TaskCardOptionsCommentsNew({ task }: { task: Task }) {
         };
 
         const updatedComments = [...(task.comments || []), comment];
-        updateNodeData(task.id, { comments: updatedComments });
+        updateTask(task.id, { comments: updatedComments });
         setNewComment('');
     };
 

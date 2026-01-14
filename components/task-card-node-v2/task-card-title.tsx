@@ -8,7 +8,7 @@ export default function TaskCardTitle({ task }: { task: Task }) {
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const updateNodeData = useStore((state) => state.updateNodeData);
+    const updateTask = useStore((state) => state.updateTask);
     const maxFontSize = 48;
     const minFontSize = 12;
 
@@ -41,7 +41,7 @@ export default function TaskCardTitle({ task }: { task: Task }) {
     };
 
     const handleBlur = () => {
-        updateNodeData(task.id, { task: { title: value.trim() } } as Partial<Task>);
+        updateTask(task.id, { title: value.trim() });
     };
 
     const handleContainerClick = () => {

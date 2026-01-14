@@ -3,7 +3,7 @@ import useStore from '@/stores/flow-store';
 import { Task } from '@/stores/types';
 
 export default function TaskCardOptionsStatus({ task }: { task: Task }) {
-    const updateNodeData = useStore((state) => state.updateNodeData);
+    const updateTask = useStore((state) => state.updateTask);
 
     const statusOptions = [
         {
@@ -39,7 +39,7 @@ export default function TaskCardOptionsStatus({ task }: { task: Task }) {
     ];
 
     const handleStatusChange = (newStatus: string) => {
-        updateNodeData(task.id, { task: { status: newStatus } } as Partial<Task>);
+        updateTask(task.id, { status: newStatus as any });
     };
 
     return (

@@ -4,9 +4,9 @@ import { AlignLeft } from 'lucide-react';
 
 export default function TaskCardOptionsDescription({ task }: { task: Task }) {
 
-    const updateNodeData = useStore((state) => state.updateNodeData);
+    const updateTask = useStore((state) => state.updateTask);
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        updateNodeData(task.id, { description: e.target.value });
+        updateTask(task.id, { description: e.target.value });
     };
 
     return (

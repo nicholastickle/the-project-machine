@@ -10,10 +10,20 @@ import TaskCardDurations from '@/components/task-card-node-v2/task-card-duration
 import TaskCardOptionsBadge from '@/components/task-card-node-v2/task-card-options-badge';
 import { Clock } from 'lucide-react';
 import { type NodeProps } from '@xyflow/react';
+import useStore from '@/stores/flow-store';
 
-export default function TaskCard({ data }: NodeProps)  {
-   
-    const task = data as any;
+export default function TaskCard({ id }: NodeProps)  {
+    const getTaskByNodeId = useStore((state) => state.getTaskByNodeId);
+    const task = getTaskByNodeId(id);
+    
+    // If no task found, render empty or loading state
+    if (!task) {
+        return (
+            <div className="group relative w-[400px] min-h-[400px] border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center rounded-sm shadow-lg m-5">
+                <span className="text-gray-500">Task not found</span>
+            </div>
+        );
+    }
     return (
         <div
             className={`group relative w-[400px] min-h-[400px] border-2 border-task-card-border bg-task-card-background flex flex-col rounded-sm shadow-lg m-5`}
@@ -22,7 +32,7 @@ export default function TaskCard({ data }: NodeProps)  {
             <div className="border flex flex-col flex-[5] ml-3 mr-3 mt-3 bg-task-card-accent ">
                 <div className="flex flex-row flex-[0.1] gap-2 justify-start items-center px-3">
                     <Clock size={24} className="text-task-card-icon-foreground" />
-                    <TaskCardDurations estimatedHours={task.estimatedHours} />
+                    <TaskCardDurations estimatedHours={task.estimated_hours} />
                 </div>
                 <div className="h-full w-full flex flex-[9] justify-center items-center text-center">
                     <TaskCardTitle task={task} />
