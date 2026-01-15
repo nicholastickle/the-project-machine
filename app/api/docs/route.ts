@@ -737,7 +737,46 @@ const openApiSpec = {
           },
         },
         responses: {
-          201: { description: 'Note created' },
+          200: { description: 'Note created' },
+        },
+      },
+    },
+    '/api/projects/{id}/notes/{noteId}': {
+      patch: {
+        tags: ['Notes'],
+        summary: 'Update note',
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+          { name: 'noteId', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  title: { type: 'string' },
+                  content: { type: 'string' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Note updated' },
+          404: { description: 'Note not found' },
+        },
+      },
+      delete: {
+        tags: ['Notes'],
+        summary: 'Delete note',
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+          { name: 'noteId', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+        ],
+        responses: {
+          200: { description: 'Note deleted' },
         },
       },
     },
