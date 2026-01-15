@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { devtools } from 'zustand/middleware';
 import { addEdge, applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
 import { initialNodes } from '@/components/canvas/initial-nodes';
 import { initialEdges } from '@/components/canvas/initial-edges';
@@ -11,8 +11,7 @@ const MAX_HISTORY = 50;
 
 const useStore = create<AppState>()(
     devtools(
-        persist(
-            (set, get) => ({
+        (set, get) => ({
                 nodes: initialNodes,
                 edges: initialEdges,
                 tasks: initialTasks,
@@ -269,9 +268,6 @@ const useStore = create<AppState>()(
                 },
 
                 resetCanvas: () => {
-                    localStorage.removeItem('canvas-storage');
-                    localStorage.removeItem('taskbook-storage');
-
                     set({
                         nodes: initialNodes,
                         edges: initialEdges,
@@ -371,18 +367,7 @@ const useStore = create<AppState>()(
                     get().saveHistory();
                 },
 
-            }),
-            {
-                name: 'canvas-storage',
-                partialize: (state) => ({
-                    // Only persist certain parts of state. Not the functions or history.
-                    nodes: state.nodes,
-                    edges: state.edges,
-                    tasks: state.tasks,
-                }),
-                version: 2, // Increment version for migration due to new tasks array
-            }
-        ),
+        }),
         {
             name: 'flow-store'
         }
