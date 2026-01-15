@@ -682,9 +682,31 @@ const openApiSpec = {
       },
     },
     '/api/projects/{id}/files': {
+      get: {
+        tags: ['Files'],
+        summary: 'List project files',
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+        ],
+        responses: {
+          200: {
+            description: 'List of files',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    files: { type: 'array', items: { $ref: '#/components/schemas/FileSummary' } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       post: {
         tags: ['Files'],
-        summary: 'Upload file',
+        summary: 'Upload file and generate summary',
         parameters: [
           { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
         ],
@@ -694,16 +716,58 @@ const openApiSpec = {
             'multipart/form-data': {
               schema: {
                 type: 'object',
+                required: ['file'],
                 properties: {
-                  file: { type: 'string', format: 'binary' },
-                  extractStructure: { type: 'boolean' },
+                  file: { type: 'string', format: 'binary', description: 'Excel (.xlsx, .xls), CSV, PDF, or Word (.docx, .doc) file (max 10MB)' },
+                  extractStructure: { type: 'boolean', description: 'Extract file structure for AI analysis' },
                 },
               },
             },
           },
         },
         responses: {
-          201: { description: 'File uploaded' },
+          201: { description: 'File uploaded with AI summary' },
+          400: { description: 'Invalid file type or too large' },
+        },
+      },
+    },
+    '/api/projects/{id}/files/{fileId}': {
+      patch: {
+        tags: ['Files'],
+        summary: 'Confirm file summary',
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+          { name: 'fileId', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['summary'],
+                properties: {
+                  summary: { type: 'string', description: 'User-confirmed summary of file contents' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'File summary confirmed' },
+          404: { description: 'File not found' },
+        },
+      },
+      delete: {
+        tags: ['Files'],
+        summary: 'Delete file',
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+          { name: 'fileId', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+        ],
+        responses: {
+          200: { description: 'File deleted' },
+          404: { description: 'File not found' },
         },
       },
     },
@@ -878,9 +942,69 @@ const openApiSpec = {
         parameters: [
           { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
         ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['nodes', 'edges'],
+                properties: {
+                  nodes: {
+                    type: 'array',
+                    description: 'Canvas nodes from snapshot',
+                    items: { type: 'object' }
+                  },
+                  edges: {
+                    type: 'array',
+                    description: 'Canvas edges from snapshot',
+                    items: { type: 'object' }
+                  },
+                },
+              },
+            },
+          },
+        },
         responses: {
           200: {
-            description: 'Excel file',
+            description: 'Excel file with Tasks, Subtasks, and Project Info sheets',
+            content: {
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {
+                schema: { type: 'string', format: 'binary' },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/api/projects/{id}/export/timesheet': {
+      post: {
+        tags: ['Export'],
+        summary: 'Export project as timesheet',
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['nodes'],
+                properties: {
+                  nodes: {
+                    type: 'array',
+                    description: 'Canvas nodes from snapshot',
+                    items: { type: 'object' }
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Excel timesheet file',
             content: {
               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {
                 schema: { type: 'string', format: 'binary' },
@@ -900,6 +1024,30 @@ const openApiSpec = {
         responses: {
           200: { description: 'Invitation accepted' },
           404: { description: 'Invalid or expired token' },
+        },
+      },
+    },
+    '/api/projects/{id}/invitations': {
+      get: {
+        tags: ['Invitations'],
+        summary: 'List pending invitations for project',
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+        ],
+        responses: {
+          200: {
+            description: 'List of pending invitations',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    invitations: { type: 'array', items: { $ref: '#/components/schemas/Invitation' } },
+                  },
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -1009,6 +1157,33 @@ const openApiSpec = {
           reflectionType: { type: 'string' },
           content: { type: 'string' },
           createdBy: { type: 'string', format: 'uuid' },
+          createdAt: { type: 'string', format: 'date-time' },
+        },
+      },
+      FileSummary: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          projectId: { type: 'string', format: 'uuid' },
+          filename: { type: 'string' },
+          fileType: { type: 'string' },
+          fileSizeBytes: { type: 'integer' },
+          storagePath: { type: 'string' },
+          aiGeneratedSummary: { type: 'string' },
+          summary: { type: 'string', nullable: true },
+          confirmedAt: { type: 'string', format: 'date-time', nullable: true },
+          createdAt: { type: 'string', format: 'date-time' },
+        },
+      },
+      Invitation: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          projectId: { type: 'string', format: 'uuid' },
+          email: { type: 'string', format: 'email' },
+          role: { type: 'string', enum: ['editor', 'viewer'] },
+          token: { type: 'string' },
+          expiresAt: { type: 'string', format: 'date-time' },
           createdAt: { type: 'string', format: 'date-time' },
         },
       },

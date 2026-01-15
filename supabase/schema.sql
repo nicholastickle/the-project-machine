@@ -52,10 +52,14 @@ create table if not exists file_summaries (
   id uuid primary key default uuid_generate_v4(),
   project_id uuid references projects(id) on delete cascade not null,
   filename text not null,
-  file_type text, -- 'excel' | 'csv' | 'pdf' | 'other'
-  summary text not null, -- Human-confirmed summary
-  confirmed_at timestamptz default now(),
-  confirmed_by uuid references auth.users(id),
+  file_type text, -- mime type
+  file_size_bytes integer,
+  storage_path text, -- Path in Supabase Storage
+  extracted_structure jsonb, -- Extracted headers, sheets, etc.
+  ai_generated_summary text, -- AI-generated summary (before user confirmation)
+  summary text, -- User-confirmed summary (NULL until confirmed)
+  confirmed_at timestamptz, -- When user confirmed the summary
+  uploaded_by uuid references auth.users(id),
   created_at timestamptz default now()
 );
 

@@ -171,11 +171,15 @@ export const referenceNotes = pgTable('reference_notes', {
 export const fileSummaries = pgTable('file_summaries', {
   id: uuid('id').primaryKey().defaultRandom(),
   projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
-  confirmedBy: uuid('confirmed_by').notNull(),
   filename: text('filename').notNull(),
-  fileType: text('file_type'), // 'excel' | 'csv' | 'pdf' | 'other'
-  summary: text('summary').notNull(),
-  confirmedAt: timestamp('confirmed_at').defaultNow().notNull(),
+  fileType: text('file_type'), // mime type
+  fileSizeBytes: integer('file_size_bytes'),
+  storagePath: text('storage_path'), // Path in Supabase Storage
+  extractedStructure: jsonb('extracted_structure'), // Extracted headers, sheets, etc.
+  aiGeneratedSummary: text('ai_generated_summary'), // AI-generated summary (before user confirmation)
+  summary: text('summary'), // User-confirmed summary (NULL until confirmed)
+  confirmedAt: timestamp('confirmed_at'),
+  uploadedBy: uuid('uploaded_by').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

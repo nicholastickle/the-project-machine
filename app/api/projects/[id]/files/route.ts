@@ -17,7 +17,9 @@ const ALLOWED_MIME_TYPES = [
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
   'application/vnd.ms-excel', // .xls
   'text/csv',
-  'application/pdf'
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+  'application/msword' // .doc
 ]
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
@@ -70,7 +72,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     // Validate file type
     if (!ALLOWED_MIME_TYPES.includes(file.type)) {
       return NextResponse.json({ 
-        error: 'Invalid file type. Only Excel (.xlsx, .xls), CSV, and PDF files are allowed.' 
+        error: 'Invalid file type. Only Excel (.xlsx, .xls), CSV, PDF, and Word (.docx, .doc) files are allowed.' 
       }, { status: 400 })
     }
 
@@ -99,8 +101,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
     let extractedStructure = null
     if (extractStructure) {
       try {
-        // For Excel/CSV: Extract headers and basic structure
-        if (file.type.includes('spreadsheet') || file.type.includes('csv')) {
+        // For CSV only: Extract headers (Excel requires proper library)
+        if (file.type === 'text/csv') {
           const buffer = await file.arrayBuffer()
           const text = new TextDecoder().decode(buffer)
           
@@ -108,16 +110,33 @@ export async function POST(request: NextRequest, context: RouteContext) {
           const lines = text.split('\n').slice(0, 5) // First 5 lines
           extractedStructure = {
             type: 'tabular',
+            format: 'csv',
             headers: lines[0]?.split(',').map(h => h.trim()) || [],
             row_count_sample: lines.length - 1,
             preview: lines.slice(0, 3).join('\n')
+          }
+        } else if (file.type.includes('spreadsheet')) {
+          // For Excel: Basic metadata only (don't try to parse binary)
+          extractedStructure = {
+            type: 'tabular',
+            format: 'excel',
+            size_kb: Math.round(file.size / 1024),
+            note: 'Excel file - structure requires library parsing'
           }
         } else if (file.type === 'application/pdf') {
           // For PDF: Basic metadata
           extractedStructure = {
             type: 'document',
-            page_count: 'unknown',
+            format: 'pdf',
             size_kb: Math.round(file.size / 1024)
+          }
+        } else if (file.type.includes('word')) {
+          // For Word: Basic metadata
+          extractedStructure = {
+            type: 'document',
+            format: 'word',
+            size_kb: Math.round(file.size / 1024),
+            note: 'Word document - requires library for text extraction'
           }
         }
       } catch (extractError) {
@@ -131,7 +150,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     
     try {
       const structurePrompt = extractedStructure 
-        ? `\n\nExtracted Structure:\n${JSON.stringify(extractedStructure, null, 2)}`
+        ? `\n\nExtracted Metadata:\n${JSON.stringify(extractedStructure, null, 2)}`
         : ''
 
       const completion = await openai.chat.completions.create({
@@ -144,12 +163,16 @@ File: ${file.name}
 Type: ${file.type}
 Size: ${Math.round(file.size / 1024)}KB${structurePrompt}
 
-Generate a brief summary (2-3 sentences) of what this file likely contains and how it might be useful for project planning. Be specific if structure was extracted. DO NOT make authoritative claims about contents you haven't seen.
+Generate a brief summary (2-3 sentences) of what this file likely contains and how it might be useful for project planning.
 
-If it's a spreadsheet/CSV, mention the headers/columns if available.
-If it's a PDF, mention it's a document that needs review.
+Guidelines:
+- For CSV files with headers: Mention the column names and what data might be in the file
+- For Excel files: Note it's a spreadsheet that may contain structured data (we can't see inside yet)
+- For PDF files: Note it's a document that will need manual review
+- DO NOT make authoritative claims about specific contents you haven't seen
+- Suggest what the user should confirm or look for when reviewing
 
-Format: "This appears to be a [type] containing [structure]. It might be useful for [potential use]."`
+Format: "This appears to be a [type] that likely contains [general description]. The user should confirm [what to check]."`
         }],
         temperature: 0.3,
         max_tokens: 200
