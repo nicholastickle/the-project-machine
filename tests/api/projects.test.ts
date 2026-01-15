@@ -5,19 +5,11 @@ import { AuthError } from '@/lib/auth/session'
 import { db } from '@/lib/db'
 
 // Mock lib/auth/session
-vi.mock('@/lib/auth/session', () => {
-  class MockAuthError extends Error {
-    statusCode: number
-    constructor(message: string, statusCode: number) {
-      super(message)
-      this.statusCode = statusCode
-      this.name = 'AuthError'
-    }
-  }
-
+vi.mock('@/lib/auth/session', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/auth/session')>()
   return {
+    ...actual,
     getCurrentUser: vi.fn(),
-    AuthError: MockAuthError,
   }
 })
 
@@ -50,7 +42,8 @@ describe('GET /api/projects', () => {
     const data = await response.json()
 
     expect(response.status).toBe(401)
-    expect(data.error).toBe('Unauthorized')
+    expect(data.error.code).toBe('AUTH_ERROR')
+    expect(data.error.message).toBe('Unauthorized')
   })
 
   it('returns projects for authenticated user', async () => {

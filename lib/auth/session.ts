@@ -1,12 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { User } from '@supabase/supabase-js'
 
-export class AuthError extends Error {
-  constructor(message: string, public statusCode: number = 401) {
-    super(message)
-    this.name = 'AuthError'
-  }
-}
+import { AuthError } from '../errors'
+export { AuthError }
 
 /**
  * Validates the current user session server-side.
@@ -16,7 +12,7 @@ export class AuthError extends Error {
  */
 export async function getCurrentUser(): Promise<User> {
   const supabase = await createClient()
-  
+
   const { data: { user }, error } = await supabase.auth.getUser()
 
   if (error || !user) {
@@ -59,7 +55,7 @@ export async function requireProjectAccess(projectId: string, requiredRole?: 'ed
 
   if (member) {
     if (requiredRole === 'editor' && member.role !== 'editor') {
-       throw new AuthError('Insufficient permissions', 403)
+      throw new AuthError('Insufficient permissions', 403)
     }
     return { user, role: member.role }
   }

@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { extractUserFromCookies, createAuthenticatedClient } from '@/lib/supabase/auth-utils'
 import { db } from '@/lib/db'
 import { projects, projectMembers, usageLogs } from '@/lib/db/schema'
 import { isNull, desc, eq } from 'drizzle-orm'
-import { getCurrentUser, AuthError } from '@/lib/auth/session'
+import { getCurrentUser } from '@/lib/auth/session'
 import { createProjectSchema } from '@/lib/validation/schemas'
+import { handleApiError } from '@/lib/api-handler'
+import { logger } from '@/lib/logger'
+import { ServerError } from '@/lib/errors'
 
 // GET /api/projects - List user's projects
 export async function GET(request: NextRequest) {
   try {
-    console.log('[GET /api/projects] Starting request')
+    logger.info('[GET /api/projects] Starting request')
     const user = await getCurrentUser()
 
     // Fetch projects with Drizzle (RLS will filter to user's projects)
@@ -20,25 +21,13 @@ export async function GET(request: NextRequest) {
       .where(isNull(projects.archivedAt))
       .orderBy(desc(projects.updatedAt));
 
-    console.log('[GET /api/projects] Query result:', {
-      projectCount: projectsList?.length || 0,
-      error: undefined,
-      errorDetails: null
+    logger.info('[GET /api/projects] Query result', {
+      projectCount: projectsList?.length || 0
     })
 
     return NextResponse.json({ projects: projectsList })
   } catch (error) {
-    if (error instanceof AuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.statusCode })
-    }
-    console.error('Unexpected error:', error)
-    return NextResponse.json(
-      {
-        error: 'Internal server error',
-        details: String(error)
-      },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -53,8 +42,16 @@ export async function POST(request: NextRequest) {
     const result = createProjectSchema.safeParse(body)
 
     if (!result.success) {
+      // Zod errors are handled by handleApiError automatically if thrown or passed manually
+      // Here we can just return the standardized error response directly for manual Zod check
       return NextResponse.json(
-        { error: 'Validation failed', details: result.error.flatten() },
+        {
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Validation failed',
+            details: result.error.flatten()
+          }
+        },
         { status: 400 }
       )
     }
@@ -62,10 +59,6 @@ export async function POST(request: NextRequest) {
     const { name, description } = result.data
 
     // 3. Database Operation (Transactional-ish)
-    // Drizzle doesn't support nested transactions easily with standard client, 
-    // so we sequence carefully: Project -> Member -> Usage.
-    // If Member fails, we should ideally rollback, but for now we'll just error hard.
-
     const [project] = await db
       .insert(projects)
       .values({
@@ -76,7 +69,7 @@ export async function POST(request: NextRequest) {
       .returning();
 
     if (!project) {
-      throw new Error('Failed to create project record')
+      throw new ServerError('Failed to create project record')
     }
 
     // Force add creator as editor
@@ -87,13 +80,13 @@ export async function POST(request: NextRequest) {
         role: 'editor',
       });
     } catch (memberError) {
-      console.error('[CRITICAL] Failed to add creator to project members:', memberError)
+      const wrappedError = memberError instanceof Error ? memberError : new Error(String(memberError));
+      logger.error('[CRITICAL] Failed to add creator to project members', wrappedError)
+
       // Attempt cleanup (compensation action)
       await db.delete(projects).where(eq(projects.id, project.id))
-      return NextResponse.json(
-        { error: 'Failed to initialize project membership. Please try again.' },
-        { status: 500 }
-      )
+
+      throw new ServerError('Failed to initialize project membership. Please try again.')
     }
 
     // Log usage (fire and forget / non-critical)
@@ -109,10 +102,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ project }, { status: 201 })
 
   } catch (error) {
-    if (error instanceof AuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.statusCode })
-    }
-    console.error('[POST /api/projects] Unexpected error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return handleApiError(error)
   }
 }

@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { tasks } from '@/lib/db/schema';
 import { eq, and, isNull } from 'drizzle-orm';
-import { getCurrentUser, AuthError } from '@/lib/auth/session';
+import { getCurrentUser } from '@/lib/auth/session';
 import { createTaskSchema } from '@/lib/validation/schemas';
+import { handleApiError } from '@/lib/api-handler';
+import { logger } from '@/lib/logger';
+import { ServerError } from '@/lib/errors';
 
 type RouteContext = {
   params: Promise<{ id: string }>
@@ -33,11 +35,7 @@ export async function GET(
 
     return NextResponse.json({ tasks: projectTasks });
   } catch (error) {
-    if (error instanceof AuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.statusCode })
-    }
-    console.error('[GET /api/projects/[id]/tasks] Error:', error);
-    return NextResponse.json({ error: 'Failed to fetch tasks' }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -58,7 +56,13 @@ export async function POST(
 
     if (!result.success) {
       return NextResponse.json(
-        { error: 'Validation failed', details: result.error.flatten() },
+        {
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Validation failed',
+            details: result.error.flatten()
+          }
+        },
         { status: 400 }
       )
     }
@@ -81,19 +85,12 @@ export async function POST(
       .returning();
 
     if (!newTask) {
-      throw new Error('Failed to create task record')
+      throw new ServerError('Failed to create task record')
     }
 
     return NextResponse.json({ task: newTask }, { status: 201 });
 
   } catch (error) {
-    if (error instanceof AuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.statusCode })
-    }
-    console.error('[POST /api/projects/[id]/tasks] Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create task' },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }
