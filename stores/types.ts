@@ -176,8 +176,6 @@ export type AppState = {
   // History and utility methods
   saveHistory: () => void;
   resetCanvas: () => void;
-  loadMockData: () => void; // Development helper
-  addSampleTask: () => void; // Development helper
   undo: () => void;
   redo: () => void;
 };

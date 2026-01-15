@@ -281,23 +281,7 @@ const useStore = create<AppState>()(
                     get().saveHistory();
                 },
 
-                loadMockData: () => {
-                    const { mockNodes, mockEdges, mockTasks } = require('@/lib/mock-data');
-                    set({
-                        nodes: mockNodes,
-                        edges: mockEdges,
-                        tasks: mockTasks,
-                    });
-                    get().saveHistory();
-                },
-
-                addSampleTask: () => {
-                    get().addTaskNode({
-                        title: "Sample Task",
-                        description: "This is a sample task to test the new structure",
-                        status: "backlog"
-                    });
-                },
+               
 
                 addSubtask: (taskId: string) => {
                     const newSubtask = {
