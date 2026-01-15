@@ -141,7 +141,7 @@ export const chatMessages = pgTable('chat_messages', {
   projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
   role: chatRoleEnum('role').notNull(),
   content: text('content').notNull(),
-  createdBy: uuid('created_by').notNull(),
+  createdBy: uuid('created_by'), // Nullable - only set for user messages, null for AI
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

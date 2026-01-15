@@ -89,7 +89,7 @@ export async function POST(
         projectId,
         role,
         content,
-        createdBy: user.id
+        createdBy: role === 'user' ? user.id : null // Only set for user messages, null for AI
       })
       .returning({
         id: chatMessages.id,
