@@ -1,3 +1,7 @@
+// ======================================================================
+// TYPES DEFINITIONS
+// ======================================================================
+
 import {
   type Edge as ReactFlowEdge,
   type Node as ReactFlowNode,
@@ -7,33 +11,29 @@ import {
   type OnInit,
 } from '@xyflow/react';
 
-// --- Interfaces based on the ERD ---
-
 export interface User {
   id: string; // uuid (PK)
   email: string;
   created_at: string;
+  name?: string;
+  avatar_url?: string;
 }
-
 export interface Project {
-
   id: string; // uuid (PK)
   name: string;
+  description?: string;
   created_by: string; // uuid (FK)
   viewport: { x: number; y: number; zoom: number }; // JSONB
   created_at: string;
   updated_at: string;
   archived_at?: string;
 }
-
 export interface ProjectMember {
   project_id: string; // uuid (FK)
   user_id: string; // uuid (FK)
   name?: string;
   role: 'viewer' | 'editor' | 'admin';
-
 }
-
 export interface PendingInvitation {
   id: string;
   project_id: string;
@@ -45,7 +45,6 @@ export interface PendingInvitation {
   accepted_at: string;
   created_at: string;
 }
-
 export interface TaskbookEntry {
   id: string;
   user_id: string;
@@ -59,7 +58,6 @@ export interface TaskbookEntry {
   updated_at: string;
   used_at?: string;
 }
-
 export interface AIChatThread {
   id: string;
   project_id: string;
@@ -68,7 +66,6 @@ export interface AIChatThread {
   created_at: string;
   updated_at: string;
 }
-
 export interface AIChatMessage {
   id: string;
   thread_id: string;
@@ -77,22 +74,20 @@ export interface AIChatMessage {
   metadata?: any; // JSONB
   created_by: string; // Null if assistant/system
 }
-
 export interface Node extends ReactFlowNode {
   project_id: string;
   content_id: string; // FK to tasks.id
 
   //React Flow data already includes id, type, position, and data, so these are excluded from the above.
 }
-
 export interface Edge extends ReactFlowEdge {
   id: string; // React Flow Edge ID
   project_id: string;
   source: string; // references nodes.id
   target: string; // references nodes.id
   label?: string;
+  type?: string;
 }
-
 export interface Task {
   id: string;
   node_id: string;
@@ -110,7 +105,6 @@ export interface Task {
   comments?: TaskComment[];
   subtasks?: Subtask[];
 }
-
 export interface Subtask {
   id: string;
   task_id?: string;
@@ -122,14 +116,12 @@ export interface Subtask {
   created_at: string;
   updated_at: string;
 }
-
 export interface TaskAssignment {
   project_id: string;
   user_id: string;
   role: 'editor' | 'viewer' | 'admin';
   joined_at: string;
 }
-
 export interface TaskComment {
   id: string;
   task_id: string;
@@ -139,7 +131,15 @@ export interface TaskComment {
   created_at: string;
   updated_at: string;
 }
-
+export interface ProjectData {
+  project: Project;
+  tasks: Task[];
+  subtasks: Subtask[];
+  comments: TaskComment[];
+  nodes: Node[];
+  edges: Edge[];
+  members: ProjectMember[];
+}
 export type AppState = {
   nodes: Node[];
   edges: Edge[];
