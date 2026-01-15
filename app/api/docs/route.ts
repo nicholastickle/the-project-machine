@@ -666,6 +666,21 @@ const openApiSpec = {
         },
       },
     },
+    '/api/projects/{id}/collaborators/{userId}': {
+      delete: {
+        tags: ['Collaborators'],
+        summary: 'Remove collaborator',
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+          { name: 'userId', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+        ],
+        responses: {
+          200: { description: 'Collaborator removed' },
+          403: { description: 'Forbidden - only owner can remove' },
+          404: { description: 'Collaborator not found' },
+        },
+      },
+    },
     '/api/projects/{id}/files': {
       post: {
         tags: ['Files'],
