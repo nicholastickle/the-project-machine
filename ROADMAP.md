@@ -1,11 +1,10 @@
 # The Project Machine - Product Roadmap
 
-## 🎯 Vision
+## Vision
 Visual project planning tool with AI assistance - canvas-based task management meets intelligent workflow optimization.
 
-## ✅ Sprint 0: Backend Foundation (COMPLETE)
+## ✅ Sprint 0: Backend Foundation
 **Status:** ✅ Done - PR submitted  
-**Duration:** Jan 2026  
 
 ### Completed
 - ✅ Next.js 15 + React 19 setup with App Router
@@ -44,7 +43,7 @@ Visual project planning tool with AI assistance - canvas-based task management m
   - Health check endpoints
 
 ### Phase 2: Manual Testing (0 of 200+ tasks)
-See `docs/TESTING_CHECKLIST.md` for complete list:
+See `TESTING_CHECKLIST.md` for complete list:
 - ⏳ Authentication & sessions (7 tasks)
 - ⏳ Projects API (9 tasks)
 - ⏳ Tasks, Subtasks, Comments (25+ tasks)
@@ -55,9 +54,8 @@ See `docs/TESTING_CHECKLIST.md` for complete list:
 - ⏳ Security, RLS, error handling (15+ tasks)
 - ⏳ Performance & data integrity (15+ tasks)
 
-**Estimated effort:** 20-30 hours of thorough testing
 
-## 📋 v0.4: Frontend-Backend Integration (NEXT)
+## Frontend-Backend Integration (NEXT)
 **Prerequisites:** Nick completes landing page work
 
 ### Core Features
@@ -68,7 +66,6 @@ See `docs/TESTING_CHECKLIST.md` for complete list:
 - Sidebar functionality
   - Project list from API
   - Create/delete projects
-  - File upload panel
 - Task management
   - Create tasks from canvas
   - Update status/description
@@ -83,34 +80,6 @@ See `docs/TESTING_CHECKLIST.md` for complete list:
 - Error handling & toast notifications
 - Empty states
 - Optimistic updates
-
-## 🔮 v0.5: Team Collaboration
-- Project invitation flow (UI for existing API)
-- Member management interface
-- Real-time updates (Supabase subscriptions)
-- Activity feed
-- Role-based access (editor vs viewer)
-
-## 📊 v0.6: AI Enhancements
-- Task duration estimation
-- Dependency detection from descriptions
-- Smart task breakdown suggestions
-- Reflection-based insights (daily summaries)
-- Improved command parsing
-
-## 🎨 v0.7: Analytics & Polish
-- Usage analytics dashboard
-- Enhanced snapshot management
-- Export improvements (PDF/PNG)
-- Keyboard shortcuts
-- Performance optimization
-
-## 🚀 v1.0: Public Beta
-- Landing page final polish
-- Onboarding flow
-- Pricing/subscription tiers
-- Documentation
-- Marketing site
 
 ---
 

@@ -908,30 +908,76 @@ const openApiSpec = {
         },
       },
     },
-    '/api/projects/{id}/chat': {
+    '/api/ai/chat': {
       post: {
         tags: ['Chat'],
-        summary: 'Send AI chat message',
-        parameters: [
-          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
-        ],
+        summary: 'Send message to AI assistant with project context',
+        description: 'AI assistant analyzes your project context (current plan, reflections, files, notes) to provide grounded advice',
         requestBody: {
           required: true,
           content: {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['message'],
+                required: ['projectId', 'message'],
                 properties: {
-                  message: { type: 'string' },
-                  threadId: { type: 'string', format: 'uuid', nullable: true },
+                  projectId: { 
+                    type: 'string', 
+                    format: 'uuid',
+                    description: 'Project ID for context'
+                  },
+                  message: { 
+                    type: 'string',
+                    description: 'Your message/question to the AI',
+                    example: 'What should I work on next?'
+                  },
+                  history: {
+                    type: 'array',
+                    description: 'Previous conversation messages (optional)',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        role: { type: 'string', enum: ['user', 'assistant'] },
+                        content: { type: 'string' }
+                      }
+                    }
+                  },
+                  currentSnapshot: {
+                    type: 'object',
+                    description: 'Current canvas state (optional)',
+                    properties: {
+                      nodes: { type: 'array', items: { type: 'object' } },
+                      edges: { type: 'array', items: { type: 'object' } }
+                    }
+                  }
                 },
               },
             },
           },
         },
         responses: {
-          200: { description: 'AI response' },
+          200: {
+            description: 'AI response with sources',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    response: { type: 'string', description: 'AI assistant response' },
+                    sources: { 
+                      type: 'array', 
+                      items: { type: 'string' },
+                      description: 'Context sources used (current_plan, reflections, file_summaries, etc.)'
+                    },
+                    tokens_used: { type: 'integer', description: 'OpenAI tokens consumed' }
+                  }
+                }
+              }
+            }
+          },
+          400: { description: 'Missing required fields' },
+          401: { description: 'Unauthorized' },
+          500: { description: 'OpenAI API error or internal error' }
         },
       },
     },
