@@ -931,17 +931,6 @@ const openApiSpec = {
                     description: 'Your message/question to the AI',
                     example: 'What should I work on next?'
                   },
-                  history: {
-                    type: 'array',
-                    description: 'Previous conversation messages (optional)',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        role: { type: 'string', enum: ['user', 'assistant'] },
-                        content: { type: 'string' }
-                      }
-                    }
-                  },
                   currentSnapshot: {
                     type: 'object',
                     description: 'Current canvas state (optional)',

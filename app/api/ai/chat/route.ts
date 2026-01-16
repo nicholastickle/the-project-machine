@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { projectId, message, history, currentSnapshot } = body
+    const { projectId, message, currentSnapshot } = body
 
     if (!message || typeof message !== 'string') {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 })
@@ -27,6 +27,14 @@ export async function POST(request: NextRequest) {
     if (!projectId) {
       return NextResponse.json({ error: 'Project ID is required' }, { status: 400 })
     }
+
+    // Retrieve recent chat history from database (last 20 messages)
+    const { data: recentMessages } = await supabase
+      .from('chat_messages')
+      .select('role, content, created_at')
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: true })
+      .limit(20)
 
     // Build grounded context
     const context = await buildAIContext(projectId, currentSnapshot)
@@ -79,15 +87,13 @@ The user will see a confirmation dialog before any changes are applied. Keep you
       { role: 'system', content: systemPrompt }
     ]
 
-    // Add conversation history if provided
-    if (history && Array.isArray(history)) {
-      history.forEach((msg: any) => {
-        if (msg.role === 'user' || msg.role === 'assistant') {
-          messages.push({
-            role: msg.role,
-            content: msg.content
-          })
-        }
+    // Add conversation history from database
+    if (recentMessages && recentMessages.length > 0) {
+      recentMessages.forEach((msg) => {
+        messages.push({
+          role: msg.role as 'user' | 'assistant',
+          content: msg.content
+        })
       })
     }
 
@@ -106,6 +112,30 @@ The user will see a confirmation dialog before any changes are applied. Keep you
     })
 
     const response = completion.choices[0].message.content
+
+    // Save user message to database
+    const { error: userMsgError } = await supabase.from('chat_messages').insert({
+      project_id: projectId,
+      role: 'user',
+      content: message,
+      created_by: user.id
+    })
+    
+    if (userMsgError) {
+      console.error('Failed to save user message:', userMsgError)
+    }
+
+    // Save assistant response to database
+    const { error: assistantMsgError } = await supabase.from('chat_messages').insert({
+      project_id: projectId,
+      role: 'assistant',
+      content: response || 'Sorry, I encountered an error generating a response.',
+      created_by: null // AI messages don't have a creator
+    })
+    
+    if (assistantMsgError) {
+      console.error('Failed to save assistant message:', assistantMsgError)
+    }
 
     // Log usage
     await supabase.from('usage_logs').insert({
