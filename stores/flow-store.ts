@@ -384,11 +384,7 @@ const useStore = create<AppState>()(
                     get().saveHistory();
                 },
 
-<<<<<<< HEAD
-            }),
-=======
         }),
->>>>>>> origin/Nicholas-multiple-sidebar-features
         {
             name: 'flow-store'
         }
