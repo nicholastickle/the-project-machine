@@ -43,38 +43,30 @@ export default function TaskCardTitle({ task }: { task: Task }) {
     };
 
     const handleBlur = () => {
-        setFocused(false);
         updateTask(task.id, { title: value.trim() });
-    };
-
-    const handleContainerClick = () => {
-        // Only focus if it wasn't a drag operation
-        if (!isDraggingRef.current) {
-            textAreaRef.current?.focus();
-            setFocused(true);
+        setFocused(false);
+        if (textAreaRef.current) {
+            textAreaRef.current.readOnly = true;
         }
     };
 
-    const handleMouseDown = () => {
-        isDraggingRef.current = false;
+    const handleDivClick = (e: React.MouseEvent) => {
+       
+        if (e.target !== textAreaRef.current) {
+            setFocused(true);
+            if (textAreaRef.current) {
+                textAreaRef.current.readOnly = false;
+            }
+            textAreaRef.current?.focus();
+        }
     };
 
-    const handleMouseMove = () => {
-        isDraggingRef.current = true;
-      
-    };
-
-    const handleMouseUp = () => {
-        // Reset drag state after a brief delay to allow click event to fire
-        setTimeout(() => {
-            isDraggingRef.current = false;
-        }, 10);
-    };
-
-    const handleTextareaMouseDown = (e: React.MouseEvent) => {
-        // Only prevent focus if textarea is not already focused and it's a drag operation
-        if (isDraggingRef.current && !focused) {
-            e.preventDefault();
+   
+    const handleTextAreaClick = (e: React.MouseEvent<HTMLTextAreaElement>) => {
+        setFocused(true);
+        if (textAreaRef.current) {
+            textAreaRef.current.readOnly = false;
+            textAreaRef.current.focus();
         }
     };
 
@@ -84,6 +76,7 @@ export default function TaskCardTitle({ task }: { task: Task }) {
             e.currentTarget.blur();
         }
     };
+
 
     useEffect(() => {
         setValue(task.title || '');
@@ -96,19 +89,16 @@ export default function TaskCardTitle({ task }: { task: Task }) {
     return (
         <div
             ref={containerRef}
-            onClick={handleContainerClick}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            className={`w-full h-[280px] flex flex-col items-center justify-center cursor-default ${focused ? 'nodrag' : ''}`}
+            onClick={handleDivClick}
+            className={"w-full h-[280px] flex flex-col items-center justify-center cursor-default "}
         >
             <textarea
                 ref={textAreaRef}
+                onClick={handleTextAreaClick}
                 value={value}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
-                // onMouseDown={handleTextareaMouseDown}
                 placeholder='Enter Task...'
                 maxLength={200}
                 autoComplete="off"
@@ -117,6 +107,7 @@ export default function TaskCardTitle({ task }: { task: Task }) {
                 style={{
                     fontSize: `${fontSize}px`,
                     lineHeight: '1.1',
+                    pointerEvents: focused ? 'auto' : 'none',
                 }}
 
             />

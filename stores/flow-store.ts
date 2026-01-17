@@ -111,6 +111,7 @@ const useStore = create<AppState>()(
                         stroke: 'hsl(var(--edges))',
                         strokeWidth: 10,
                         animationDuration: '1s',
+                        strokeDasharray: '5,5',
                     },
                 };
                 set({

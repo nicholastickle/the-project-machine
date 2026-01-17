@@ -45,7 +45,6 @@ export default function TaskCard({ id }: NodeProps) {
             </div>
         );
     }
-
     return (
         <div
             className={"group relative w-[400px] min-h-[400px] border-2 border-task-card-border bg-task-card-background flex flex-col rounded-3xl shadow-lg m-5 cursor-default"}
@@ -67,9 +66,6 @@ export default function TaskCard({ id }: NodeProps) {
                 <TaskCardComments comments={task.comments} />
                 <TaskCardMembers members={task.members} />
             </div>
-
-
-
             <TaskHandles />
         </div>
     );

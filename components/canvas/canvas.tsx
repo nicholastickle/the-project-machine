@@ -41,6 +41,10 @@ export default function Canvas({ onInit }: CanvasProps) {
                 onInit={onInit}
                 panOnScroll
                 selectionOnDrag
+                elementsSelectable={true}
+                defaultEdgeOptions={{
+                    interactionWidth: 20
+                }}
                 panOnDrag={panOnDrag}
                 selectionMode={SelectionMode.Partial}
                 connectionLineStyle={{
