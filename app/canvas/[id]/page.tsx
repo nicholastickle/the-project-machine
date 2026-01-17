@@ -3,7 +3,7 @@
 import Canvas from "@/components/canvas/canvas"
 import ChatPanel from "@/components/chat/chat-panel"
 import SidebarProvider from "@/components/ui/sidebar"
-import CanvasSidebar from "@/components/sidebar/canvas-sidebar"
+import Sidebar from "@/components/sidebar/sidebar"
 import CanvasToolbar from "@/components/toolbar/canvas-toolbar"
 import CanvasSidebarTrigger from "@/components/sidebar/sidebar-trigger"
 import ExportButtons from "@/components/export/export-buttons"
@@ -67,7 +67,7 @@ export default function CanvasProjectPage({ params }: { params: Promise<{ id: st
                 />
                 <ExportButtons isChatVisible={isChatDocked} />
                 <TaskBook />
-                <CanvasSidebar />
+                <Sidebar />
                 <CanvasToolbar />
                 <CanvasSidebarTrigger />
             </div>
