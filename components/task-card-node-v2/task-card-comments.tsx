@@ -2,7 +2,6 @@ import { MessageSquare } from 'lucide-react';
 import { TaskData } from '@/stores/types';
 
 export default function TaskCardComments({ comments }: { comments?: TaskData['comments'] }) {
-    // Only render if comments exist and array is not empty
     if (!comments || comments.length === 0) {
         return null;
     }

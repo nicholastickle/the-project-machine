@@ -24,13 +24,24 @@ export default function TaskCardOptionsSaveAction({ nodeId, data }: TaskCardOpti
     };
 
     const handleSaveConfirm = () => {
-        // Convert TaskData to SavedTask format (without comments for now)
+    
+        const convertCommentsToString = (comments: TaskData['comments']) => {
+            if (!comments || comments.length === 0) return '';
+
+            return comments.map(comment => {
+                const dateToUse = comment.editedDate || comment.createdDate;
+                const date = new Date(dateToUse).toLocaleDateString();
+                return `${comment.memberName}: ${comment.comment} - ${date}`;
+            }).join('\n\n'); // Double newline creates a space between comments
+        };
+
         const savedTask = {
-            title: data.title,
+            title: data.title && data.title.trim() ? data.title : "New saved task",
             status: data.status,
             timeSpent: data.timeSpent || 0,
             estimatedHours: data.estimatedHours,
             description: data.description,
+            comments: convertCommentsToString(data.comments),
             subtasks: data.subtasks
         };
 
@@ -55,19 +66,16 @@ export default function TaskCardOptionsSaveAction({ nodeId, data }: TaskCardOpti
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="sm:max-w-md bg-task-card-status-dialog-background text-task-card-status-dialog-foreground border border-task-card-status-dialog-border">
                     <div className="flex flex-col gap-6 py-2">
-                        {/* Row 1: Question */}
+                    
                         <div className="text-center">
                             <DialogTitle className="text-lg font-semibold">Store this task for future use?</DialogTitle>
                         </div>
-
-                        {/* Row 2: Subtext */}
+                    
                         <div className="text-center">
                             <DialogDescription className="text-sm text-muted-foreground">
                                 This helps improve future planning.
                             </DialogDescription>
                         </div>
-
-                        {/* Row 3: Buttons */}
                         <div className="flex gap-3 justify-center">
                             <Button
                                 variant="outline"

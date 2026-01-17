@@ -1,15 +1,17 @@
-import { TaskData } from '@/stores/types';
+import { SavedTask } from '@/stores/types';
 import { CheckSquare } from 'lucide-react';
-import SubtaskTable from '@/components/task-card-options/task-card-options-subtask-table';
+import TaskBookTaskSubtaskTable from '@/components/task-book/task-book-task-subtask-table';
 
-
-
-interface TaskCardOptionsSubtasksProps {
-    nodeId: string;
-    subtasks?: TaskData['subtasks'];
+interface TaskBookTaskSubtaskProps {
+    task: SavedTask | null;
 }
 
-export default function TaskCardOptionsSubtasks({ nodeId, subtasks }: TaskCardOptionsSubtasksProps) {
+export default function TaskBookTaskSubtask({ task }: TaskBookTaskSubtaskProps) {
+
+    if (!task) {
+        return null;
+    }
+
     return (
         <div className="w-full flex flex-col p-3">
             <div className="flex items-center gap-2 mb-1">
@@ -17,8 +19,9 @@ export default function TaskCardOptionsSubtasks({ nodeId, subtasks }: TaskCardOp
                 <span className="text-lg font-medium text-muted-foreground">Subtasks:</span>
             </div>
             <div className='border border-gray-200 outline-none rounded-md bg-white'>
-                < SubtaskTable nodeId={nodeId} subtasks={subtasks || []} />
+                <TaskBookTaskSubtaskTable taskId={task.id} subtasks={task.subtasks || []} />
+                
             </div>
-        </div >
+        </div>
     );
 }

@@ -48,6 +48,7 @@ export default function TaskCardOptionsCommentsNew({ nodeId, comments }: TaskCar
                 onKeyDown={handleKeyDown}
                 placeholder="Write a comment..."
                 className="flex-1 bg-transparent border-none outline-none text-sm"
+                maxLength={1000}
             />
 
             <button

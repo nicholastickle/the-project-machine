@@ -8,11 +8,18 @@ import type { SavedTask } from './types';
 // Taskbook should show all tasks across all snapshots (history view)
 // DO NOT extend this store - it will be refactored to read from Supabase plan_snapshots table
 
+// Extract the subtask type for better type safety
+type SubtaskType = NonNullable<SavedTask['subtasks']>[number];
+
 interface TaskbookState {
     savedTasks: SavedTask[];
     hasNewTask: boolean;
     addSavedTask: (task: Omit<SavedTask, 'id' | 'savedAt' | 'lastUpdated'>) => void;
     removeTask: (taskId: string) => void;
+    updateSavedTask: (taskId: string, updates: Partial<SavedTask>) => void;
+    addSubtask: (taskId: string) => void;
+    updateSubtask: (taskId: string, subtaskId: string, updates: Partial<SubtaskType>) => void;
+    deleteSubtask: (taskId: string, subtaskId: string) => void;
     clearNewTaskIndicator: () => void;
 }
 
@@ -42,6 +49,82 @@ const useTaskbookStore = create<TaskbookState>()(
             removeTask: (taskId: string) => {
                 set({
                     savedTasks: get().savedTasks.filter(task => task.id !== taskId)
+                });
+            },
+
+            updateSavedTask: (taskId: string, updates: Partial<SavedTask>) => {
+                const now = new Date().toLocaleString();
+                const isOnlyLastUsedUpdate = Object.keys(updates).length === 1 && 'lastUsed' in updates;
+
+                set({
+                    savedTasks: get().savedTasks.map(task =>
+                        task.id === taskId
+                            ? {
+                                ...task,
+                                ...updates,
+                                ...(isOnlyLastUsedUpdate ? {} : { lastUpdated: now })
+                            }
+                            : task
+                    )
+                });
+            },
+
+            addSubtask: (taskId: string) => {
+                const now = new Date().toLocaleString();
+                const newSubtask = {
+                    id: `subtask-${uuidv4()}`,
+                    title: '',
+                    isCompleted: false,
+                    estimatedDuration: 0,
+                    timeSpent: 0
+                };
+
+                set({
+                    savedTasks: get().savedTasks.map(task =>
+                        task.id === taskId
+                            ? {
+                                ...task,
+                                subtasks: [...(task.subtasks || []), newSubtask],
+                                lastUpdated: now
+                            }
+                            : task
+                    )
+                });
+            },
+
+            updateSubtask: (taskId: string, subtaskId: string, updates: Partial<SubtaskType>) => {
+                const now = new Date().toLocaleString();
+
+                set({
+                    savedTasks: get().savedTasks.map(task =>
+                        task.id === taskId
+                            ? {
+                                ...task,
+                                subtasks: (task.subtasks || []).map(subtask =>
+                                    subtask.id === subtaskId
+                                        ? { ...subtask, ...updates }
+                                        : subtask
+                                ),
+                                lastUpdated: now
+                            }
+                            : task
+                    )
+                });
+            },
+
+            deleteSubtask: (taskId: string, subtaskId: string) => {
+                const now = new Date().toLocaleString();
+
+                set({
+                    savedTasks: get().savedTasks.map(task =>
+                        task.id === taskId
+                            ? {
+                                ...task,
+                                subtasks: (task.subtasks || []).filter(subtask => subtask.id !== subtaskId),
+                                lastUpdated: now
+                            }
+                            : task
+                    )
                 });
             },
 

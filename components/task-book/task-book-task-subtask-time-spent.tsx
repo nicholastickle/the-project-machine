@@ -1,34 +1,31 @@
 import { useState, useRef, useEffect } from 'react';
 import { Play, Pause } from 'lucide-react';
-import useStore from '@/stores/flow-store';
+import useTaskbookStore from '@/stores/taskbook-store';
 
-interface SubtaskTimerProps {
-    nodeId: string;
+interface TaskBookTaskSubtaskTimeSpentProps {
+    taskId: string;
     subtaskId: string;
-    timeSpent: number; // in seconds
+    timeSpent: number;
 }
 
-export default function SubtaskTimer({ nodeId, subtaskId, timeSpent }: SubtaskTimerProps) {
+export default function TaskBookTaskSubtaskTimeSpent({ taskId, subtaskId, timeSpent }: TaskBookTaskSubtaskTimeSpentProps) {
     const [isTracking, setIsTracking] = useState(false);
     const [currentTime, setCurrentTime] = useState(timeSpent);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    const updateSubtask = useStore((state) => state.updateSubtask);
+    const updateSubtask = useTaskbookStore((state) => state.updateSubtask);
 
- 
     useEffect(() => {
         setCurrentTime(timeSpent);
     }, [timeSpent]);
 
- 
     useEffect(() => {
         if (isTracking) {
             intervalRef.current = setInterval(() => {
                 setCurrentTime(prev => {
                     const newTime = prev + 1;
-                  
                     setTimeout(() => {
-                        updateSubtask(nodeId, subtaskId, { timeSpent: newTime });
+                        updateSubtask(taskId, subtaskId, { timeSpent: newTime });
                     }, 0);
                     return newTime;
                 });
@@ -45,9 +42,8 @@ export default function SubtaskTimer({ nodeId, subtaskId, timeSpent }: SubtaskTi
                 clearInterval(intervalRef.current);
             }
         };
-    }, [isTracking, nodeId, subtaskId, updateSubtask]);
+    }, [isTracking, taskId, subtaskId, updateSubtask]);
 
-   
     const formatTime = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -69,8 +65,8 @@ export default function SubtaskTimer({ nodeId, subtaskId, timeSpent }: SubtaskTi
             <button
                 onClick={handleToggleTimer}
                 className={`flex items-center justify-center w-6 h-6 hover:bg-task-card-accent rounded-full transition-colors opacity-60 hover:opacity-100 ${isTracking
-                        ? 'text-red-500 border border-red-500'
-                        : 'text-muted'
+                    ? 'text-red-500 border border-red-500'
+                    : 'text-muted'
                     }`}
                 title={isTracking ? "Pause timer" : "Start timer"}
             >

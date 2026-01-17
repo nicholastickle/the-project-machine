@@ -95,8 +95,6 @@ export type AppState = {
 
   connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => void;
 
-  
-
   updateNodeData: (id: string, data: Partial<TaskData>, saveToHistory?: boolean) => void;
 
   addSubtask: (nodeId: string) => void;
