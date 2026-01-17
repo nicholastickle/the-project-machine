@@ -1,8 +1,4 @@
-.react-flow__selection {
-    background: hsl(var(--selection));
-    border: 0.5px solid hsl(var(--selection-border));
-    border-radius: 10px;
-}
+
 
 .react-flow__pane.selection {
     cursor: default;
@@ -10,6 +6,20 @@
 
 .react-flow__pane.dragging {
     cursor: grabbing;
+}
+
+.react-flow__node {
+    cursor: default !important;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #0041d0;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 2px #0041d0);
+}
+
+.react-flow__node.dragging {
+    cursor: default !important;
 }
 
 @keyframes card-entrance {

@@ -100,9 +100,6 @@
     --minimap-border: 210 17% 6% / 0.15;
     --minimap-nodes: 240 4.8% 50%;
 
-    --selection: 45 100% 27% / 0.1;
-    --selection-border: 45 100% 20%;
-
     --task-card-background: 0 0% 100%;
     --task-card-background-accent: 240 4.8% 94%;
     --task-card-foreground: 210 11% 7%;
@@ -128,7 +125,7 @@
     --task-card-in-progress: 45 99.2% 48.6%;
     --task-card-stuck: 0 68.5% 49.8%;
     --task-card-complete: 135 59.2% 41.4%;
-    --task-card-cancelled: 220 9% 46%;
+    --task-card-cancelled: 280 70% 50%;
     --task-card-handles-background: 240 4.8% 85%;
 
     --edges: 240 10% 5%;
@@ -238,8 +235,8 @@
     --minimap-border: 0 0% 15%;
     --minimap-nodes: 240 3.7% 60%;
 
-    --selection: 25 95% 53% / 0.05;
-    --selection-border: 25 95% 15%;
+
+
 
     --task-card-background: 240 10% 10%;
     --task-card-background-accent: 240 3.7% 16%;
@@ -266,7 +263,7 @@
     --task-card-in-progress: 45 99.2% 48.6%;
     --task-card-stuck: 0 68.5% 49.8%;
     --task-card-complete: 135 59.2% 41.4%;
-    --task-card-cancelled: 220 9% 46%;
+    --task-card-cancelled: 280 70% 60%;
 
     --task-card-handles-background: 240 4.8% 95.9% / 0.1;
 

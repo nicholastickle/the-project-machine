@@ -3,21 +3,16 @@ import { Task } from '@/stores/types';
 import useTaskbookStore from '@/stores/taskbook-store';
 import { useState } from 'react';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogTitle,
-} from "@/components/ui/dialog";
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 
 
 export default function TaskCardOptionsSaveAction({ task }: { task: Task }) {
     const addSavedTask = useTaskbookStore((state) => state.addSavedTask);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-    const handleSaveClick = () => {
-        setIsDialogOpen(true);
-    };
+    const [isOpen, setIsOpen] = useState(false);
 
     const handleSaveConfirm = () => {
 
@@ -42,54 +37,48 @@ export default function TaskCardOptionsSaveAction({ task }: { task: Task }) {
         };
 
         addSavedTask(savedTask);
-        setIsDialogOpen(false);
+        setIsOpen(false);
     };
 
     const handleSaveCancel = () => {
-        setIsDialogOpen(false);
+        setIsOpen(false);
     };
 
     return (
-        <>
-            <button
-                onClick={handleSaveClick}
-                className="flex items-center space-x-2 p-2 rounded-md text-sm transition-all duration-200 hover:bg-gray-100 border "
-            >
-                <Save className="w-4 h-4 text-muted-foreground" />
-                <span className="flex-1 text-left">Save to task library</span>
-            </button>
-
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-md bg-task-card-status-dialog-background text-task-card-status-dialog-foreground border border-task-card-status-dialog-border">
-                    <div className="flex flex-col gap-6 py-2">
-
-                        <div className="text-center">
-                            <DialogTitle className="text-lg font-semibold">Store this task for future use?</DialogTitle>
-                        </div>
-
-                        <div className="text-center">
-                            <DialogDescription className="text-sm text-muted-foreground">
-                                This helps improve future planning.
-                            </DialogDescription>
-                        </div>
-                        <div className="flex gap-3 justify-center">
-                            <Button
-                                variant="outline"
-                                onClick={handleSaveCancel}
-                                className="min-w-[100px] border border-task-card-status-dialog-border text-task-card-status-dialog-foreground bg-task-card-status-dialog-background hover:bg-task-card-status-dialog-accent hover:text-task-card-status-dialog-foreground"
-                            >
-                                No
-                            </Button>
-                            <Button
-                                onClick={handleSaveConfirm}
-                                className="min-w-[100px]"
-                            >
-                                Yes (recommended)
-                            </Button>
-                        </div>
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <PopoverTrigger asChild>
+                <button className="flex items-center space-x-2 p-2 rounded-md text-sm transition-all duration-200 hover:bg-gray-100 border">
+                    <Save className="w-4 h-4 text-muted-foreground" />
+                    <span className="flex-1 text-left">Save to task library</span>
+                </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-4 bg-white" align="start">
+                <div className="space-y-3">
+                    <div className="text-sm font-medium text-foreground">
+                        Store this task for future use?
                     </div>
-                </DialogContent>
-            </Dialog>
-        </>
+                    <div className="text-xs text-muted-foreground mb-3">
+                        This helps improve future planning.
+                    </div>
+                    <div className="flex gap-2">
+                        <Button
+                            onClick={handleSaveConfirm}
+                            size="sm"
+                            className="flex-1 text-foreground"
+                        >
+                            Yes (recommended)
+                        </Button>
+                        <Button
+                            onClick={handleSaveCancel}
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 text-foreground"
+                        >
+                            No
+                        </Button>
+                    </div>
+                </div>
+            </PopoverContent>
+        </Popover>
     );
 }
