@@ -1,0 +1,19 @@
+import { MessageSquare } from 'lucide-react';
+import { Task } from '@/stores/types';
+
+export default function TaskCardComments({ comments }: { comments?: Task['comments'] }) {
+    if (!comments || comments.length === 0) {
+        return null;
+    }
+
+    const commentCount = comments.length;
+
+    return (
+        <div className="flex items-center gap-2">
+            <MessageSquare size={16} className="text-task-card-icon-foreground" />
+            <span className="text-sm text-task-card-foreground">
+                {commentCount}
+            </span>
+        </div>
+    );
+}

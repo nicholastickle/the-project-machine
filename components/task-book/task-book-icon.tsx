@@ -1,4 +1,4 @@
-import { BookOpen, Book } from 'lucide-react';
+import { BookOpen, BookType} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface TaskBookIconProps {
@@ -22,7 +22,7 @@ export default function TaskBookIcon({ size = 24, onClick, isOpen = false, hasNe
             }}
         >
             <div>
-                {isOpen ? <BookOpen size={size} className='text-task-book-icon-foreground' /> : <Book size={size} className='text-task-book-icon-foreground/70' />}
+                {isOpen ? <BookOpen size={size} className='text-task-book-icon-foreground' /> : <BookType size={size} className='text-task-book-icon-foreground/70' />}
             </div>
             {hasNewTask && !isOpen && (
                 <Badge

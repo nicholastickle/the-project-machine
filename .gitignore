@@ -1,3 +1,7 @@
+# =============================================================================
+# .gitignore
+# =============================================================================
+
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -21,6 +25,7 @@
 # misc
 *.log
 *.log.*
+*.pem
 
 # debug
 npm-debug.log*
@@ -31,10 +36,17 @@ lerna-debug.log*
 
 # local env files
 .env*.local
+.env.local
 .env
 .env.development
+.env.development.local
 .env.test
+.env.test.local
 .env.production
+.env.production.local
+
+# Keep example env file
+!.env.example
 
 # vercel
 .vercel
@@ -48,6 +60,9 @@ next-env.d.ts
 
 # IDE and editors
 .vscode/
+
+# Mock data for development (replace with real API calls in production)
+lib/mock-data.ts
 .idea/
 *.swp
 *.swo
@@ -107,6 +122,3 @@ logs
 
 # usage tracking
 usage-log.json
-
-# Mock data for development (replace with real API calls in production)
-lib/mock-data.ts

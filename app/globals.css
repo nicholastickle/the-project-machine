@@ -7,7 +7,7 @@
 @layer base {
   :root {
 
-    --background: 0 0% 98%;
+    --background: 0 0% 96%;
     --foreground: 210 11% 7%;
 
     --muted: 240 2% 40%;
@@ -79,9 +79,9 @@
 
     --task-book: 0 0% 97%;
     --task-book-background: 0 0% 97%;
-    --task-book-foreground: 240 5.3% 26.1%;
-    --task-book-accent: 240 4.8% 94%;
-    --task-book-accent-foreground: 240 5.9% 10%;
+    --task-book-foreground: 210 11% 7%;
+    --task-book-accent: 240 4.8% 90%;
+    --task-book-accent-foreground: 240 4.8% 85%;
     --task-book-border: 210 17% 6% / 0.15;
     --task-book-icon-background: 0 0% 97%;
     --task-book-icon-foreground: 240 5.3% 50%;
@@ -94,25 +94,21 @@
     --control-accent-foreground: 240 5.9% 10%;
     --control-border: 210 17% 6% / 0.15;
 
-
     --minimap-background: 0 0% 98%;
     --minimap-mask: 0 0% 96% / 0.6;
     --minimap-mask-stroke: 210 17% 6% / 0.15;
     --minimap-border: 210 17% 6% / 0.15;
     --minimap-nodes: 240 4.8% 50%;
 
-    --selection: 45 100% 27% / 0.1;
-    --selection-border: 45 100% 20%;
-
     --task-card-background: 0 0% 100%;
     --task-card-background-accent: 240 4.8% 94%;
-    --task-card-foreground: 240 5.3% 26.1%;
+    --task-card-foreground: 210 11% 7%;
     --task-card-placeholder: 240 5% 60%;
     --task-card-border: 210 17% 6% / 0.2;
     --task-card-border-accent: 25 95% 53%/0.5;
-    --task-card-icon-foreground: 240 5.3% 26.1%;
+    --task-card-icon-foreground: 210 11% 7%;
     --task-card-accent: 240 4.8% 94%;
-    --task-card-accent-foreground: 240 5.3% 26.1%;
+    --task-card-accent-foreground: 210 11% 7%;
 
     --task-card-status-options-background: 0 0% 100%;
     --task-card-status-options-foreground: 210 11% 7%;
@@ -124,11 +120,12 @@
     --task-card-status-dialog-accent: 240 4.8% 94%;
     --task-card-status-dialog-border: 210 17% 6% / 0.15;
 
-    --task-card-not-started: 240 4.8% 94%;
-    --task-card-on-going: 45 99.2% 48.6%;
+    --task-card-backlog: 0 0% 10%;
+    --task-card-planned: 210 17% 82%;
+    --task-card-in-progress: 45 99.2% 48.6%;
     --task-card-stuck: 0 68.5% 49.8%;
     --task-card-complete: 135 59.2% 41.4%;
-    --task-card-abandoned: 256 100% 24.3%;
+    --task-card-cancelled: 280 70% 50%;
     --task-card-handles-background: 240 4.8% 85%;
 
     --edges: 240 10% 5%;
@@ -138,11 +135,15 @@
     --canvas-buttons-border: 210 17% 6% / 0.15;
     --canvas-buttons-accent: 240 4.8% 94%;
     --canvas-buttons-accent-foreground: 240 5.3% 26.1%;
+
+    --grid-primary: 220 10% 92%;
+    --grid-secondary: 220 10% 92%;
+
+
   }
 
   .dark {
     --background: 240 100% 2%;
-      /* --background: 240 10% 5%; */
     --foreground: 0 0% 90%;
 
     --muted: 240 3.7% 50%;
@@ -234,8 +235,8 @@
     --minimap-border: 0 0% 15%;
     --minimap-nodes: 240 3.7% 60%;
 
-    --selection: 25 95% 53% / 0.05;
-    --selection-border: 25 95% 15%;
+
+
 
     --task-card-background: 240 10% 10%;
     --task-card-background-accent: 240 3.7% 16%;
@@ -257,11 +258,12 @@
     --task-card-status-dialog-accent: 240 3.7% 16%;
     --task-card-status-dialog-border: 0 0% 15%;
 
-    --task-card-not-started: 240 3.7% 16%;
-    --task-card-on-going: 45 99.2% 48.6%;
+    --task-card-backlog: 0 0% 10%;
+    --task-card-planned: 210 17% 82%;
+    --task-card-in-progress: 45 99.2% 48.6%;
     --task-card-stuck: 0 68.5% 49.8%;
     --task-card-complete: 135 59.2% 41.4%;
-    --task-card-abandoned: 256 100% 24.3%;
+    --task-card-cancelled: 280 70% 60%;
 
     --task-card-handles-background: 240 4.8% 95.9% / 0.1;
 
@@ -272,6 +274,9 @@
     --canvas-buttons-border: 0 0% 15%;
     --canvas-buttons-accent: 240 3.7% 16%;
     --canvas-buttons-accent-foreground: 240 4.8% 95.9%;
+
+    --grid-primary: 220 10% 14%;
+    --grid-secondary: 220 10% 12%;
 
   }
 }
