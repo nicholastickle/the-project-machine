@@ -31,7 +31,7 @@ export default function TaskBookDelete({ taskId, disabled = false, onDeleteCompl
     };
 
     return (
-        <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <Popover open={isOpen} onOpenChange={setIsOpen} modal={false}>
             <PopoverTrigger asChild>
                 <Button
                     variant="outline"

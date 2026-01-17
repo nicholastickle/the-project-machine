@@ -53,7 +53,7 @@ export default function TaskCardOptionsMembersAction({ task }: { task: Task }) {
     };
 
     return (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
                 <button className="flex items-center space-x-2 p-2 rounded-md text-sm transition-all duration-200 hover:bg-gray-100 border">
                     <Users className="w-4 h-4 text-muted-foreground" />

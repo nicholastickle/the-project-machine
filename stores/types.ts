@@ -140,6 +140,9 @@ export interface ProjectData {
   edges: Edge[];
   members: ProjectMember[];
 }
+
+export type CursorMode = 'select' | 'pan';
+
 export type AppState = {
   nodes: Node[];
   edges: Edge[];
@@ -149,6 +152,7 @@ export type AppState = {
   onNodesChange: OnNodesChange<Node>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
+  cursorMode: CursorMode;
 
   // Node management methods
   setNodes: (nodes: Node[]) => void;
@@ -178,7 +182,14 @@ export type AppState = {
   resetCanvas: () => void;
   undo: () => void;
   redo: () => void;
+
+  // Cursor mode methods
+  setCursorMode: (mode: CursorMode) => void; // Add this new method
+
 };
+
+
+
 
 // Canvas component props
 export interface CanvasProps {

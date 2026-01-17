@@ -17,6 +17,7 @@ const useStore = create<AppState>()(
             tasks: initialTasks,
             history: [{ nodes: initialNodes, edges: initialEdges, tasks: initialTasks }],
             historyIndex: 0,
+            cursorMode: 'select',
 
             saveHistory: () => {
                 const { nodes, edges, tasks, history, historyIndex } = get();
@@ -125,6 +126,10 @@ const useStore = create<AppState>()(
 
             setEdges: (edges) => {
                 set({ edges });
+            },
+
+            setCursorMode: (mode) => {
+                set({ cursorMode: mode });
             },
 
             addTaskNode: (task?: Partial<Task>, nodeOptions?: {

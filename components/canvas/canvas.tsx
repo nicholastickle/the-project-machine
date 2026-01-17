@@ -22,12 +22,18 @@ const selector = (state: AppState) => ({
     onNodesChange: state.onNodesChange,
     onEdgesChange: state.onEdgesChange,
     onConnect: state.onConnect,
+    cursorMode: state.cursorMode,
 });
 
 export default function Canvas({ onInit }: CanvasProps) {
-    const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(
+    const { nodes, edges, onNodesChange, onEdgesChange, onConnect, cursorMode } = useStore(
         useShallow(selector),
     );
+
+    const panOnDrag = cursorMode === 'pan' ? true : [1, 2];
+    const nodesDraggable = cursorMode === 'select';
+    const nodesConnectable = cursorMode === 'select';
+    const elementsSelectable = cursorMode === 'select';
 
     return (
         <div className='w-full h-screen z-0'>
@@ -40,8 +46,10 @@ export default function Canvas({ onInit }: CanvasProps) {
                 onConnect={onConnect}
                 onInit={onInit}
                 panOnScroll
-                selectionOnDrag
-                elementsSelectable={true}
+                selectionOnDrag={cursorMode === 'select'}
+                elementsSelectable={elementsSelectable}
+                nodesDraggable={nodesDraggable}
+                nodesConnectable={nodesConnectable}
                 defaultEdgeOptions={{
                     interactionWidth: 20
                 }}
