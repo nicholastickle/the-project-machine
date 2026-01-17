@@ -11,6 +11,7 @@ import { ModeToggle } from "@/components/theme-provider/theme-toggle"
 
 import { SignInUpButton } from "@/components/landing/sign-in-up-button"
 import { SubscribeButton } from "@/components/landing/subscribe-button"
+import { AuthRedirectButton } from "@/components/auth/auth-redirect-button"
 
 export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
@@ -91,16 +92,28 @@ export default function Header() {
           </Link>
         </div>
         <nav className="hidden lg:flex items-center gap-2">
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={(e) => handleScroll(e, item.href)}
-              className="text-muted hover:text-foreground px-4 py-2 rounded-full font-medium text-sm transition-colors"
-            >
-              {item.name}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            if (item.name === "Get started") {
+              return (
+                <AuthRedirectButton
+                  key={item.name}
+                  text={item.name}
+                  asLink={true}
+                  className="text-muted hover:text-foreground px-4 py-2 rounded-full font-medium text-sm transition-colors"
+                />
+              )
+            }
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={(e) => handleScroll(e, item.href)}
+                className="text-muted hover:text-foreground px-4 py-2 rounded-full font-medium text-sm transition-colors"
+              >
+                {item.name}
+              </Link>
+            )
+          })}
         </nav>
       </div>
       <div className="flex flex-row items-center">
@@ -125,16 +138,28 @@ export default function Header() {
               </SheetDescription>
             </SheetHeader>
             <nav className="flex flex-col mt-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={(e) => handleMobileNavClick(e, item.href)} // Use mobile-specific handler
-                  className="text-muted hover:text-foreground justify-start text-md py-2"
-                >
-                  {item.name}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                if (item.name === "Get started") {
+                  return (
+                    <AuthRedirectButton
+                      key={item.name}
+                      text={item.name}
+                      asLink={true}
+                      className="text-muted hover:text-foreground justify-start text-md py-2"
+                    />
+                  )
+                }
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={(e) => handleMobileNavClick(e, item.href)}
+                    className="text-muted hover:text-foreground justify-start text-md py-2"
+                  >
+                    {item.name}
+                  </Link>
+                )
+              })}
               <div className="md:hidden flex flex-col gap-2 ">
                 <SubscribeButton />
                 <ModeToggle />

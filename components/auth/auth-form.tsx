@@ -7,10 +7,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import OTPDialog from "@/components/auth/otp-dialog"
+import { LoadingSkeleton } from "@/components/auth/auth-loading"
 import { ProjectMachineLogoStandard } from "@/components/logo/project-machine-logo-standard"
+import { sessionUtils } from "@/utils/session"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 export default function AuthForm() {
+    const router = useRouter()
     const [email, setEmail] = useState("")
     const [showOtpDialog, setShowOtpDialog] = useState(false)
     const [generatedCode, setGeneratedCode] = useState("")
@@ -18,6 +22,7 @@ export default function AuthForm() {
     const [error, setError] = useState("")
     const [resendDisabled, setResendDisabled] = useState(false)
     const [countdown, setCountdown] = useState(60)
+    const [isRedirecting, setIsRedirecting] = useState(false)
 
     const generateCode = () => {
         const code = Math.floor(100000 + Math.random() * 900000).toString()
@@ -59,17 +64,38 @@ export default function AuthForm() {
 
     const handleOtpComplete = (value: string) => {
         if (value === generatedCode) {
+            // Create session data
+            const sessionData = {
+                userId: `user_${Date.now()}`, // Simple user ID for testing
+                email: email,
+                createdAt: new Date().toISOString()
+            }
+
+            // Create session cookie
+            sessionUtils.createSession(sessionData)
+
+            // Show loading state
+            setIsRedirecting(true)
+
             setTimeout(() => {
-                alert("Correct code, you are logged in")
+                // Clear form state
                 setShowOtpDialog(false)
                 setOtpValue("")
                 setError("")
                 setEmail("")
-            }, 500)
+
+                // Redirect to canvas
+                router.push('/canvas')
+            }, 800)
         } else {
             setError("Incorrect code")
             setOtpValue("")
         }
+    }
+
+    // Show loading screen when redirecting
+    if (isRedirecting) {
+        return <LoadingSkeleton size="lg" />
     }
 
     return (
