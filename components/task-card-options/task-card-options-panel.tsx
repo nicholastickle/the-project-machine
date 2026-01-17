@@ -6,14 +6,13 @@ import TaskCardMembersIcons from "./task-card-options-members-icons";
 import TaskCardOptionsStatus from "./task-card-options-status";
 import TaskCardOptionsActions from "./task-card-options-actions";
 
-import { TaskData } from '@/stores/types';
+import { Task } from '@/stores/types';
+import useStore from '@/stores/flow-store';
 
-interface TaskCardOptionsPanelProps {
-    nodeId: string;
-    data: TaskData;
-}
-
-export default function TaskCardOptionsPanel({ nodeId, data }: TaskCardOptionsPanelProps) {
+export default function TaskCardOptionsPanel({ task }: { task: Task }) {
+    // Subscribe to store to get latest task data
+    const tasks = useStore((state) => state.tasks);
+    const currentTask = tasks.find(t => t.id === task.id) || task;
 
     return (
         <div className="flex flex-row rounded-xl h-[85vh] bg-task-card-panel-background text-task-card-panel-foreground p-2">
@@ -21,10 +20,10 @@ export default function TaskCardOptionsPanel({ nodeId, data }: TaskCardOptionsPa
             <div className="flex flex-col flex-[10] border">
                 <div className="flex flex-row flex-[1.5] border-b">
                     <div className="flex flex-[8] text-2xl p-3">
-                        <TaskCardOptionsTitle nodeId={nodeId} title={data.title} />
+                        <TaskCardOptionsTitle task={currentTask} />
                     </div>
                     <div className="flex flex-row flex-[4]items-center justify-end p-3">
-                        <TaskCardMembersIcons members={data.members} />
+                        <TaskCardMembersIcons members={currentTask.members} />
                     </div>
                 </div>
 
@@ -34,13 +33,13 @@ export default function TaskCardOptionsPanel({ nodeId, data }: TaskCardOptionsPa
                         scrollbarColor: '#cbd5e1 transparent'
                     }}>
                         <div className="flex flex-col flex-shrink-0">
-                            <TaskCardOptionsDescription nodeId={nodeId} description={data.description} />
+                            <TaskCardOptionsDescription task={currentTask} />
                         </div>
                         <div className="flex flex-col flex-shrink-0">
-                            <TaskCardOptionsSubtasks nodeId={nodeId} subtasks={data.subtasks} />
+                            <TaskCardOptionsSubtasks task={currentTask} />
                         </div>
                         <div className="flex flex-col flex-shrink-0">
-                            <TaskCardOptionsComments nodeId={nodeId} comments={data.comments} />
+                            <TaskCardOptionsComments task={currentTask} />
                         </div>
                     </div>
                 </div>
@@ -48,18 +47,16 @@ export default function TaskCardOptionsPanel({ nodeId, data }: TaskCardOptionsPa
 
             <div className="flex flex-col flex-[3] border-r border-t border-b">
                 <div className="flex flex- col flex-[2]">
-                    
+
                 </div>
                 <div className="flex flex-col flex-[6]">
                     <TaskCardOptionsStatus
-                        nodeId={nodeId}
-                        status={data.status}
+                        task={currentTask}
                     />
                 </div>
                 <div className="flex flex-col flex-[8] ">
-                    <TaskCardOptionsActions 
-                        nodeId={nodeId} 
-                        data={data} 
+                    <TaskCardOptionsActions
+                        task={currentTask}
                     />
                 </div>
 

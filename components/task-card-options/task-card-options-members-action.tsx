@@ -1,5 +1,5 @@
 import { Users, Check } from 'lucide-react';
-import { TaskData } from '@/stores/types';
+import { Task, ProjectMember } from '@/stores/types';
 import useStore from '@/stores/flow-store';
 import {
     DropdownMenu,
@@ -9,13 +9,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface TaskCardOptionsMembersActionProps {
-    nodeId: string;
-    data: TaskData;
-}
-
-export default function TaskCardOptionsMembersAction({ nodeId, data }: TaskCardOptionsMembersActionProps) {
-    const updateNodeData = useStore((state) => state.updateNodeData);
+export default function TaskCardOptionsMembersAction({ task }: { task: Task }) {
+    const updateTask = useStore((state) => state.updateTask);
 
     // Dummy users
     const availableMembers = [
@@ -29,44 +24,32 @@ export default function TaskCardOptionsMembersAction({ nodeId, data }: TaskCardO
         }
     ];
 
-    const currentMembers = data.members || [];
+    const currentMembers = task.members || [];
 
     const isMemberSelected = (memberId: string) => {
         return currentMembers.some(member =>
-            member.memberId === memberId && !member.removedDate
+            member.user_id === memberId
         );
     };
 
     const handleMemberToggle = (member: typeof availableMembers[0]) => {
-        const currentTime = new Date().toISOString();
         let updatedMembers = [...currentMembers];
 
         if (isMemberSelected(member.memberId)) {
-            updatedMembers = updatedMembers.map(m =>
-                m.memberId === member.memberId
-                    ? { ...m, removedDate: currentTime }
-                    : m
-            );
+            // Remove member from the task
+            updatedMembers = updatedMembers.filter(m => m.user_id !== member.memberId);
         } else {
-            const existingMemberIndex = updatedMembers.findIndex(
-                m => m.memberId === member.memberId
-            );
-
-            if (existingMemberIndex !== -1) {
-                updatedMembers[existingMemberIndex] = {
-                    ...updatedMembers[existingMemberIndex],
-                    removedDate: undefined
-                };
-            } else {
-                updatedMembers.push({
-                    memberId: member.memberId,
-                    memberName: member.memberName,
-                    addedDate: currentTime,
-                });
-            }
+            // Add member to the task
+            const newMember: ProjectMember = {
+                project_id: task.project_id,
+                user_id: member.memberId,
+                name: member.memberName,
+                role: 'editor'
+            };
+            updatedMembers.push(newMember);
         }
 
-        updateNodeData(nodeId, { members: updatedMembers });
+        updateTask(task.id, { members: updatedMembers });
     };
 
     return (

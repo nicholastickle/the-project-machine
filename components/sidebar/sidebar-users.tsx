@@ -1,11 +1,7 @@
 import {
-  BadgeCheck,
-  Bell,
   ChevronsUpDown,
   ChevronRight,
-  CreditCard,
   LogOut,
-  Sparkles,
   Palette,
 } from "lucide-react"
 
@@ -29,18 +25,24 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { ThemeChanger } from "./theme-changer"
+import SidebarThemeChanger from "@/components/sidebar/sidebar-theme-changer"
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string
-    email: string
-    avatar: string
-  }
-}) {
+export default function SidebarUsers() {
   const { isMobile } = useSidebar()
+
+  interface UserProps {
+    name: string,
+    email: string,
+    avatar: string,
+  }
+
+  const user: UserProps =
+  {
+    name: "Nicholas Tickle",
+    email: "nicholas@theprojectmachine.com",
+    avatar: "/images/avatars/robert-fox.png",
+  }
+
 
   return (
     <SidebarMenu>
@@ -52,7 +54,8 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarImage src={user.avatar
+                } alt={user.name} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -80,27 +83,9 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-sidebar-border" />
+            
             <DropdownMenuGroup>
-              <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator className="bg-sidebar-border" />
-            <DropdownMenuGroup>
-              <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-              <ThemeChanger>
+              <SidebarThemeChanger>
                 <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center gap-2">
@@ -110,13 +95,13 @@ export function NavUser({
                     <ChevronRight className="h-3 w-3" />
                   </div>
                 </DropdownMenuItem>
-              </ThemeChanger>
+              </SidebarThemeChanger>
 
             </DropdownMenuGroup>
             <DropdownMenuSeparator className="bg-sidebar-border" />
             <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
               <LogOut />
-              Log out
+              Sign Out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

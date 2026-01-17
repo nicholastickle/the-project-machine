@@ -1,13 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import useStore from '@/stores/flow-store';
+import { Task, Subtask } from '@/stores/types';
 
-interface EditableSubtaskTimeSpentProps {
-    nodeId: string;
-    subtaskId: string;
-    timeSpent: number;
-}
+export default function EditableSubtaskTimeSpent({ taskId, subtaskId, timeSpent }: { taskId: Task['id']; subtaskId: Subtask['id']; timeSpent: Subtask['time_spent'] }) {
 
-export default function EditableSubtaskTimeSpent({ nodeId, subtaskId, timeSpent }: EditableSubtaskTimeSpentProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState(timeSpent.toString());
     const inputRef = useRef<HTMLInputElement>(null);
@@ -34,7 +30,7 @@ export default function EditableSubtaskTimeSpent({ nodeId, subtaskId, timeSpent 
 
     const handleSave = () => {
         const numValue = parseFloat(editValue) || 0;
-        updateSubtask(nodeId, subtaskId, { timeSpent: numValue });
+        updateSubtask(taskId, subtaskId, { time_spent: numValue });
         setIsEditing(false);
     };
 

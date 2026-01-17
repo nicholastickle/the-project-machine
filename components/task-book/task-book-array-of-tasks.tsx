@@ -1,14 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import useTaskbookStore from '@/stores/taskbook-store';
-import { SavedTask } from '@/stores/types';
+import { TaskbookEntry } from '@/stores/types';
 
 interface TaskBookArrayOfTasksProps {
-    tasks: SavedTask[];
-    selectedTask: SavedTask | null;
-    onTaskClick: (task: SavedTask) => void;
+    tasks: TaskbookEntry[];
+    selectedTask: TaskbookEntry | null;
+    onTaskClick: (task: TaskbookEntry) => void;
 }
 
 export default function TaskBookArrayOfTasks({ tasks, selectedTask, onTaskClick }: TaskBookArrayOfTasksProps) {
+
+
     const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
     const [editValue, setEditValue] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
@@ -24,11 +26,11 @@ export default function TaskBookArrayOfTasks({ tasks, selectedTask, onTaskClick 
         }
     }, [editingTaskId]);
 
-    const handleClick = (task: SavedTask) => {
+    const handleClick = (task: TaskbookEntry) => {
         if (selectedTask?.id === task.id && editingTaskId !== task.id) {
             // Task is already selected, enter edit mode
             setEditingTaskId(task.id);
-            setEditValue(task.title);
+            setEditValue(task.title || '');
         } else {
             // Select the task
             onTaskClick(task);
@@ -46,7 +48,7 @@ export default function TaskBookArrayOfTasks({ tasks, selectedTask, onTaskClick 
             updateSavedTask(editingTaskId, { title: trimmedValue });
         } else if (task && trimmedValue.length === 0) {
             // Reset to original title if empty
-            setEditValue(task.title);
+            setEditValue(task.title || '');
         }
 
         setEditingTaskId(null);
@@ -61,7 +63,7 @@ export default function TaskBookArrayOfTasks({ tasks, selectedTask, onTaskClick 
             e.preventDefault();
             const task = tasks.find(t => t.id === editingTaskId);
             if (task) {
-                setEditValue(task.title);
+                setEditValue(task.title || '');
             }
             setEditingTaskId(null);
         }
@@ -90,7 +92,7 @@ export default function TaskBookArrayOfTasks({ tasks, selectedTask, onTaskClick 
                             spellCheck={true}
                         />
                     ) : (
-                        <div className="overflow-hidden text-ellipsis w-full whitespace-nowrap">{task.title}</div>
+                        <div className="overflow-hidden text-ellipsis w-full whitespace-nowrap">{task.title || 'Untitled'}</div>
                     )}
                 </div>
             ))}

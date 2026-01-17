@@ -1,13 +1,10 @@
 import { useRef } from 'react';
 import useStore from '@/stores/flow-store';
 
-interface SubtaskDurationProps {
-    nodeId: string;
-    subtaskId: string;
-    duration: number;
-}
+import { Task, Subtask } from '@/stores/types';
 
-export default function SubtaskDuration({ nodeId, subtaskId, duration }: SubtaskDurationProps) {
+export default function SubtaskDuration({ taskId, subtaskId, duration }: { taskId: Task['id']; subtaskId: Subtask['id']; duration: Subtask['estimated_duration'] }) {
+
     const inputRef = useRef<HTMLInputElement>(null);
     const updateSubtask = useStore((state) => state.updateSubtask);
 
@@ -16,7 +13,7 @@ export default function SubtaskDuration({ nodeId, subtaskId, duration }: Subtask
         // Allow numbers and decimal points
         if (/^\d*\.?\d*$/.test(value)) {
             const numValue = parseFloat(value) || 0;
-            updateSubtask(nodeId, subtaskId, { estimatedDuration: numValue });
+            updateSubtask(taskId, subtaskId, { estimated_duration: numValue });
         }
     };
 

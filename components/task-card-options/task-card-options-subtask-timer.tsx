@@ -1,21 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
 import { Play, Pause } from 'lucide-react';
 import useStore from '@/stores/flow-store';
+import { Task, Subtask } from '@/stores/types';
 
-interface SubtaskTimerProps {
-    nodeId: string;
-    subtaskId: string;
-    timeSpent: number; // in seconds
-}
 
-export default function SubtaskTimer({ nodeId, subtaskId, timeSpent }: SubtaskTimerProps) {
+export default function SubtaskTimer({ taskId, subtaskId, timeSpent }: { taskId: Task['id']; subtaskId: Subtask['id']; timeSpent: Subtask['time_spent'] }) {
+
     const [isTracking, setIsTracking] = useState(false);
     const [currentTime, setCurrentTime] = useState(timeSpent);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const updateSubtask = useStore((state) => state.updateSubtask);
 
- 
     useEffect(() => {
         setCurrentTime(timeSpent);
     }, [timeSpent]);
@@ -28,7 +24,7 @@ export default function SubtaskTimer({ nodeId, subtaskId, timeSpent }: SubtaskTi
                     const newTime = prev + 1;
                   
                     setTimeout(() => {
-                        updateSubtask(nodeId, subtaskId, { timeSpent: newTime });
+                        updateSubtask(taskId, subtaskId, { time_spent: newTime });
                     }, 0);
                     return newTime;
                 });
@@ -45,7 +41,7 @@ export default function SubtaskTimer({ nodeId, subtaskId, timeSpent }: SubtaskTi
                 clearInterval(intervalRef.current);
             }
         };
-    }, [isTracking, nodeId, subtaskId, updateSubtask]);
+    }, [isTracking, taskId, subtaskId, updateSubtask]);
 
    
     const formatTime = (seconds: number) => {

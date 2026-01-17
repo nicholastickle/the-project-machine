@@ -1,9 +1,9 @@
-import { SavedTask } from '@/stores/types';
+import { TaskbookEntry } from '@/stores/types';
 import { CheckSquare } from 'lucide-react';
 import TaskBookTaskSubtaskTable from '@/components/task-book/task-book-task-subtask-table';
 
 interface TaskBookTaskSubtaskProps {
-    task: SavedTask | null;
+    task: TaskbookEntry | null;
 }
 
 export default function TaskBookTaskSubtask({ task }: TaskBookTaskSubtaskProps) {

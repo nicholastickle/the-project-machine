@@ -1,12 +1,10 @@
-
-
 import { Plus } from "lucide-react"
 import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-export function NewProject() {
+export default function SidebarProjectsNew() {
     const handleAddNewProject = () => {
         console.log("new project added")
     }

@@ -1,15 +1,11 @@
 import { Trash2 } from 'lucide-react';
 import useStore from '@/stores/flow-store';
+import { Task, Subtask } from '@/stores/types';
 
-interface SubtaskDeleteProps {
-    nodeId: string;
-    subtaskId: string;
-}
-
-export default function SubtaskDelete({ nodeId, subtaskId }: SubtaskDeleteProps) {
+export default function SubtaskDelete({ taskId, subtaskId }: { taskId: Task['id']; subtaskId: Subtask['id'] }) {
     const deleteSubtask = useStore((state) => state.deleteSubtask);
     const handleDelete = () => {
-        deleteSubtask(nodeId, subtaskId);
+        deleteSubtask(taskId, subtaskId);
     };
 
     return (

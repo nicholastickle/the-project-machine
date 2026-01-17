@@ -1,5 +1,5 @@
 import { Trash2 } from 'lucide-react';
-import { TaskData } from '@/stores/types';
+import { Task } from '@/stores/types';
 import useStore from '@/stores/flow-store';
 import { useState } from 'react';
 import {
@@ -9,17 +9,13 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 
-interface TaskCardOptionsDeleteActionProps {
-    nodeId: string;
-    data: TaskData;
-}
 
-export default function TaskCardOptionsDeleteAction({ nodeId, data }: TaskCardOptionsDeleteActionProps) {
-    const deleteNode = useStore((state) => state.deleteNode);
+export default function TaskCardOptionsDeleteAction({ task }: { task: Task }) {
+    const deleteTaskNode = useStore((state) => state.deleteTaskNode);
     const [isOpen, setIsOpen] = useState(false);
 
     const handleDeleteConfirm = () => {
-        deleteNode(nodeId);
+        deleteTaskNode(task.node_id);
         setIsOpen(false);
     };
 

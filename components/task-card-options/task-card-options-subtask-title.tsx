@@ -1,17 +1,11 @@
 import useStore from '@/stores/flow-store';
-import { TaskData } from '@/stores/types';
+import { Task, Subtask } from '@/stores/types';
 
-interface SubtaskTitleProps {
-    nodeId: string;
-    subtaskId: NonNullable<TaskData['subtasks']>[0]['id'];
-    title: NonNullable<TaskData['subtasks']>[0]['title'];
-    isCompleted: NonNullable<TaskData['subtasks']>[0]['isCompleted'];
-}
 
-export default function SubtaskTitle({ nodeId, subtaskId, title, isCompleted }: SubtaskTitleProps) {
+export default function SubtaskTitle({ taskId, subtaskId, title, isCompleted }: { taskId: Task['id']; subtaskId: Subtask['id']; title: Subtask['title']; isCompleted: Subtask['is_completed'] }) {
     const updateSubtask = useStore((state) => state.updateSubtask);
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        updateSubtask(nodeId, subtaskId, { title: e.target.value });
+        updateSubtask(taskId, subtaskId, { title: e.target.value });
     };
 
     return (

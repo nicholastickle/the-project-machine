@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import useTaskbookStore from '@/stores/taskbook-store';
-import { SavedTask } from '@/stores/types';
+import { TaskbookEntry } from '@/stores/types';
 
 interface TaskBookTaskTitleProps {
-    task: SavedTask | null;
+    task: TaskbookEntry | null;
 }
 
 export default function TaskBookTaskTitle({ task }: TaskBookTaskTitleProps) {
@@ -25,8 +25,8 @@ export default function TaskBookTaskTitle({ task }: TaskBookTaskTitleProps) {
         if (trimmedValue !== task.title && trimmedValue.length > 0) {
             updateSavedTask(task.id, { title: trimmedValue });
         } else if (trimmedValue.length === 0) {
-            setValue(task.title);
-            updateSavedTask(task.id, { title: task.title });
+            setValue(task.title || '');
+            updateSavedTask(task.id, { title: task.title || '' });
         }
     };
 

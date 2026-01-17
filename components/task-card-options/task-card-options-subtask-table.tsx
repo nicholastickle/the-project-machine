@@ -5,16 +5,14 @@ import SubtaskTimer from "@/components/task-card-options/task-card-options-subta
 import SubtaskTitle from "@/components/task-card-options/task-card-options-subtask-title";
 
 import useStore from '@/stores/flow-store';
+import { Task } from '@/stores/types';
 
-interface SubtaskTableProps {
-    nodeId: string;
-    subtasks: { id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }[];
-}
 
-export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
+export default function SubtaskTable({ task }: { task: Task }) {
 
-    const totalEstimated = subtasks.reduce((sum, subtask) => sum + subtask.estimatedDuration, 0);
-    const totalTimeSpent = subtasks.reduce((sum, subtask) => sum + subtask.timeSpent, 0);
+    const subtasks = task.subtasks || [];
+    const totalEstimated = subtasks.reduce((sum, subtask) => sum + (subtask.estimated_duration || 0), 0);
+    const totalTimeSpent = subtasks.reduce((sum, subtask) => sum + (subtask.time_spent || 0), 0);
     const addSubtask = useStore((state) => state.addSubtask);
 
 
@@ -28,7 +26,7 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
 
     return (
         <table className="w-full border border-gray-200 rounded-lg overflow-hidden border-collapse">
-     
+
             <thead >
                 <tr className="h-7 text-muted-foreground">
                     <th className="w-[30px] "></th>
@@ -39,42 +37,42 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
                 </tr>
             </thead>
 
-        
+
             <tbody>
                 {subtasks.map((subtask) => (
                     <tr key={subtask.id} className="h-8 last:border-b-0">
                         <td className="w-[30px] text-center">
                             <SubtaskCheckbox
-                                nodeId={nodeId}
+                                taskId={task.id}
                                 subtaskId={subtask.id}
-                                isCompleted={subtask.isCompleted}
+                                isCompleted={subtask.is_completed}
                             />
                         </td>
                         <td className="px-2">
                             <SubtaskTitle
-                                nodeId={nodeId}
+                                taskId={task.id}
                                 subtaskId={subtask.id}
                                 title={subtask.title}
-                                isCompleted={subtask.isCompleted}
+                                isCompleted={subtask.is_completed}
                             />
                         </td>
                         <td className="w-[100px] text-center">
                             <SubtaskDuration
-                                nodeId={nodeId}
+                                taskId={task.id}
                                 subtaskId={subtask.id}
-                                duration={subtask.estimatedDuration}
+                                duration={subtask.estimated_duration}
                             />
                         </td>
                         <td className="w-[80px] text-left">
                             <SubtaskTimer
-                                nodeId={nodeId}
+                                taskId={task.id}
                                 subtaskId={subtask.id}
-                                timeSpent={subtask.timeSpent}
+                                timeSpent={subtask.time_spent}
                             />
                         </td>
                         <td className="w-[30px] text-center">
                             <SubtaskDelete
-                                nodeId={nodeId}
+                                taskId={task.id}
                                 subtaskId={subtask.id}
                             />
                         </td>
@@ -82,13 +80,13 @@ export default function SubtaskTable({ nodeId, subtasks }: SubtaskTableProps) {
                 ))}
             </tbody>
 
-        
+
             <tfoot className="">
                 <tr className="border-t border-gray-200">
                     <td className="w-[30px] h-8"></td>
                     <td className="px-2">
                         <button
-                            onClick={() => addSubtask(nodeId)}
+                            onClick={() => addSubtask(task.id)}
                             className="text-muted hover:text-muted-foreground cursor-pointer text-sm"
                         >
                             + Add subtask

@@ -1,12 +1,12 @@
 import { CheckSquare } from 'lucide-react';
-import { TaskData } from '@/stores/types';
+import { Task } from '@/stores/types';
 
-export default function TaskCardSubtask({ subtasks }: { subtasks?: TaskData['subtasks'] }) {
+export default function TaskCardSubtask({ subtasks }: { subtasks?: Task['subtasks'] }) {
     if (!subtasks || subtasks.length === 0) {
         return null;
     }
 
-    const completedCount = subtasks.filter(subtask => subtask.isCompleted).length;
+    const completedCount = subtasks.filter(subtask => subtask.is_completed).length;
     const totalCount = subtasks.length;
 
     return (

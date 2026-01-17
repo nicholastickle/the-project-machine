@@ -1,6 +1,7 @@
 import { AlignLeft } from 'lucide-react';
+import { Task } from '@/stores/types';
 
-export default function TaskCardDescription({ description }: { description?: string }) {
+export default function TaskCardDescription({ description }: { description?: Task['description'] }) {
   if (!description || description.trim() === '') {
     return null;
   }

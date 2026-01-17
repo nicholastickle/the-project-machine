@@ -19,7 +19,7 @@ import TaskBookTaskComments from "@/components/task-book/task-book-task-comments
 import { BookType } from "lucide-react"
 import { useState, useEffect } from 'react'
 import useTaskbookStore from '@/stores/taskbook-store'
-import { SavedTask } from '@/stores/types'
+import { TaskbookEntry } from '@/stores/types'
 
 interface TaskBookDialogProps {
     children: React.ReactNode;
@@ -38,7 +38,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
         }
     }, [isOpen]);
 
-    const handleTaskClick = (task: SavedTask) => {
+    const handleTaskClick = (task: TaskbookEntry) => {
         setSelectedTaskId(task.id);
     };
 
@@ -57,7 +57,7 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                 <div className="flex flex-col h-full  text-task-book-foreground border bg-task-book-background border-task-book-border rounded-2xl">
                     <div className="flex flex-col flex-[1] bg-task-book-accent rounded-t-2xl">
                         <DialogHeader className="p-6  ">
-                            <DialogTitle className="text-3xl font-bold text-left w-full flex flex-row items-center gap-2 "><span><BookType size={36} /></span>Task book</DialogTitle>
+                            <DialogTitle className="text-3xl font-bold text-left w-full flex flex-row items-center gap-2 "><span><BookType size={36} /></span>Task Library</DialogTitle>
                             <DialogDescription className="text-xs text-task-book-foreground">All your saved tasks are stored here for you and your AI. Create new tasks, manage existing ones, import a task into your canvas</DialogDescription>
                         </DialogHeader>
                     </div>
@@ -96,11 +96,11 @@ export default function TaskBookDialog({ children, isOpen, onOpenChange }: TaskB
                                 <div className="flex flex-col flex-[3]">
                                     <div className="flex flex-col flex-1 justify-center items-center px-2 py-1">
                                         <p className="text-xs text-muted-foreground">Last updated</p>
-                                        <p className="text-xs text-task-book-foreground">{selectedTask ? selectedTask.lastUpdated : "-"}</p>
+                                        <p className="text-xs text-task-book-foreground">{selectedTask ? new Date(selectedTask.updated_at).toLocaleDateString() : "-"}</p>
                                     </div>
                                     <div className="flex flex-col flex-1 justify-center items-center px-2 py-1">
                                         <p className="text-xs text-muted-foreground">Last used</p>
-                                        <p className="text-xs text-task-book-foreground">{selectedTask ? selectedTask.lastUsed || "-" : "-"}</p>
+                                        <p className="text-xs text-task-book-foreground">{selectedTask && selectedTask.used_at ? new Date(selectedTask.used_at).toLocaleDateString() : "-"}</p>
                                     </div>
                                 </div>
                             </div>

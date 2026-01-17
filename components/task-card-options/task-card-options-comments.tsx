@@ -1,15 +1,10 @@
-import { TaskData } from '@/stores/types';
+import { Task } from '@/stores/types';
 import { MessageSquare } from 'lucide-react';
 import TaskCardOptionsCommentsNew from './task-card-options-comments-new';
 import TaskCardOptionsCommentsExisting from './task-card-options-comments-existing';
 
-interface TaskCardOptionsCommentsProps {
-    nodeId: string;
-    comments?: TaskData['comments'];
-}
 
-export default function TaskCardOptionsComments({ nodeId, comments }: TaskCardOptionsCommentsProps) {
-
+export default function TaskCardOptionsComments({ task }: { task: Task }) {
 
     return (
         <div className="w-full flex flex-col p-3">
@@ -19,8 +14,8 @@ export default function TaskCardOptionsComments({ nodeId, comments }: TaskCardOp
             </div>
 
             <div className="space-y-4">
-                <TaskCardOptionsCommentsNew nodeId={nodeId} comments={comments} />
-                <TaskCardOptionsCommentsExisting nodeId={nodeId} comments={comments} />
+                <TaskCardOptionsCommentsNew task={task} />
+                <TaskCardOptionsCommentsExisting task={task} />
             </div>
         </div>
     );

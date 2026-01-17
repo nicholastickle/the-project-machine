@@ -1,7 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
-import type { SavedTask } from './types';
+import type { TaskbookEntry } from './types';
 
 // ⚠️ DEPRECATED: This store will be replaced with a derived view over PlanSnapshots
 // In v1.0, PlanSnapshots are the ONLY authoritative memory
@@ -9,14 +8,14 @@ import type { SavedTask } from './types';
 // DO NOT extend this store - it will be refactored to read from Supabase plan_snapshots table
 
 // Extract the subtask type for better type safety
-type SubtaskType = NonNullable<SavedTask['subtasks']>[number];
+type SubtaskType = NonNullable<TaskbookEntry['subtasks']>[number];
 
 interface TaskbookState {
-    savedTasks: SavedTask[];
+    savedTasks: TaskbookEntry[];
     hasNewTask: boolean;
-    addSavedTask: (task: Omit<SavedTask, 'id' | 'savedAt' | 'lastUpdated'>) => void;
+    addSavedTask: (task: Omit<TaskbookEntry, 'id' | 'created_at' | 'updated_at'>) => void;
     removeTask: (taskId: string) => void;
-    updateSavedTask: (taskId: string, updates: Partial<SavedTask>) => void;
+    updateSavedTask: (taskId: string, updates: Partial<TaskbookEntry>) => void;
     addSubtask: (taskId: string) => void;
     updateSubtask: (taskId: string, subtaskId: string, updates: Partial<SubtaskType>) => void;
     deleteSubtask: (taskId: string, subtaskId: string) => void;
@@ -24,21 +23,21 @@ interface TaskbookState {
 }
 
 // These match the tasks that get added to canvas after user confirms AI plan
-const seedTasks: SavedTask[] = [];
+const seedTasks: TaskbookEntry[] = [];
 
 const useTaskbookStore = create<TaskbookState>()(
-    persist(
-        (set, get) => ({
+    (set, get) => ({
             savedTasks: seedTasks,
             hasNewTask: false,
 
             addSavedTask: (task) => {
-                const now = new Date().toLocaleString();
-                const newTask: SavedTask = {
+                const now = new Date().toISOString();
+                const newTask: TaskbookEntry = {
                     ...task,
                     id: `saved-${uuidv4()}`,
-                    savedAt: now,
-                    lastUpdated: now,
+                    created_at: now,
+                    updated_at: now,
+                    usage_count: 0
                 };
                 set({
                     savedTasks: [...get().savedTasks, newTask],
@@ -52,9 +51,9 @@ const useTaskbookStore = create<TaskbookState>()(
                 });
             },
 
-            updateSavedTask: (taskId: string, updates: Partial<SavedTask>) => {
-                const now = new Date().toLocaleString();
-                const isOnlyLastUsedUpdate = Object.keys(updates).length === 1 && 'lastUsed' in updates;
+            updateSavedTask: (taskId: string, updates: Partial<TaskbookEntry>) => {
+                const now = new Date().toISOString();
+                const isOnlyUsedAtUpdate = Object.keys(updates).length === 1 && 'used_at' in updates;
 
                 set({
                     savedTasks: get().savedTasks.map(task =>
@@ -62,7 +61,7 @@ const useTaskbookStore = create<TaskbookState>()(
                             ? {
                                 ...task,
                                 ...updates,
-                                ...(isOnlyLastUsedUpdate ? {} : { lastUpdated: now })
+                                ...(isOnlyUsedAtUpdate ? {} : { updated_at: now })
                             }
                             : task
                     )
@@ -70,13 +69,16 @@ const useTaskbookStore = create<TaskbookState>()(
             },
 
             addSubtask: (taskId: string) => {
-                const now = new Date().toLocaleString();
+                const now = new Date().toISOString();
                 const newSubtask = {
                     id: `subtask-${uuidv4()}`,
                     title: '',
-                    isCompleted: false,
-                    estimatedDuration: 0,
-                    timeSpent: 0
+                    is_completed: false,
+                    estimated_duration: 0,
+                    time_spent: 0,
+                    sort_order: 0,
+                    created_at: now,
+                    updated_at: now
                 };
 
                 set({
@@ -85,7 +87,7 @@ const useTaskbookStore = create<TaskbookState>()(
                             ? {
                                 ...task,
                                 subtasks: [...(task.subtasks || []), newSubtask],
-                                lastUpdated: now
+                                updated_at: now
                             }
                             : task
                     )
@@ -93,7 +95,7 @@ const useTaskbookStore = create<TaskbookState>()(
             },
 
             updateSubtask: (taskId: string, subtaskId: string, updates: Partial<SubtaskType>) => {
-                const now = new Date().toLocaleString();
+                const now = new Date().toISOString();
 
                 set({
                     savedTasks: get().savedTasks.map(task =>
@@ -105,7 +107,7 @@ const useTaskbookStore = create<TaskbookState>()(
                                         ? { ...subtask, ...updates }
                                         : subtask
                                 ),
-                                lastUpdated: now
+                                updated_at: now
                             }
                             : task
                     )
@@ -113,7 +115,7 @@ const useTaskbookStore = create<TaskbookState>()(
             },
 
             deleteSubtask: (taskId: string, subtaskId: string) => {
-                const now = new Date().toLocaleString();
+                const now = new Date().toISOString();
 
                 set({
                     savedTasks: get().savedTasks.map(task =>
@@ -121,7 +123,7 @@ const useTaskbookStore = create<TaskbookState>()(
                             ? {
                                 ...task,
                                 subtasks: (task.subtasks || []).filter(subtask => subtask.id !== subtaskId),
-                                lastUpdated: now
+                                updated_at: now
                             }
                             : task
                     )
@@ -131,12 +133,7 @@ const useTaskbookStore = create<TaskbookState>()(
             clearNewTaskIndicator: () => {
                 set({ hasNewTask: false });
             },
-        }),
-        {
-            name: 'taskbook-storage', // Separate localStorage key
-            version: 1,
-        }
-    )
+    })
 );
 
 export default useTaskbookStore;

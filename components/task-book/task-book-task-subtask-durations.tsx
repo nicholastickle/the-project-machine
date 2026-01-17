@@ -7,14 +7,14 @@ interface TaskBookTaskSubtaskDurationProps {
 }
 
 export default function TaskBookTaskSubtaskDurations({ taskId, subtaskId, duration }: TaskBookTaskSubtaskDurationProps) {
- 
+
     const updateSubtask = useTaskbookStore((state) => state.updateSubtask);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         if (/^\d*\.?\d*$/.test(value)) {
             const numValue = parseFloat(value) || 0;
-            updateSubtask(taskId, subtaskId, { estimatedDuration: numValue });
+            updateSubtask(taskId, subtaskId, { estimated_duration: numValue });
         }
     };
 

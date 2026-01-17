@@ -1,17 +1,12 @@
 
 import useStore from '@/stores/flow-store';
-import { TaskData } from '@/stores/types';
+import { Task } from '@/stores/types';
 
-interface TaskCardPanelTitleProps {
-    nodeId: string
-    title: TaskData['title'];
-}
-
-export default function TaskCardPanelTitle({ nodeId, title }: TaskCardPanelTitleProps) {
-    const updateNodeData = useStore((state) => state.updateNodeData);
+export default function TaskCardOptionsTitle({ task }: { task: Task }) {
+    const updateTask = useStore((state) => state.updateTask);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        updateNodeData(nodeId, { title: e.target.value });
+        updateTask(task.id, { title: e.target.value });
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -24,7 +19,7 @@ export default function TaskCardPanelTitle({ nodeId, title }: TaskCardPanelTitle
     return (
         <textarea
 
-            value={title || ''}
+            value={task.title || ''}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             className="w-full bg-transparent resize-none border-none outline-none overflow-hidden"

@@ -1,17 +1,12 @@
 import useStore from '@/stores/flow-store';
-import { TaskData } from '@/stores/types';
+import { Task } from '@/stores/types';
 import { AlignLeft } from 'lucide-react';
 
-interface TaskCardOptionsDescriptionProps {
-    nodeId: string;
-    description?: TaskData['description'];
-}
+export default function TaskCardOptionsDescription({ task }: { task: Task }) {
 
-export default function TaskCardOptionsDescription({ nodeId, description }: TaskCardOptionsDescriptionProps) {
-
-    const updateNodeData = useStore((state) => state.updateNodeData);
+    const updateTask = useStore((state) => state.updateTask);
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        updateNodeData(nodeId, { description: e.target.value });
+        updateTask(task.id, { description: e.target.value });
     };
 
     return (
@@ -21,7 +16,7 @@ export default function TaskCardOptionsDescription({ nodeId, description }: Task
                 <span className="text-lg font-medium text-muted-foreground">Description:</span>
             </div>
             <textarea
-                value={description || ''}
+                value={task.description || ''}
                 onChange={handleInputChange}
                 className="w-full text-md placeholder:text-muted-foreground text-muted-foreground border border-gray-200 outline-none resize-none overflow-auto p-2 rounded-md"
                 placeholder="Enter description..."

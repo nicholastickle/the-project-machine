@@ -1,19 +1,14 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import useStore from '@/stores/flow-store';
-import { TaskData } from '@/stores/types';
+import { Task } from '@/stores/types';
 
-interface TaskCardTitleProps {
-    nodeId: string;
-    data: TaskData;
-}
-
-export default function TaskCardTitle({ nodeId, data }: TaskCardTitleProps) {
-    const [value, setValue] = useState(data.title || '');
+export default function TaskCardTitle({ task }: { task: Task }) {
+    const [value, setValue] = useState(task.title || '');
     const [fontSize, setFontSize] = useState(48); // Starting font size
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const updateNodeData = useStore((state) => state.updateNodeData);
+    const updateTask = useStore((state) => state.updateTask);
     const maxFontSize = 48;
     const minFontSize = 12;
 
@@ -46,7 +41,7 @@ export default function TaskCardTitle({ nodeId, data }: TaskCardTitleProps) {
     };
 
     const handleBlur = () => {
-        updateNodeData(nodeId, { title: value.trim() });
+        updateTask(task.id, { title: value.trim() });
     };
 
     const handleContainerClick = () => {
@@ -61,8 +56,8 @@ export default function TaskCardTitle({ nodeId, data }: TaskCardTitleProps) {
     };
 
     useEffect(() => {
-        setValue(data.title || '');
-    }, [data.title]);
+        setValue(task.title || '');
+    }, [task.title]);
 
     useEffect(() => {
         requestAnimationFrame(adjustFontSize);

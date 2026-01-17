@@ -1,6 +1,6 @@
-import { TaskData } from '@/stores/types';
+import { Task } from '@/stores/types';
 
-export default function TaskCardDurations({ estimatedHours }: { estimatedHours?: TaskData['estimatedHours'] }) {
+export default function TaskCardDurations({ estimatedHours }: { estimatedHours?: Task['estimated_hours'] }) {
   const hours = estimatedHours || 0;
   
   return (
