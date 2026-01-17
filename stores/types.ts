@@ -8,16 +8,51 @@ import {
 
 export type AppNode = Node;
 
+// Base type for task data
+export interface TaskData {
+  title: string;
+  status: string;
+  timeSpent?: number;
+  estimatedHours?: number;
+  description?: string;
+  comments?: {
+    id: string;
+    memberId: string;
+    memberName: string;
+    comment: string;
+    createdDate: string;
+    editedDate?: string;
+  }[];
+  subtasks?: {
+    id: string;
+    title: string;
+    isCompleted: boolean;
+    estimatedDuration: number;
+    timeSpent: number;
+  }[];
+  members?: {
+    memberId: string;
+    memberName: string;
+    addedDate: string;
+    removedDate?: string;
+  }[];
+}
+
+// Types for TaskCard component
+export interface TaskCardProps {
+  id: string;
+  data: TaskData;
+}
+
+// Type for saved tasks that get stored in the task book
 export type SavedTask = {
   id: string;
   title: string;
-  description?: string;
   status: string;
-  estimatedHours?: number;
   timeSpent: number;
-  savedAt: string;
-  lastUpdated: string;
-  lastUsed?: string;
+  estimatedHours?: number;
+  description?: string;
+  comments?: string;
   subtasks?: Array<{
     id: string;
     title: string;
@@ -25,58 +60,47 @@ export type SavedTask = {
     estimatedDuration: number;
     timeSpent: number;
   }>;
+  savedAt: string;
+  lastUpdated: string;
+  lastUsed?: string;
 };
 
 export type AppState = {
+
   nodes: AppNode[];
   edges: Edge[];
+
   history: { nodes: AppNode[]; edges: Edge[] }[];
   historyIndex: number;
   projectId: string | null;
   lastSavedAt: string | null;
   isDirty: boolean;
   isSaving: boolean;
+
   onNodesChange: OnNodesChange<AppNode>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
+
   setNodes: (nodes: AppNode[]) => void;
   setEdges: (edges: Edge[]) => void;
   setProjectId: (projectId: string | null) => void;
   markDirty: () => void;
   markClean: () => void;
-  addTaskNode: (nodeData?: {
-    title?: string;
+
+  addTaskNode: (nodeData?: Partial<TaskData> & {
     position?: { x: number; y: number };
-    status?: string;
-    estimatedHours?: number;
-    timeSpent?: number;
-    description?: string;
-    subtasks?: {
-      id: string;
-      title: string;
-      isCompleted: boolean;
-      estimatedDuration: number;
-      timeSpent: number;
-    }[]
   }) => string;
+
   deleteNode: (nodeId: string) => void;
+
   connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => void;
-  resetCanvas: () => void;
-  updateNodeData: (id: string, data: Partial<{
-    title: string;
-    status: string;
-    timeSpent: number;
-    estimatedHours: number;
-    description: string;
-    subtasks: {
-      id: string;
-      title: string;
-      isCompleted: boolean;
-      estimatedDuration: number;
-      timeSpent: number;
-    }[]
-  }>, saveToHistory?: boolean) => void;
+
+  
+
+  updateNodeData: (id: string, data: Partial<TaskData>, saveToHistory?: boolean) => void;
+
   addSubtask: (nodeId: string) => void;
+
   updateSubtask: (nodeId: string, subtaskId: string, data: Partial<{
     id: string;
     title: string;
@@ -84,8 +108,12 @@ export type AppState = {
     estimatedDuration: number;
     timeSpent: number;
   }>) => void;
+
   deleteSubtask: (nodeId: string, subtaskId: string) => void;
+
   saveHistory: () => void;
+  resetCanvas: () => void;
+
   undo: () => void;
   redo: () => void;
 };

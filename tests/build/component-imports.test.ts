@@ -58,8 +58,8 @@ describe('Component Imports', () => {
   })
 
   describe('Node Components', () => {
-    it('should import task-card-node', async () => {
-      await expect(import('@/components/task-card-node/task-card-node')).resolves.toBeDefined()
+    it('should import task-card-node-v2', async () => {
+      await expect(import('@/components/task-card-node-v2/task-card-node')).resolves.toBeDefined()
     })
 
     it('should import instruction-node', async () => {

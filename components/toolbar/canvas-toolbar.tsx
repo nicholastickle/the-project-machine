@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Undo2, Redo2, RotateCcw, ClipboardPlus } from "lucide-react"
+import { Undo2, Redo2, ClipboardPlus } from "lucide-react"
 import {
     Tooltip,
     TooltipContent,
@@ -16,7 +16,6 @@ export default function CanvasToolbar() {
     const undo = useStore((state) => state.undo)
     const redo = useStore((state) => state.redo)
     const addTaskNode = useStore((state) => state.addTaskNode)
-    const resetCanvas = useStore((state) => state.resetCanvas)
     const historyIndex = useStore((state) => state.historyIndex)
     const history = useStore((state) => state.history)
     const { open, isMobile } = useSidebar()
@@ -26,12 +25,6 @@ export default function CanvasToolbar() {
 
     const handleAddTask = () => {
         addTaskNode()
-    }
-
-    const handleReset = () => {
-        if (confirm('Are you sure you want to reset the canvas? This will clear all your work.')) {
-            resetCanvas()
-        }
     }
 
     return (

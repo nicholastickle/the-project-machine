@@ -68,9 +68,9 @@ export default function SubtaskTimer({ nodeId, subtaskId, timeSpent }: SubtaskTi
             </span>
             <button
                 onClick={handleToggleTimer}
-                className={`flex items-center justify-center w-6 h-6 hover:bg-task-card-accent rounded-full transition-colors ${isTracking
+                className={`flex items-center justify-center w-6 h-6 hover:bg-task-card-accent rounded-full transition-colors opacity-60 hover:opacity-100 ${isTracking
                         ? 'text-red-500 border border-red-500'
-                        : 'text-task-card-foreground border border-task-card-border'
+                        : 'text-muted'
                     }`}
                 title={isTracking ? "Pause timer" : "Start timer"}
             >

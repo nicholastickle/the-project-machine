@@ -17,7 +17,7 @@ import { type AppState } from '@/stores/types';
 
 import CanvasBackground from '@/components/canvas/background';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
-import TaskCard from '@/components/task-card-node/task-card-node';
+import TaskCard from '@/components/task-card-node-v2/task-card-node';
 import LogoNode from '@/components/logo/logo-node';
 import InstructionNode from '@/components/instruction-node/instruction-node';
 

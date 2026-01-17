@@ -48,6 +48,9 @@ next-env.d.ts
 
 # IDE and editors
 .vscode/
+
+# Mock data for development (replace with real API calls in production)
+lib/mock-data.ts
 .idea/
 *.swp
 *.swo

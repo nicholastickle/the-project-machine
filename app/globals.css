@@ -124,11 +124,12 @@
     --task-card-status-dialog-accent: 240 4.8% 94%;
     --task-card-status-dialog-border: 210 17% 6% / 0.15;
 
-    --task-card-not-started: 240 4.8% 94%;
-    --task-card-on-going: 45 99.2% 48.6%;
+    --task-card-backlog: 0 0% 10%;
+    --task-card-planned: 210 17% 82%;
+    --task-card-in-progress: 45 99.2% 48.6%;
     --task-card-stuck: 0 68.5% 49.8%;
     --task-card-complete: 135 59.2% 41.4%;
-    --task-card-abandoned: 256 100% 24.3%;
+    --task-card-cancelled: 220 9% 46%;
     --task-card-handles-background: 240 4.8% 85%;
 
     --edges: 240 10% 5%;
@@ -257,11 +258,12 @@
     --task-card-status-dialog-accent: 240 3.7% 16%;
     --task-card-status-dialog-border: 0 0% 15%;
 
-    --task-card-not-started: 240 3.7% 16%;
-    --task-card-on-going: 45 99.2% 48.6%;
+    --task-card-backlog: 0 0% 10%;
+    --task-card-planned: 210 17% 82%;
+    --task-card-in-progress: 45 99.2% 48.6%;
     --task-card-stuck: 0 68.5% 49.8%;
     --task-card-complete: 135 59.2% 41.4%;
-    --task-card-abandoned: 256 100% 24.3%;
+    --task-card-cancelled: 220 9% 46%;
 
     --task-card-handles-background: 240 4.8% 95.9% / 0.1;
 
