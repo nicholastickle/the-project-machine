@@ -18,14 +18,14 @@ export default function CanvasProjectPage({ params }: { params: Promise<{ id: st
     const [isChatDocked, setIsChatDocked] = useState(false)
     const [projectId, setProjectId] = useState<string | null>(null)
     
-    // Sprint 3: Backend sync methods
-    const loadProject = useStore((state) => state.loadProject)
-    const subscribeToRealtime = useStore((state) => state.subscribeToRealtime)
+    // TODO: Sprint 3 - Re-enable after wiring Nick's services to backend
+    // const loadProject = useStore((state) => state.loadProject)
+    // const subscribeToRealtime = useStore((state) => state.subscribeToRealtime)
 
     const setReactFlowInstance = (instance: ReactFlowInstance) => {
         reactFlowInstance.current = instance
-        // Center on logo without animation
-        instance.setCenter(600, 300, { zoom: 0.8 })
+        // Center on logo without animation  
+        setTimeout(() => instance.setCenter(600, 300, { zoom: 0.8 }), 0)
     }
 
     // Get project ID from params
@@ -33,24 +33,17 @@ export default function CanvasProjectPage({ params }: { params: Promise<{ id: st
         params.then(p => setProjectId(p.id))
     }, [params])
 
-    // Sprint 3: Load project and setup realtime
-    useEffect(() => {
-        if (!projectId) return
-
-        console.log('[Canvas Page] Loading project:', projectId)
-        
-        // Load project data
-        loadProject(projectId)
-        
-        // Subscribe to realtime updates
-        const unsubscribe = subscribeToRealtime()
-        
-        // Cleanup
-        return () => {
-          console.log('[Canvas Page] Cleaning up realtime subscription')
-          unsubscribe()
-        }
-    }, [projectId, loadProject, subscribeToRealtime])
+    // TODO: Sprint 3 - Re-enable after backend integration
+    // useEffect(() => {
+    //     if (!projectId) return
+    //     console.log('[Canvas Page] Loading project:', projectId)
+    //     loadProject(projectId)
+    //     const unsubscribe = subscribeToRealtime()
+    //     return () => {
+    //       console.log('[Canvas Page] Cleaning up realtime subscription')
+    //       unsubscribe()
+    //     }
+    // }, [projectId, loadProject, subscribeToRealtime])
 
     // Handle chat visibility changes
     const handleChatVisibilityChange = (isVisible: boolean, isDocked: boolean) => {

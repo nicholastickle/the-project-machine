@@ -2,16 +2,16 @@ import { describe, it, expect } from 'vitest'
 
 describe('Component Imports', () => {
   describe('Sidebar Components', () => {
-    it('should import canvas-sidebar', async () => {
-      await expect(import('@/components/sidebar/canvas-sidebar')).resolves.toBeDefined()
+    it('should import sidebar', async () => {
+      await expect(import('@/components/sidebar/sidebar')).resolves.toBeDefined()
     })
 
-    it('should import nav-projects', async () => {
-      await expect(import('@/components/sidebar/nav-projects')).resolves.toBeDefined()
+    it('should import sidebar-projects-list', async () => {
+      await expect(import('@/components/sidebar/sidebar-projects-list')).resolves.toBeDefined()
     })
 
-    it('should import new-project', async () => {
-      await expect(import('@/components/sidebar/new-project')).resolves.toBeDefined()
+    it('should import sidebar-projects-new', async () => {
+      await expect(import('@/components/sidebar/sidebar-projects-new')).resolves.toBeDefined()
     })
 
     it('should import options-project', async () => {
