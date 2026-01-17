@@ -1,28 +1,21 @@
 "use client"
 
-
 import { useShallow } from 'zustand/react/shallow';
-
-
 import {
     ReactFlow,
     SelectionMode,
     ConnectionMode,
-    ConnectionLineType,
-} from '@xyflow/react';
 
+} from '@xyflow/react';
 
 import useStore from '@/stores/flow-store';
 import { type AppState, type CanvasProps } from '@/stores/types';
-
 import CanvasBackground from '@/components/canvas/background';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
 import TaskCard from '@/components/task-card-node-v2/task-card-node';
 
-// Define nodeTypes outside component to prevent recreation
 const nodeTypes = { task: TaskCard };
 const panOnDrag = [1, 2];
-
 const selector = (state: AppState) => ({
     nodes: state.nodes,
     edges: state.edges,
@@ -50,17 +43,23 @@ export default function Canvas({ onInit }: CanvasProps) {
                 selectionOnDrag
                 panOnDrag={panOnDrag}
                 selectionMode={SelectionMode.Partial}
-                connectionLineType={ConnectionLineType.SmoothStep}
-                connectionLineStyle={{ stroke: 'hsl(var(--edges))', strokeWidth: 2 }}
-                fitViewOptions={{ padding: 0.2, duration: 600, maxZoom: 1 }}
+                connectionLineStyle={{
+                    stroke: 'hsl(var(--edges))',
+                    strokeWidth: 9,
+                    strokeDasharray: '5,5',
+                }}
+                fitViewOptions={{
+                    padding: 0.2,
+                    duration: 600,
+                    maxZoom: 1
+                }}
                 aria-label='Canvas Component'
                 proOptions={{ hideAttribution: true }}
-                connectionMode={ConnectionMode.Strict}
+                connectionMode={ConnectionMode.Loose}
                 connectionRadius={20}
                 minZoom={0.1}
                 maxZoom={2}
                 zoomOnDoubleClick={false}
-
             >
                 <CanvasBackground />
                 <NavControlBar />

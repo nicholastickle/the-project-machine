@@ -84,10 +84,6 @@ const config = {
     				ring: 'hsl(var(--sidebar-ring))',
     				'options-background': 'hsl(var(--sidebar-options-background))'
     			},
-    			selection: {
-    				DEFAULT: 'hsl(var(--selection))',
-    				border: 'hsl(var(--selection-border))'
-    			},
     			toolbar: {
     				DEFAULT: 'hsl(var(--toolbar))',
     				background: 'hsl(var(--toolbar-background))',
