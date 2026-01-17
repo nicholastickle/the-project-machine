@@ -34,7 +34,7 @@ export default function SidebarProjectsOptions({ projectName }: OptionsProjectPr
     }
 
     return (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
                 <SidebarMenuAction showOnHover>
                     <MoreHorizontal />

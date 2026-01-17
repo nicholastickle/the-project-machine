@@ -19,7 +19,7 @@ export default function SidebarThemeChanger({ children }: ThemeChangerProps) {
     const { isMobile } = useSidebar()
 
     return (
-        <DropdownMenu>
+        <DropdownMenu >
             <DropdownMenuTrigger asChild>
                 {children}
             </DropdownMenuTrigger>

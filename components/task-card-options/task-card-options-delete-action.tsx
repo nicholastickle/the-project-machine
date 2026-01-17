@@ -24,7 +24,7 @@ export default function TaskCardOptionsDeleteAction({ task }: { task: Task }) {
     };
 
     return (
-        <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <Popover open={isOpen} onOpenChange={setIsOpen} modal={false}>
             <PopoverTrigger asChild>
                 <button className="flex items-center space-x-2 p-2 rounded-md text-sm transition-all duration-200 hover:bg-gray-100 border">
                     <Trash2 className="w-4 h-4 text-muted-foreground" />
