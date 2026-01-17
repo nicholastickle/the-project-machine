@@ -5,6 +5,7 @@ import {
   type OnEdgesChange,
   type OnConnect,
 } from '@xyflow/react';
+import type { TaskFromBackend } from '@/lib/canvas-sync';
 
 export type AppNode = Node;
 
@@ -58,7 +59,7 @@ export type AppState = {
       estimatedDuration: number;
       timeSpent: number;
     }[]
-  }) => string;
+  }) => Promise<string>;
   deleteNode: (nodeId: string) => void;
   connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => void;
   resetCanvas: () => void;
@@ -88,4 +89,17 @@ export type AppState = {
   saveHistory: () => void;
   undo: () => void;
   redo: () => void;
+  
+  // Backend sync methods (Sprint 3)
+  loadProject: (projectId: string) => Promise<void>;
+  saveSnapshot: (type?: 'manual' | 'autosave') => Promise<boolean>;
+  updateTaskData: (nodeId: string, updates: Partial<{
+    title: string;
+    description: string;
+    status: string;
+    estimated_hours: number;
+    time_spent: number;
+  }>) => Promise<boolean>;
+  handleRealtimeUpdate: (task: TaskFromBackend) => void;
+  subscribeToRealtime: () => () => void;
 };

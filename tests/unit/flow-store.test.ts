@@ -26,10 +26,10 @@ describe('Flow Store', () => {
         expect(nodes.length).toBeGreaterThan(0)
     })
 
-    it('adds a task node', () => {
+    it('adds a task node', async () => {
         const { addTaskNode } = useStore.getState()
 
-        const id = addTaskNode({
+        const id = await addTaskNode({
             title: 'New Task',
             status: 'in-progress'
         })
@@ -42,9 +42,9 @@ describe('Flow Store', () => {
         expect(newNode?.data.status).toBe('in-progress')
     })
 
-    it('updates a node', () => {
+    it('updates a node', async () => {
         const { addTaskNode, updateNodeData } = useStore.getState()
-        const id = addTaskNode({ title: 'Task 1' })
+        const id = await addTaskNode({ title: 'Task 1' })
 
         updateNodeData(id, { status: 'completed' })
 
@@ -54,9 +54,9 @@ describe('Flow Store', () => {
         expect(node?.data.status).toBe('completed')
     })
 
-    it('deletes a node', () => {
+    it('deletes a node', async () => {
         const { addTaskNode, deleteNode } = useStore.getState()
-        const id = addTaskNode({ title: 'Delete Me' })
+        const id = await addTaskNode({ title: 'Delete Me' })
 
         deleteNode(id)
 

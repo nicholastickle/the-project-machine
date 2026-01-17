@@ -12,7 +12,7 @@ export default function EditableDescription({ nodeId, description = "" }: Editab
     const [editValue, setEditValue] = useState(description);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const updateNodeData = useStore((state) => state.updateNodeData);
+    const updateTaskData = useStore((state) => state.updateTaskData);
 
     useEffect(() => {
         if (isEditing && textareaRef.current) {
@@ -36,7 +36,7 @@ export default function EditableDescription({ nodeId, description = "" }: Editab
 
     const handleSave = () => {
         const trimmedValue = editValue.trim();
-        updateNodeData(nodeId, { description: trimmedValue });
+        updateTaskData(nodeId, { description: trimmedValue });
         setIsEditing(false);
     };
 

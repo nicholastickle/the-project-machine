@@ -12,7 +12,7 @@ export default function EditableTitle({ nodeId, title }: EditableTitleProps) {
     const [editValue, setEditValue] = useState(title);
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
-    const updateNodeData = useStore((state) => state.updateNodeData);
+    const updateTaskData = useStore((state) => state.updateTaskData);
 
     useEffect(() => {
         if (isEditing && inputRef.current) {
@@ -37,7 +37,7 @@ export default function EditableTitle({ nodeId, title }: EditableTitleProps) {
     const handleSave = () => {
         const trimmedValue = editValue.trim();
 
-        updateNodeData(nodeId, { title: trimmedValue });
+        updateTaskData(nodeId, { title: trimmedValue });
 
         setIsEditing(false);
     };

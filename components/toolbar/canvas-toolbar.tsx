@@ -24,8 +24,8 @@ export default function CanvasToolbar() {
     const canUndo = historyIndex > 0 && history.length > 1
     const canRedo = historyIndex < history.length - 1
 
-    const handleAddTask = () => {
-        addTaskNode()
+    const handleAddTask = async () => {
+        await addTaskNode()
     }
 
     const handleReset = () => {

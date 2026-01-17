@@ -21,6 +21,11 @@ export default function CanvasPage() {
     const redo = useStore((state) => state.redo)
     const addTaskNode = useStore((state) => state.addTaskNode)
     const nodes = useStore((state) => state.nodes)
+    const projectId = useStore((state) => state.projectId)
+    
+    // Sprint 3: Backend sync methods
+    const loadProject = useStore((state) => state.loadProject)
+    const subscribeToRealtime = useStore((state) => state.subscribeToRealtime)
 
     const setReactFlowInstance = (instance: ReactFlowInstance) => {
         reactFlowInstance.current = instance
@@ -28,14 +33,45 @@ export default function CanvasPage() {
         instance.setCenter(600, 300, { zoom: 0.8 })
     }
 
-    // Initialize history on mount
+    // Sprint 3: Auto-load first project with backend sync
     useEffect(() => {
-        const saveHistory = useStore.getState().saveHistory
-        const history = useStore.getState().history
-        if (history.length === 0) {
-            saveHistory()
+        const loadFirstProject = async () => {
+            try {
+                // Fetch user's first project
+                const response = await fetch('/api/projects')
+                if (!response.ok) {
+                    console.error('[Canvas Page] Failed to fetch projects')
+                    return
+                }
+                
+                const { projects } = await response.json()
+                if (projects && projects.length > 0) {
+                    const firstProject = projects[0]
+                    console.log('[Canvas Page] Loading first project:', firstProject.id)
+                    await loadProject(firstProject.id)
+                } else {
+                    console.log('[Canvas Page] No projects found - working in local mode')
+                }
+            } catch (error) {
+                console.error('[Canvas Page] Error loading project:', error)
+            }
         }
-    }, [])
+        
+        loadFirstProject()
+    }, [loadProject])
+
+    // Sprint 3: Subscribe to realtime updates when project is loaded
+    useEffect(() => {
+        if (!projectId) return
+        
+        console.log('[Canvas Page] Setting up realtime subscription for project:', projectId)
+        const unsubscribe = subscribeToRealtime()
+        
+        return () => {
+            console.log('[Canvas Page] Cleaning up realtime subscription')
+            unsubscribe()
+        }
+    }, [projectId, subscribeToRealtime])
 
     // Keyboard shortcuts
     useEffect(() => {

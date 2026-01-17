@@ -23,7 +23,7 @@ export default function SelectStatus({ nodeId, status }: SelectStatusProps) {
     const [showSaveDialog, setShowSaveDialog] = useState(false);
     const [pendingStatus, setPendingStatus] = useState<string | null>(null);
 
-    const updateNodeData = useStore((state) => state.updateNodeData);
+    const updateTaskData = useStore((state) => state.updateTaskData);
     const addSavedTask = useTaskbookStore((state) => state.addSavedTask);
     const nodes = useStore((state) => state.nodes);
 
@@ -33,7 +33,7 @@ export default function SelectStatus({ nodeId, status }: SelectStatusProps) {
             setPendingStatus(newStatus);
             setShowSaveDialog(true);
         } else {
-            updateNodeData(nodeId, { status: newStatus });
+            updateTaskData(nodeId, { status: newStatus });
         }
     };
 
@@ -59,7 +59,7 @@ export default function SelectStatus({ nodeId, status }: SelectStatusProps) {
 
         // Update the node status
         if (pendingStatus) {
-            updateNodeData(nodeId, { status: pendingStatus });
+            updateTaskData(nodeId, { status: pendingStatus });
         }
         setPendingStatus(null);
     };
@@ -68,7 +68,7 @@ export default function SelectStatus({ nodeId, status }: SelectStatusProps) {
         if (!open) {
             // If dialog is closed without confirmation, still update status
             if (pendingStatus) {
-                updateNodeData(nodeId, { status: pendingStatus });
+                updateTaskData(nodeId, { status: pendingStatus });
             }
             setPendingStatus(null);
         }

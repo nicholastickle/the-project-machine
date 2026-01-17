@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import {
@@ -30,6 +30,9 @@ const selector = (state: AppState) => ({
     onNodesChange: state.onNodesChange,
     onEdgesChange: state.onEdgesChange,
     onConnect: state.onConnect,
+    saveSnapshot: state.saveSnapshot,
+    markDirty: state.markDirty,
+    projectId: state.projectId,
 });
 
 interface CanvasProps {
@@ -37,9 +40,29 @@ interface CanvasProps {
 }
 
 export default function Canvas({ onInit }: CanvasProps) {
-    const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(
+    const { nodes, edges, onNodesChange, onEdgesChange, onConnect, saveSnapshot, markDirty, projectId } = useStore(
         useShallow(selector),
     );
+
+    // Sprint 3: Save snapshot after connecting edges
+    const handleConnect = useCallback((connection: any) => {
+        console.log('[Canvas] Edge connected - saving snapshot')
+        onConnect(connection)
+        // Save snapshot to persist connections
+        if (projectId) {
+            setTimeout(() => saveSnapshot('manual'), 100)
+        }
+    }, [onConnect, saveSnapshot, projectId])
+
+    // Sprint 3: Save snapshot on drag stop (not during drag)
+    const handleNodeDragStop = useCallback(() => {
+        console.log('[Canvas] Node drag stopped - saving snapshot')
+        markDirty()
+        // Debounced save (300ms)
+        setTimeout(() => {
+            saveSnapshot('autosave')
+        }, 300)
+    }, [saveSnapshot, markDirty])
 
     return (
         <div className='w-full h-screen z-0'>
@@ -49,7 +72,8 @@ export default function Canvas({ onInit }: CanvasProps) {
                 nodeTypes={nodeTypes}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
+                onConnect={handleConnect}
+                onNodeDragStop={handleNodeDragStop}
                 onInit={onInit}
                 panOnScroll
                 selectionOnDrag

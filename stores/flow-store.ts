@@ -5,6 +5,22 @@ import { initialNodes } from '@/components/canvas/initial-nodes';
 import { initialEdges } from '@/components/canvas/initial-edges';
 import { type AppState } from './types';
 import { v4 as uuidv4 } from 'uuid';
+import { 
+  loadProjectCanvas, 
+  saveCanvasSnapshot, 
+  updateTaskInBackend,
+  subscribeToProjectUpdates,
+  type TaskFromBackend
+} from '@/lib/canvas-sync';
+
+// Type for task data updates (camelCase to match API)
+type TaskDataUpdate = Partial<{
+    title: string;
+    description: string;
+    status: string;
+    estimatedHours: number;
+    timeSpent: number;
+}>;
 
 const MAX_HISTORY = 50;
 
@@ -104,6 +120,14 @@ const useStore = create<AppState>()(
                     set({
                         edges: addEdge(newEdge, get().edges),
                     });
+
+                    get().saveHistory();
+                    
+                    // Save snapshot to persist edge to backend
+                    const { projectId } = get()
+                    if (projectId) {
+                        setTimeout(() => get().saveSnapshot('manual'), 100)
+                    }
                 },
 
                 setNodes: (nodes) => {
@@ -114,7 +138,7 @@ const useStore = create<AppState>()(
                     set({ edges, isDirty: true });
                 },
 
-                addTaskNode: (nodeData?: {
+                addTaskNode: async (nodeData?: {
                     title?: string;
                     position?: { x: number; y: number }
                     status?: string;
@@ -123,6 +147,7 @@ const useStore = create<AppState>()(
                     description?: string;
                     subtasks?: { id: string; title: string; isCompleted: boolean; estimatedDuration: number; timeSpent: number; }[];
                 }) => {
+                    const { projectId } = get()
                     const nodes = get().nodes;
                     let position = nodeData?.position || { x: 200, y: 200 };
 
@@ -141,12 +166,59 @@ const useStore = create<AppState>()(
                         };
                     }
 
+                    // If we have a projectId, create task in backend first
+                    let taskId: string | null = null
+                    if (projectId) {
+                        try {
+                            console.log('[Store] Creating task in backend for project:', projectId)
+                            
+                            // Build request body - only include non-null values
+                            const taskData: {
+                                title: string
+                                status: string
+                                description?: string
+                                estimatedHours?: number
+                            } = {
+                                title: nodeData?.title || 'New Task',
+                                status: nodeData?.status || 'Backlog',
+                            }
+                            
+                            if (nodeData?.description) {
+                                taskData.description = nodeData.description
+                            }
+                            
+                            if (nodeData?.estimatedHours != null) {
+                                taskData.estimatedHours = nodeData.estimatedHours
+                            }
+                            
+                            const response = await fetch(`/api/projects/${projectId}/tasks`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(taskData)
+                            })
+                            
+                            if (response.ok) {
+                                const data = await response.json()
+                                taskId = data.task.id
+                                console.log('[Store] ✅ Task created in backend:', taskId)
+                            } else {
+                                const errorText = await response.text()
+                                console.error('[Store] ❌ Failed to create task in backend:', response.status, errorText)
+                            }
+                        } catch (error) {
+                            console.error('[Store] Error creating task:', error)
+                        }
+                    } else {
+                        console.warn('[Store] ⚠️ No projectId - task will only exist locally')
+                    }
+
                     const newNode: Node = {
                         id: `task-${uuidv4()}`,
                         type: 'taskCardNode',
                         position: position,
                         data: {
-                            title: nodeData?.title ?? "",
+                            taskId: taskId, // Link to backend task
+                            title: nodeData?.title ?? "New Task",
                             status: nodeData?.status ?? 'Not started',
                             estimatedHours: nodeData?.estimatedHours,
                             timeSpent: nodeData?.timeSpent ?? 0,
@@ -161,6 +233,13 @@ const useStore = create<AppState>()(
 
                     // Save history AFTER the change
                     get().saveHistory();
+                    
+                    // If we have projectId, also save snapshot (positions)
+                    if (projectId) {
+                        setTimeout(() => {
+                            get().saveSnapshot('manual')
+                        }, 100)
+                    }
 
                     return newNode.id;
                 },
@@ -177,6 +256,12 @@ const useStore = create<AppState>()(
                     // Only save history for user-initiated changes (not time tracking ticks)
                     if (saveToHistory) {
                         get().saveHistory();
+                        
+                        // Also persist to backend if we have projectId
+                        const { projectId } = get()
+                        if (projectId) {
+                            get().updateTaskData(nodeId, newData)
+                        }
                     }
                 },
 
@@ -305,6 +390,145 @@ const useStore = create<AppState>()(
                     });
 
                     get().saveHistory();
+                },
+
+                // ========================================
+                // BACKEND SYNC METHODS (Sprint 3)
+                // ========================================
+
+                /**
+                 * Load project from backend (snapshots + tasks)
+                 */
+                loadProject: async (projectId: string) => {
+                    console.log(`[Store] Loading project: ${projectId}`)
+                    set({ projectId, isSaving: true })
+                    
+                    try {
+                        const { nodes, edges } = await loadProjectCanvas(projectId)
+                        set({ 
+                            nodes, 
+                            edges, 
+                            isDirty: false,
+                            isSaving: false 
+                        })
+                        
+                        // Initialize history with loaded state
+                        get().saveHistory()
+                        
+                        console.log(`[Store] ✅ Project loaded: ${nodes.length} nodes`)
+                    } catch (error) {
+                        console.error('[Store] Failed to load project:', error)
+                        set({ isSaving: false })
+                    }
+                },
+
+                /**
+                 * Save canvas snapshot (debounced, positions only)
+                 */
+                saveSnapshot: async (type: 'manual' | 'autosave' = 'autosave') => {
+                    const { projectId, nodes, edges, isSaving } = get()
+                    
+                    if (!projectId) {
+                        console.warn('[Store] Cannot save: No projectId')
+                        return false
+                    }
+                    
+                    if (isSaving) {
+                        console.warn('[Store] Save already in progress')
+                        return false
+                    }
+                    
+                    set({ isSaving: true })
+                    const success = await saveCanvasSnapshot(projectId, nodes, edges, type)
+                    
+                    if (success) {
+                        set({ 
+                            isDirty: false, 
+                            lastSavedAt: new Date().toISOString(),
+                            isSaving: false 
+                        })
+                    } else {
+                        set({ isSaving: false })
+                    }
+                    
+                    return success
+                },
+
+                /**
+                 * Update task business data (title, status, etc.)
+                 */
+                updateTaskData: async (nodeId: string, updates: TaskDataUpdate) => {
+                    const { projectId, nodes } = get()
+                    
+                    if (!projectId) {
+                        console.warn('[Store] Cannot update: No projectId')
+                        return false
+                    }
+                    
+                    const node = nodes.find(n => n.id === nodeId)
+                    const taskId = node?.data?.taskId as string | undefined
+                    
+                    if (!taskId) {
+                        console.warn('[Store] Cannot update: No taskId found for node:', nodeId)
+                        return false
+                    }
+                    
+                    console.log('[Store] Updating task:', taskId, 'with:', updates)
+                    
+                    // Optimistic update to local state
+                    get().updateNodeData(nodeId, updates, false)
+                    
+                    // Persist to backend (updates already in camelCase)
+                    const success = await updateTaskInBackend(projectId, taskId, updates)
+                    
+                    if (!success) {
+                        console.error('[Store] Task update failed, state may be inconsistent')
+                    }
+                    
+                    return success
+                },
+
+                /**
+                 * Handle realtime updates from other users
+                 */
+                handleRealtimeUpdate: (task: TaskFromBackend) => {
+                    const { nodes } = get()
+                    
+                    // Find node with this taskId
+                    const nodeIndex = nodes.findIndex(n => n.data?.taskId === task.id)
+                    
+                    if (nodeIndex >= 0) {
+                        const updatedNodes = [...nodes]
+                        updatedNodes[nodeIndex] = {
+                            ...updatedNodes[nodeIndex],
+                            data: {
+                                ...updatedNodes[nodeIndex].data,
+                                title: task.title,
+                                description: task.description || '',
+                                status: task.status,
+                                estimatedHours: task.estimated_hours,
+                                timeSpent: task.time_spent
+                            }
+                        }
+                        
+                        set({ nodes: updatedNodes })
+                        console.log(`[Store] 🔄 Realtime update applied: ${task.title}`)
+                    }
+                },
+
+                /**
+                 * Subscribe to realtime updates for current project
+                 */
+                subscribeToRealtime: () => {
+                    const { projectId, handleRealtimeUpdate } = get()
+                    
+                    if (!projectId) {
+                        console.warn('[Store] Cannot subscribe: No projectId')
+                        return () => {}
+                    }
+                    
+                    console.log(`[Store] 📡 Subscribing to realtime for project: ${projectId}`)
+                    return subscribeToProjectUpdates(projectId, handleRealtimeUpdate)
                 },
 
             }),
