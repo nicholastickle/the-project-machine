@@ -2,6 +2,11 @@ import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import type { TaskbookEntry } from './types';
 
+// ⚠️ DEPRECATED: This store will be replaced with a derived view over PlanSnapshots
+// In v1.0, PlanSnapshots are the ONLY authoritative memory
+// Taskbook should show all tasks across all snapshots (history view)
+// DO NOT extend this store - it will be refactored to read from Supabase plan_snapshots table
+
 // Extract the subtask type for better type safety
 type SubtaskType = NonNullable<TaskbookEntry['subtasks']>[number];
 

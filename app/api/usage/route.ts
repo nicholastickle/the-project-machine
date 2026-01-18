@@ -1,91 +1,82 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { createClient } from '@/lib/supabase/server';
+import { db } from '@/lib/db';
+import { usageLogs } from '@/lib/db/schema';
+import { eq, desc } from 'drizzle-orm';
 
-const USAGE_FILE = path.join(process.cwd(), 'usage-log.json');
-
-interface UsageLog {
-  sessions: {
-    timestamp: string;
-    duration?: number;
-    model: string;
-  }[];
-  totalSessions: number;
-  lastReset: string;
-}
-
-function getUsageLog(): UsageLog {
-  try {
-    if (fs.existsSync(USAGE_FILE)) {
-      const data = fs.readFileSync(USAGE_FILE, 'utf-8');
-      return JSON.parse(data);
-    }
-  } catch (error) {
-    console.error('Failed to read usage log:', error);
-  }
-  
-  return {
-    sessions: [],
-    totalSessions: 0,
-    lastReset: new Date().toISOString(),
-  };
-}
-
-function saveUsageLog(log: UsageLog) {
-  try {
-    fs.writeFileSync(USAGE_FILE, JSON.stringify(log, null, 2));
-  } catch (error) {
-    console.error('Failed to save usage log:', error);
-  }
-}
-
+// POST /api/usage - Log usage event
 export async function POST(request: Request) {
   try {
-    const { action, model, duration } = await request.json();
-    const log = getUsageLog();
+    const supabase = await createClient();
+    
+    // Get current user (optional for pre-login tracking)
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (action === 'start') {
-      log.sessions.push({
-        timestamp: new Date().toISOString(),
-        model: model || 'gpt-4o-mini-realtime-preview-2024-12-17',
-      });
-      log.totalSessions += 1;
-    } else if (action === 'end' && duration) {
-      // Update the last session with duration
-      const lastSession = log.sessions[log.sessions.length - 1];
-      if (lastSession) {
-        lastSession.duration = duration;
-      }
+    const body = await request.json();
+    const { event_type, project_id, event_data } = body;
+
+    if (!event_type || typeof event_type !== 'string') {
+      return NextResponse.json({ error: 'event_type is required' }, { status: 400 });
     }
 
-    saveUsageLog(log);
-    return NextResponse.json({ success: true, log });
+    // Require authenticated user
+    if (!user?.id) {
+      return NextResponse.json({ 
+        error: 'Authentication required' 
+      }, { status: 401 });
+    }
+
+    await db.insert(usageLogs).values({
+      eventType: event_type,
+      projectId: project_id || undefined,
+      userId: user.id,
+      eventData: event_data || null
+    });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Usage tracking error:', error);
-    return NextResponse.json(
-      { error: 'Failed to log usage' },
-      { status: 500 }
-    );
+    console.error('Usage logging error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
+// GET /api/usage - Get usage stats (admin only - requires service role)
 export async function GET() {
-  const log = getUsageLog();
-  
-  // Calculate stats
-  const today = new Date().toISOString().split('T')[0];
-  const todaySessions = log.sessions.filter(s => 
-    s.timestamp.startsWith(today)
-  ).length;
-  
-  const totalDuration = log.sessions.reduce((sum, s) => 
-    sum + (s.duration || 0), 0
-  );
-  
-  return NextResponse.json({
-    totalSessions: log.totalSessions,
-    todaySessions,
-    totalDurationSeconds: Math.round(totalDuration / 1000),
-    recentSessions: log.sessions.slice(-10).reverse(),
-  });
+  try {
+    // TODO: Add admin authentication check
+    // For now, return basic stats
+
+    const supabase = await createClient();
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user's usage stats
+    const logs = await db
+      .select({
+        event_type: usageLogs.eventType,
+        created_at: usageLogs.createdAt
+      })
+      .from(usageLogs)
+      .where(eq(usageLogs.userId, user.id))
+      .orderBy(desc(usageLogs.createdAt))
+      .limit(100);
+
+    // Aggregate by event type
+    const summary: Record<string, number> = {};
+    logs?.forEach(log => {
+      summary[log.event_type] = (summary[log.event_type] || 0) + 1;
+    });
+
+    return NextResponse.json({
+      total_events: logs?.length || 0,
+      summary,
+      recent_events: logs?.slice(0, 10)
+    });
+  } catch (error) {
+    console.error('Usage fetch error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
 }
