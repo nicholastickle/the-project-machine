@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Undo2, Redo2, ClipboardPlus, MousePointer, Hand, HelpCircle } from "lucide-react"
 import {
@@ -12,9 +12,15 @@ import {
 import useStore from "@/stores/flow-store"
 import { useSidebar } from "@/components/ui/sidebar"
 import SidebarHelpOptions from "@/components/sidebar/sidebar-help-options"
+import TaskBookIcon from "@/components/task-book/task-book-icon"
+import TaskBookDialog from "@/components/task-book/task-book-dialog"
+import useTaskbookStore from "@/stores/taskbook-store"
 
 export default function CanvasToolbar() {
 
+    const [isTaskBookOpen, setIsTaskBookOpen] = useState(false)
+    const hasNewTask = useTaskbookStore((state) => state.hasNewTask)
+    const clearNewTaskIndicator = useTaskbookStore((state) => state.clearNewTaskIndicator)
     const undo = useStore((state) => state.undo)
     const redo = useStore((state) => state.redo)
     const addTaskNode = useStore((state) => state.addTaskNode)
@@ -29,6 +35,13 @@ export default function CanvasToolbar() {
 
     const handleAddTask = () => {
         addTaskNode()
+    }
+
+    const handleTaskBookClick = () => {
+        setIsTaskBookOpen(true)
+        if (hasNewTask) {
+            clearNewTaskIndicator()
+        }
     }
 
     const handleSelectMode = () => {
@@ -113,11 +126,33 @@ export default function CanvasToolbar() {
                         </TooltipContent>
                     </Tooltip>
 
+                    <TaskBookDialog isOpen={isTaskBookOpen} onOpenChange={setIsTaskBookOpen}>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    size="lg"
+                                    variant="ghost"
+                                    onClick={handleTaskBookClick}
+                                    className="h-10 w-10 p-0 hover:bg-toolbar-accent hover:text-toolbar-foreground"
+                                >
+                                    <TaskBookIcon
+                                        size={24}
+                                        isOpen={isTaskBookOpen}
+                                        hasNewTask={hasNewTask}
+                                    />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="right">
+                                <p>Task Library</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TaskBookDialog>
+
                     <div className="h-px w-10 bg-toolbar-border" />
 
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <SidebarHelpOptions>
+                    <SidebarHelpOptions>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
                                 <Button
                                     size="lg"
                                     variant="ghost"
@@ -125,13 +160,12 @@ export default function CanvasToolbar() {
                                 >
                                     <HelpCircle className="h-10 w-10" />
                                 </Button>
-                            </SidebarHelpOptions>
-                        </TooltipTrigger>
-
-                        <TooltipContent side="right">
-                            <p>Help</p>
-                        </TooltipContent>
-                    </Tooltip>
+                            </TooltipTrigger>
+                            <TooltipContent side="right">
+                                <p>Help</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </SidebarHelpOptions>
 
 
 
