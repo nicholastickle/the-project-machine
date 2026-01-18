@@ -6,6 +6,8 @@ import { initialEdges } from '@/components/canvas/initial-edges';
 import { initialTasks } from '@/components/canvas/initial-tasks';
 import { type AppState, type Node, type Edge, type Task, type Subtask } from './types';
 import { v4 as uuidv4 } from 'uuid';
+import useProjectStore from './project-store';
+
 
 const MAX_HISTORY = 50;
 
@@ -38,20 +40,49 @@ const useStore = create<AppState>()(
                 setCursorMode: (mode) => {
                     set({ cursorMode: mode });
                 },
-
-                saveHistory: () => {
-                    const { nodes, edges, tasks, history, historyIndex } = get();
-                    const newHistory = history.slice(0, historyIndex + 1);
-                    newHistory.push({ nodes: [...nodes], edges: [...edges], tasks: [...tasks] });
-                    if (newHistory.length > MAX_HISTORY) {
-                        newHistory.shift();
-                    }
+// Project sync methods
+            syncWithActiveProject: () => {
+                const activeProject = useProjectStore.getState().getActiveProject();
+                if (activeProject) {
                     set({
-                        history: newHistory,
-                        historyIndex: newHistory.length - 1,
-                        isDirty: true, // Mark as dirty when history changes
+                        nodes: activeProject.nodes,
+                        edges: activeProject.edges,
+                        tasks: activeProject.tasks,
+                        history: activeProject.history,
+                        historyIndex: activeProject.historyIndex,
+                        cursorMode: activeProject.cursorMode
                     });
-                },
+                }
+            },
+
+            saveToActiveProject: () => {
+                const { nodes, edges, tasks, history, historyIndex, cursorMode } = get();
+                const activeProject = useProjectStore.getState().getActiveProject();
+                if (activeProject) {
+                    useProjectStore.getState().updateProjectData(activeProject.project.id, {
+                        nodes,
+                        edges,
+                        tasks,
+                        history,
+                        historyIndex,
+                        cursorMode
+                    });
+                }
+            },
+            saveHistory: () => {
+                const { nodes, edges, tasks, history, historyIndex } = get();
+                const newHistory = history.slice(0, historyIndex + 1);
+                newHistory.push({ nodes: [...nodes], edges: [...edges], tasks: [...tasks] });
+                if (newHistory.length > MAX_HISTORY) {
+                    newHistory.shift();
+                }
+                set({
+                    history: newHistory,
+                    historyIndex: newHistory.length - 1
+                });
+                 // Auto-save to active project
+                get().saveToActiveProject();
+            },
 
                 undo: () => {
                     const { history, historyIndex } = get();
@@ -390,12 +421,8 @@ const useStore = create<AppState>()(
                     get().saveHistory();
                 },
 
-        }),
-        {
-            name: 'flow-store'
-        }
+        })
     )
-
 );
 
 export { useStore };

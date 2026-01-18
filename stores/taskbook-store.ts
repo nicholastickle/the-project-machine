@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
 import type { TaskbookEntry } from './types';
 
@@ -26,7 +27,8 @@ interface TaskbookState {
 const seedTasks: TaskbookEntry[] = [];
 
 const useTaskbookStore = create<TaskbookState>()(
-    (set, get) => ({
+    persist(
+        (set, get) => ({
             savedTasks: seedTasks,
             hasNewTask: false,
 
@@ -133,7 +135,11 @@ const useTaskbookStore = create<TaskbookState>()(
             clearNewTaskIndicator: () => {
                 set({ hasNewTask: false });
             },
-    })
+        }),
+        {
+            name: 'taskbook-store'
+        }
+    )
 );
 
 export default useTaskbookStore;
