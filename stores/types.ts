@@ -186,7 +186,6 @@ export type AppState = {
 
   // History and utility methods
   saveHistory: () => void;
-  resetCanvas: () => void;
   undo: () => void;
   redo: () => void;
 
