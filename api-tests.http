@@ -1,0 +1,406 @@
+# Project Machine API Testing - Updated
+# Install the "REST Client" extension in VS Code to use this file
+
+###############################################
+# QUICK SETUP (Read REST_CLIENT_GUIDE.md for details)
+###############################################
+
+### 1. Open browser: http://localhost:3000/canvas
+### 2. Open DevTools (F12) → Application → Cookies → http://localhost:3000  
+### 3. Find cookie: sb-xjgjirnqitcpgwawgnlk-auth-token
+### 4. Copy the VALUE (the long string)
+### 5. Replace YOUR_COOKIE_VALUE_HERE below with that value
+
+@authCookie = sb-xjgjirnqitcpgwawgnlk-auth-token=base64-eyJhY2Nlc3NfdG9rZW4iOiJleUpoYkdjaU9pSkZVekkxTmlJc0ltdHBaQ0k2SWpjMk1EUTBORGszTFRrME9HSXROR1EyWmkxaU5USXpMV015WVdNd05UZzBNREU0T1NJc0luUjVjQ0k2SWtwWFZDSjkuZXlKcGMzTWlPaUpvZEhSd2N6b3ZMM2hxWjJwcGNtNXhhWFJqY0dkM1lYZG5ibXhyTG5OMWNHRmlZWE5sTG1OdkwyRjFkR2d2ZGpFaUxDSnpkV0lpT2lJMk5EQTNZakl5WWkwM1lqRmhMVFEwT0dFdE9UWXdZUzFtTm1ReE5ETTNOamd5TVRFaUxDSmhkV1FpT2lKaGRYUm9aVzUwYVdOaGRHVmtJaXdpWlhod0lqb3hOelkzT0RFNU1EQXlMQ0pwWVhRaU9qRTNOamM0TVRVME1ESXNJbVZ0WVdsc0lqb2lZbkpwWjJoMGIyNTBZVzVrWVdKaGJuUjFRR2R0WVdsc0xtTnZiU0lzSW5Cb2IyNWxJam9pSWl3aVlYQndYMjFsZEdGa1lYUmhJanA3SW5CeWIzWnBaR1Z5SWpvaVpXMWhhV3dpTENKd2NtOTJhV1JsY25NaU9sc2laVzFoYVd3aVhYMHNJblZ6WlhKZmJXVjBZV1JoZEdFaU9uc2laVzFoYVd3aU9pSmljbWxuYUhSdmJuUmhibVJoWW1GdWRIVkFaMjFoYVd3dVkyOXRJaXdpWlcxaGFXeGZkbVZ5YVdacFpXUWlPblJ5ZFdVc0luQm9iMjVsWDNabGNtbG1hV1ZrSWpwbVlXeHpaU3dpYzNWaUlqb2lOalF3TjJJeU1tSXROMkl4WVMwME5EaGhMVGsyTUdFdFpqWmtNVFF6TnpZNE1qRXhJbjBzSW5KdmJHVWlPaUpoZFhSb1pXNTBhV05oZEdWa0lpd2lZV0ZzSWpvaVlXRnNNU0lzSW1GdGNpSTZXM3NpYldWMGFHOWtJam9pY0dGemMzZHZjbVFpTENKMGFXMWxjM1JoYlhBaU9qRTNOamMwTkRBeU1EUjlYU3dpYzJWemMybHZibDlwWkNJNklqVTBOamN4T0RVNUxXWTVNRGN0TkdJeFl5MWhNbVl5TFRNeFlqZGhOREEwWVdNMk5pSXNJbWx6WDJGdWIyNTViVzkxY3lJNlptRnNjMlY5LjNEZjNwY0VuQWZKc25TZHZzRk40azJJcFBzdHdvTC12Q3VVYm1rMnpEeWJvVTQyZmppMThEOUdrYTRuTUYzWmxmbFI4RmlaVW9YR0hMZ0U2ME5pc0dBIiwidG9rZW5fdHlwZSI6ImJlYXJlciIsImV4cGlyZXNfaW4iOjM2MDAsImV4cGlyZXNfYXQiOjE3Njc4MTkwMDIsInJlZnJlc2hfdG9rZW4iOiI0dGZtb2dyNDdqdWMiLCJ1c2VyIjp7ImlkIjoiNjQwN2IyMmItN2IxYS00NDhhLTk2MGEtZjZkMTQzNzY4MjExIiwiYXVkIjoiYXV0aGVudGljYXRlZCIsInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiZW1haWwiOiJicmlnaHRvbnRhbmRhYmFudHVAZ21haWwuY29tIiwiZW1haWxfY29uZmlybWVkX2F0IjoiMjAyNS0xMi0yNFQxMTo0NTowMC4wODQ4MzlaIiwicGhvbmUiOiIiLCJjb25maXJtZWRfYXQiOiIyMDI1LTEyLTI0VDExOjQ1OjAwLjA4NDgzOVoiLCJsYXN0X3NpZ25faW5fYXQiOiIyMDI2LTAxLTAzVDExOjM2OjQ0LjQ2NTY2OFoiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6ImJyaWdodG9udGFuZGFiYW50dUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiI2NDA3YjIyYi03YjFhLTQ0OGEtOTYwYS1mNmQxNDM3NjgyMTEifSwiaWRlbnRpdGllcyI6W3siaWRlbnRpdHlfaWQiOiJjNjI5NzYyNS0zZDkyLTQzYWItYTc1ZS1mYTFhYWQ3OWRlNDQiLCJpZCI6IjY0MDdiMjJiLTdiMWEtNDQ4YS05NjBhLWY2ZDE0Mzc2ODIxMSIsInVzZXJfaWQiOiI2NDA3YjIyYi03YjFhLTQ0OGEtOTYwYS1mNmQxNDM3NjgyMTEiLCJpZGVudGl0eV9kYXRhIjp7ImVtYWlsIjoiYnJpZ2h0b250YW5kYWJhbnR1QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiI2NDA3YjIyYi03YjFhLTQ0OGEtOTYwYS1mNmQxNDM3NjgyMTEifSwicHJvdmlkZXIiOiJlbWFpbCIsImxhc3Rfc2lnbl9pbl9hdCI6IjIwMjUtMTItMjRUMTE6NDU6MDAuMDc3NTU0WiIsImNyZWF0ZWRfYXQiOiIyMDI1LTEyLTI0VDExOjQ1OjAwLjA3ODE3WiIsInVwZGF0ZWRfYXQiOiIyMDI1LTEyLTI0VDExOjQ1OjAwLjA3ODE3WiIsImVtYWlsIjoiYnJpZ2h0b250YW5kYWJhbnR1QGdtYWlsLmNvbSJ9XSwiY3JlYXRlZF9hdCI6IjIwMjUtMTItMjRUMTE6NDU6MDAuMDM2ODgyWiIsInVwZGF0ZWRfYXQiOiIyMDI2LTAxLTA3VDE5OjUwOjAyLjkyMTQwMVoiLCJpc19hbm9ueW1vdXMiOmZhbHNlfX0
+
+###############################################
+# VERIFY YOUR SETUP
+###############################################
+
+### First, test that your cookie works by running this:
+GET http://localhost:3000/api/test-auth
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+###############################################
+# VARIABLES
+###############################################
+
+@baseUrl = http://localhost:3000
+@projectId = 760bb1b9-4b8a-4d3a-9e78-9db0fb8c285e
+@snapshotId = YOUR_SNAPSHOT_ID_HERE
+@reflectionId = YOUR_REFLECTION_ID_HERE
+@fileId = YOUR_FILE_ID_HERE
+@noteId = YOUR_NOTE_ID_HERE
+@userId = YOUR_USER_ID_HERE
+@taskId = YOUR_TASK_ID_HERE
+@subtaskId = YOUR_SUBTASK_ID_HERE
+@commentId = YOUR_COMMENT_ID_HERE
+
+### Delete all projects (Wipe DB)
+DELETE {{baseUrl}}/api/debug/wipe
+Cookie: {{authCookie}}
+
+###############################################
+# PROJECTS (Use @authCookie with all requests below)
+###############################################
+
+### Get all projects
+GET {{baseUrl}}/api/projects
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+### Create new project
+POST {{baseUrl}}/api/projects
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "name": "Test Project from REST Client",
+  "description": "Testing the API endpoints"
+}
+
+### Get single project
+GET {{baseUrl}}/api/projects/{{projectId}}
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+### Update project
+PATCH {{baseUrl}}/api/projects/{{projectId}}
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "name": "Updated Project Name",
+  "description": "Updated description"
+}
+
+### Delete project
+DELETE {{baseUrl}}/api/projects/{{projectId}}
+Cookie: {{authCookie}}
+
+###############################################
+# TASKS (New - Hybrid Model)
+###############################################
+
+### Get all tasks for project
+GET {{baseUrl}}/api/projects/{{projectId}}/tasks
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+### Create new task
+POST {{baseUrl}}/api/projects/{{projectId}}/tasks
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "title": "Implement authentication system",
+  "description": "Set up Supabase auth with email/password login",
+  "status": "done",
+  "priority": "high",
+  "estimatedHours": 8,
+  "dueDate": "2025-01-20T00:00:00Z",
+  "tags": ["backend", "security"]
+}
+
+### Update task
+PATCH {{baseUrl}}/api/tasks/{{taskId}}
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "status": "in_progress",
+  "actualHours": 3
+}
+
+### Soft-delete task
+DELETE {{baseUrl}}/api/tasks/{{taskId}}
+Cookie: {{authCookie}}
+
+###############################################
+# SUBTASKS
+###############################################
+
+### Get all subtasks for task
+GET {{baseUrl}}/api/tasks/{{taskId}}/subtasks
+Cookie: {{authCookie}}
+
+### Create new subtask
+POST {{baseUrl}}/api/tasks/{{taskId}}/subtasks
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "title": "Set up database schema",
+  "estimatedMinutes": 30,
+  "sortOrder": 0
+}
+
+###############################################
+# ASSIGNMENTS
+###############################################
+
+### Get all assignments for task
+GET {{baseUrl}}/api/tasks/{{taskId}}/assignments
+Cookie: {{authCookie}}
+
+### Assign user to task
+POST {{baseUrl}}/api/tasks/{{taskId}}/assignments
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "userId": "{{userId}}",
+  "role": "assignee"
+}
+
+### Remove user assignment
+DELETE {{baseUrl}}/api/tasks/{{taskId}}/assignments?userId={{userId}}
+Cookie: {{authCookie}}
+
+###############################################
+# COMMENTS
+###############################################
+
+### Get all comments for task
+GET {{baseUrl}}/api/tasks/{{taskId}}/comments
+Cookie: {{authCookie}}
+
+### Add comment to task
+POST {{baseUrl}}/api/tasks/{{taskId}}/comments
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "content": "This looks good! Ready for review."
+}
+
+### Update own comment
+PATCH {{baseUrl}}/api/comments/{{commentId}}
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "content": "Updated: This is ready to merge after testing."
+}
+
+### Soft-delete own comment
+DELETE {{baseUrl}}/api/comments/{{commentId}}
+Cookie: {{authCookie}}
+
+###############################################
+# SNAPSHOTS
+###############################################
+
+### Get all snapshots
+GET {{baseUrl}}/api/projects/{{projectId}}/snapshots
+Cookie: {{authCookie}}
+
+### Create snapshot (autosave)
+POST {{baseUrl}}/api/projects/{{projectId}}/snapshots
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "snapshot_data": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "type": "taskCardNode",
+        "position": { "x": 100, "y": 200 },
+        "data": {
+          "title": "Test Task",
+          "status": "Not started",
+          "description": "This is a test task",
+          "estimatedHours": 4,
+          "timeSpent": 0,
+          "subtasks": []
+        }
+      }
+    ],
+    "edges": []
+  }
+}
+
+### Get specific snapshot
+GET {{baseUrl}}/api/projects/{{projectId}}/snapshots/{{snapshotId}}
+Cookie: {{authCookie}}
+
+### Restore snapshot
+POST {{baseUrl}}/api/projects/{{projectId}}/snapshots/{{snapshotId}}/restore
+Cookie: {{authCookie}}
+
+###############################################
+# REFLECTIONS
+###############################################
+
+### Get all reflections
+GET {{baseUrl}}/api/projects/{{projectId}}/reflections
+Cookie: {{authCookie}}
+
+### Get reflections by type
+GET {{baseUrl}}/api/projects/{{projectId}}/reflections?type=start-of-day
+Cookie: {{authCookie}}
+
+### Create reflection
+POST {{baseUrl}}/api/projects/{{projectId}}/reflections
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "reflection_type": "start-of-day",
+  "reflection_text": "Today I plan to implement the file upload feature and test all API endpoints."
+}
+
+### Update reflection
+PATCH {{baseUrl}}/api/projects/{{projectId}}/reflections/{{reflectionId}}
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "reflection_text": "Updated: Today I completed the file upload and started on chat integration."
+}
+
+### Delete reflection
+DELETE {{baseUrl}}/api/projects/{{projectId}}/reflections/{{reflectionId}}
+Cookie: {{authCookie}}
+
+###############################################
+# FILES
+###############################################
+
+### Get all files
+GET {{baseUrl}}/api/projects/{{projectId}}/files
+Cookie: {{authCookie}}
+
+### Confirm file summary
+PATCH {{baseUrl}}/api/projects/{{projectId}}/files/{{fileId}}
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "summary": "This Excel file contains our Q1 project requirements with 3 sheets."
+}
+
+### Delete file
+DELETE {{baseUrl}}/api/projects/{{projectId}}/files/{{fileId}}
+Cookie: {{authCookie}}
+
+###############################################
+# EXPORTS
+###############################################
+
+### Export as Excel
+GET {{baseUrl}}/api/projects/{{projectId}}/export/excel
+Cookie: {{authCookie}}
+
+### Export timesheet
+GET {{baseUrl}}/api/projects/{{projectId}}/export/timesheet
+Cookie: {{authCookie}}
+
+###############################################
+# AI CHAT
+###############################################
+
+### Send message to AI
+POST {{baseUrl}}/api/ai/chat
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "projectId": "{{projectId}}",
+  "message": "Add a task for user authentication",
+  "history": [],
+  "currentSnapshot": {
+    "nodes": [],
+    "edges": []
+  }
+}
+
+###############################################
+# CHAT HISTORY
+###############################################
+
+### Get chat history
+GET {{baseUrl}}/api/projects/{{projectId}}/chat
+Cookie: {{authCookie}}
+
+### Save chat message
+POST {{baseUrl}}/api/projects/{{projectId}}/chat
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "role": "user",
+  "content": "How do I structure the database schema?"
+}
+
+### Clear chat history
+DELETE {{baseUrl}}/api/projects/{{projectId}}/chat
+Cookie: {{authCookie}}
+
+###############################################
+# COLLABORATION
+###############################################
+
+### Get collaborators
+GET {{baseUrl}}/api/projects/{{projectId}}/collaborators
+Cookie: {{authCookie}}
+
+### Invite existing user
+POST {{baseUrl}}/api/projects/{{projectId}}/collaborators
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "email": "teammate@example.com",
+  "role": "editor"
+}
+
+### Remove collaborator
+DELETE {{baseUrl}}/api/projects/{{projectId}}/collaborators/{{userId}}
+Cookie: {{authCookie}}
+
+###############################################
+# REFERENCE NOTES
+###############################################
+
+### Get all notes
+GET {{baseUrl}}/api/projects/{{projectId}}/notes
+Cookie: {{authCookie}}
+
+### Create note
+POST {{baseUrl}}/api/projects/{{projectId}}/notes
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "title": "API Design Principles",
+  "content": "Always return consistent error formats. Use RLS for security."
+}
+
+### Update note
+PATCH {{baseUrl}}/api/projects/{{projectId}}/notes/{{noteId}}
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+  "title": "Updated API Principles",
+  "content": "Updated content here..."
+}
+
+### Delete note
+DELETE {{baseUrl}}/api/projects/{{projectId}}/notes/{{noteId}}
+Cookie: {{authCookie}}
+
+###############################################
+# USAGE TRACKING
+###############################################
+
+### Get usage stats
+GET {{baseUrl}}/api/usage
+Cookie: {{authCookie}}
+
+### Get usage by date range
+GET {{baseUrl}}/api/usage?start_date=2025-12-01&end_date=2025-12-31
+Cookie: {{authCookie}}

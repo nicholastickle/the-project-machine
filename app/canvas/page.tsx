@@ -3,7 +3,7 @@
 import Canvas from "@/components/canvas/canvas"
 import ChatPanel from "@/components/chat/chat-panel"
 import SidebarProvider from "@/components/ui/sidebar"
-import CanvasSidebar from "@/components/sidebar/canvas-sidebar"
+import CanvasSidebar from "@/components/sidebar/sidebar"
 import CanvasToolbar from "@/components/toolbar/canvas-toolbar"
 import CanvasSidebarTrigger from "@/components/sidebar/sidebar-trigger"
 import ExportButtons from "@/components/export/export-buttons"
@@ -12,17 +12,18 @@ import { bridgeDesignTasks } from "@/components/chat/chat-mock-data"
 import useStore from "@/stores/flow-store"
 import { useEffect, useRef, useState } from "react"
 import type { ReactFlowInstance } from "@xyflow/react"
+import type { Node, Edge } from "@/stores/types"
 
 export default function CanvasPage() {
-    const reactFlowInstance = useRef<ReactFlowInstance | null>(null)
+    const reactFlowInstance = useRef<ReactFlowInstance<Node, Edge> | null>(null)
     const [isChatVisible, setIsChatVisible] = useState(true)
     const [isChatDocked, setIsChatDocked] = useState(false)
     const undo = useStore((state) => state.undo)
     const redo = useStore((state) => state.redo)
     const addTaskNode = useStore((state) => state.addTaskNode)
-    const nodes = useStore((state) => state.nodes)
 
-    const setReactFlowInstance = (instance: ReactFlowInstance) => {
+
+    const setReactFlowInstance = (instance: ReactFlowInstance<Node, Edge>) => {
         reactFlowInstance.current = instance
         // Center on logo without animation
         instance.setCenter(600, 300, { zoom: 0.8 })

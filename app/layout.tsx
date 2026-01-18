@@ -3,6 +3,7 @@ import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider/theme-provider'
+import { AppProviders } from './providers';
 
 export const metadata: Metadata = {
   title: 'Project Machine',
@@ -39,9 +40,15 @@ html {
           enableSystem
           disableTransitionOnChange
         >
+
+          <AppProviders>
           {children}
+        </AppProviders>
         </ThemeProvider>
       </body>
     </html>
   )
 }
+
+
+
