@@ -18,14 +18,22 @@ export function AuthRedirectButton({
     className,
     asLink = false
 }: AuthRedirectButtonProps) {
-    const { redirectToAuth } = useAuthRedirect()
+    const { isAuthenticated } = useAuthRedirect()
+
+    const handleClick = () => {
+        if (isAuthenticated) {
+            window.open('/canvas', '_blank')
+        } else {
+            window.open('/auth', '_blank')
+        }
+    }
 
     if (asLink) {
         return (
             <button
-                onClick={redirectToAuth}
+                onClick={handleClick}
                 className={className}
-                style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
                 {text}
             </button>
@@ -34,7 +42,7 @@ export function AuthRedirectButton({
 
     return (
         <Button
-            onClick={redirectToAuth}
+            onClick={handleClick}
             variant={variant}
             size={size}
             className={className}

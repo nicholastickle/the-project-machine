@@ -29,16 +29,10 @@ export default function FooterSection() {
     []
   )
 
-    const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear()
 
   return (
     <div className="flex flex-row justify-center border-x border-border-dark">
-
- {/* <div className="flex flex-row justify-center border border-border-dark ">
-                <div className=" w-[60px] diagonal-lines border-l border-border-dark">
-                </div>
-                <AnimatedSectionWhileInView className=" flex-1 max-w-[1320px relative flex flex-col items-center text-center overflow-hidden w-full md:w-[98vw] lg:w-[98vw] xl:w-[1220px] max-w-[1220px] " delay={0.2}></AnimatedSectionWhileInView> */}
-
 
       <div className="w-[60px] diagonal-lines border-x border-border-dark"></div>
 

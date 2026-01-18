@@ -11,7 +11,6 @@ import { ModeToggle } from "@/components/theme-provider/theme-toggle"
 
 import { SignInUpButton } from "@/components/landing/sign-in-up-button"
 import { SubscribeButton } from "@/components/landing/subscribe-button"
-import { AuthRedirectButton } from "@/components/auth/auth-redirect-button"
 
 export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
@@ -19,7 +18,7 @@ export default function Header() {
     { name: "Features", href: "#features-section" },
     { name: "About", href: "#about-section" },
     { name: "FAQ", href: "#faq-section" },
-    { name: "Get started", href: "/canvas" },
+
   ]
 
   const handleScroll = useCallback(
@@ -93,16 +92,7 @@ export default function Header() {
         </div>
         <nav className="hidden lg:flex items-center gap-2">
           {navItems.map((item) => {
-            if (item.name === "Get started") {
-              return (
-                <AuthRedirectButton
-                  key={item.name}
-                  text={item.name}
-                  asLink={true}
-                  className="text-muted hover:text-foreground px-4 py-2 rounded-full font-medium text-sm transition-colors"
-                />
-              )
-            }
+
             return (
               <Link
                 key={item.name}
@@ -139,16 +129,7 @@ export default function Header() {
             </SheetHeader>
             <nav className="flex flex-col mt-2">
               {navItems.map((item) => {
-                if (item.name === "Get started") {
-                  return (
-                    <AuthRedirectButton
-                      key={item.name}
-                      text={item.name}
-                      asLink={true}
-                      className="text-muted hover:text-foreground justify-start text-md py-2"
-                    />
-                  )
-                }
+
                 return (
                   <Link
                     key={item.name}

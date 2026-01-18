@@ -110,7 +110,7 @@ export default function AuthForm() {
                 </div>
 
                 {/* Description */}
-                <p className="text-center text-black/70 leading-relaxed text-balance">
+                <p className="text-center text-foreground leading-relaxed text-balance">
                     Project Machine is the future of online planning. Create an account to save projects, save tasks, and
                     collaborate with others
                 </p>
@@ -118,7 +118,7 @@ export default function AuthForm() {
                 {/* Email Form */}
                 <form onSubmit={handleContinue} className="space-y-6" suppressHydrationWarning={true}>
                     <div className="space-y-2">
-                        <Label htmlFor="email" className="text-black font-medium">
+                        <Label htmlFor="email" className="text-foreground font-medium">
                             Email address
                         </Label>
                         <Input
@@ -129,11 +129,11 @@ export default function AuthForm() {
                             onChange={(e) => setEmail(e.target.value)}
                             required
                             suppressHydrationWarning={true}
-                            className="bg-white border-black/20 text-black placeholder:text-black/40"
+                            className="bg-background/80 border-border text-foreground placeholder:text-muted"
                         />
                     </div>
 
-                    <Button type="submit" className="w-full bg-black text-white hover:bg-black/90">
+                    <Button type="submit" variant="outline" size="lg" className="w-full flex items-center">
                         Continue with email
                     </Button>
                 </form>

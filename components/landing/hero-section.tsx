@@ -450,7 +450,7 @@ export default function HeroSection() {
                  <AuthRedirectButton
                   text="Get started"
                   variant="outline"
-                  className="w-full justify-center"
+                  className="p-6 justify-center"
                 />
 
               
