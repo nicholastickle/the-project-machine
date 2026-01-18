@@ -2,40 +2,40 @@ import { describe, it, expect } from 'vitest'
 
 describe('Component Imports', () => {
   describe('Sidebar Components', () => {
-    it('should import canvas-sidebar', async () => {
-      await expect(import('@/components/sidebar/canvas-sidebar')).resolves.toBeDefined()
+    it('should import sidebar', async () => {
+      await expect(import('@/components/sidebar/sidebar')).resolves.toBeDefined()
     })
 
-    it('should import nav-projects', async () => {
-      await expect(import('@/components/sidebar/nav-projects')).resolves.toBeDefined()
+    it('should import sidebar-projects-list', async () => {
+      await expect(import('@/components/sidebar/sidebar-projects-list')).resolves.toBeDefined()
     })
 
-    it('should import new-project', async () => {
-      await expect(import('@/components/sidebar/new-project')).resolves.toBeDefined()
+    it('should import sidebar-projects-new', async () => {
+      await expect(import('@/components/sidebar/sidebar-projects-new')).resolves.toBeDefined()
     })
 
-    it('should import options-project', async () => {
-      await expect(import('@/components/sidebar/options-project')).resolves.toBeDefined()
+    it('should import sidebar-projects-options', async () => {
+      await expect(import('@/components/sidebar/sidebar-projects-options')).resolves.toBeDefined()
     })
 
-    it('should import nav-user', async () => {
-      await expect(import('@/components/sidebar/nav-user')).resolves.toBeDefined()
+    it('should import sidebar-users', async () => {
+      await expect(import('@/components/sidebar/sidebar-users')).resolves.toBeDefined()
     })
 
-    it('should import nav-help', async () => {
-      await expect(import('@/components/sidebar/nav-help')).resolves.toBeDefined()
+    it('should import sidebar-help-button', async () => {
+      await expect(import('@/components/sidebar/sidebar-help-button')).resolves.toBeDefined()
     })
 
-    it('should import options-help', async () => {
-      await expect(import('@/components/sidebar/options-help')).resolves.toBeDefined()
+    it('should import sidebar-help-options', async () => {
+      await expect(import('@/components/sidebar/sidebar-help-options')).resolves.toBeDefined()
     })
 
     it('should import sidebar-trigger', async () => {
       await expect(import('@/components/sidebar/sidebar-trigger')).resolves.toBeDefined()
     })
 
-    it('should import theme-changer', async () => {
-      await expect(import('@/components/sidebar/theme-changer')).resolves.toBeDefined()
+    it('should import sidebar-theme-changer', async () => {
+      await expect(import('@/components/sidebar/sidebar-theme-changer')).resolves.toBeDefined()
     })
   })
 
@@ -61,14 +61,6 @@ describe('Component Imports', () => {
     it('should import task-card-node-v2', async () => {
       await expect(import('@/components/task-card-node-v2/task-card-node')).resolves.toBeDefined()
     })
-
-    it('should import instruction-node', async () => {
-      await expect(import('@/components/instruction-node/instruction-node')).resolves.toBeDefined()
-    })
-
-    it('should import logo-node', async () => {
-      await expect(import('@/components/logo/logo-node')).resolves.toBeDefined()
-    })
   })
 
   describe('Toolbar Components', () => {
@@ -88,10 +80,6 @@ describe('Component Imports', () => {
 
     it('should import task-book-icon', async () => {
       await expect(import('@/components/task-book/task-book-icon')).resolves.toBeDefined()
-    })
-
-    it('should import task-book-archive', async () => {
-      await expect(import('@/components/task-book/task-book-archive')).resolves.toBeDefined()
     })
   })
 
