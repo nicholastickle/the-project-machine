@@ -18,7 +18,7 @@ export default function Header() {
     { name: "Features", href: "#features-section" },
     { name: "About", href: "#about-section" },
     { name: "FAQ", href: "#faq-section" },
-    { name: "Get started", href: "/canvas" },
+
   ]
 
   const handleScroll = useCallback(
@@ -91,16 +91,19 @@ export default function Header() {
           </Link>
         </div>
         <nav className="hidden lg:flex items-center gap-2">
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={(e) => handleScroll(e, item.href)}
-              className="text-muted hover:text-foreground px-4 py-2 rounded-full font-medium text-sm transition-colors"
-            >
-              {item.name}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={(e) => handleScroll(e, item.href)}
+                className="text-muted hover:text-foreground px-4 py-2 rounded-full font-medium text-sm transition-colors"
+              >
+                {item.name}
+              </Link>
+            )
+          })}
         </nav>
       </div>
       <div className="flex flex-row items-center">
@@ -125,16 +128,19 @@ export default function Header() {
               </SheetDescription>
             </SheetHeader>
             <nav className="flex flex-col mt-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={(e) => handleMobileNavClick(e, item.href)} // Use mobile-specific handler
-                  className="text-muted hover:text-foreground justify-start text-md py-2"
-                >
-                  {item.name}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={(e) => handleMobileNavClick(e, item.href)}
+                    className="text-muted hover:text-foreground justify-start text-md py-2"
+                  >
+                    {item.name}
+                  </Link>
+                )
+              })}
               <div className="md:hidden flex flex-col gap-2 ">
                 <SubscribeButton />
                 <ModeToggle />

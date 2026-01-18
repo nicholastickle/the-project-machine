@@ -1,7 +1,6 @@
 
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
 import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
+import { AuthRedirectButton } from "@/components/auth/auth-redirect-button"
 export default function CTASection() {
   return (
 
@@ -117,15 +116,12 @@ export default function CTASection() {
                 Start today to visualize every step, build your library of proven task templates, and best of all... the more you plan, the smarter it gets.
               </p>
             </div>
-            <Link href="/canvas">
-              <Button
-                variant="outline"
-                className="flex items-center"
-                size="lg"
-              >
-                Get Started
-              </Button>
-            </Link>
+            <AuthRedirectButton
+              text="Get Started"
+              variant="outline"
+              className="flex items-center"
+              size="lg"
+            />
           </div>
         </section>
 
@@ -136,9 +132,3 @@ export default function CTASection() {
   )
 }
 
-
-//  <Link href="/canvas">
-//   <Button variant="outline" className="w-full justify-center">
-//     Get started
-//   </Button>
-// </Link>
