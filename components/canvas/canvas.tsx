@@ -5,7 +5,6 @@ import {
     ReactFlow,
     SelectionMode,
     ConnectionMode,
-
 } from '@xyflow/react';
 
 import useStore from '@/stores/flow-store';
@@ -51,7 +50,12 @@ export default function Canvas({ onInit }: CanvasProps) {
                 nodesDraggable={nodesDraggable}
                 nodesConnectable={nodesConnectable}
                 defaultEdgeOptions={{
-                    interactionWidth: 20
+                    interactionWidth: 20,
+                    style: {
+                        stroke: 'hsl(var(--edges))',
+                        strokeWidth: 9,
+                        strokeDasharray: '5,5',
+                    }
                 }}
                 panOnDrag={panOnDrag}
                 selectionMode={SelectionMode.Partial}
