@@ -102,7 +102,6 @@ export default function SidebarUsers() {
             <DropdownMenuSeparator className="bg-sidebar-border" />
             <DropdownMenuItem className="hover:bg-sidebar-accent hover:text-foreground text-xs" asChild>
               <SignOutButton
-                asDropdownItem={true}
                 className="hover:bg-sidebar-accent hover:text-foreground text-xs"
               >
                 <LogOut />
