@@ -141,6 +141,13 @@ export interface ProjectData {
   members: ProjectMember[];
 }
 
+// Extended ProjectData with canvas-specific state for project store
+export interface ProjectStoreData extends ProjectData {
+  history: { nodes: Node[]; edges: Edge[]; tasks: Task[] }[];
+  historyIndex: number;
+  cursorMode: CursorMode;
+}
+
 export type CursorMode = 'select' | 'pan';
 
 export type AppState = {
@@ -184,7 +191,11 @@ export type AppState = {
   redo: () => void;
 
   // Cursor mode methods
-  setCursorMode: (mode: CursorMode) => void; // Add this new method
+  setCursorMode: (mode: CursorMode) => void;
+
+  // Project sync methods
+  syncWithActiveProject: () => void;
+  saveToActiveProject: () => void;
 
 };
 
