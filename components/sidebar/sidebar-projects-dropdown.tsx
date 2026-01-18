@@ -28,26 +28,8 @@ export default function SidebarProjectsDropdown() {
     // Inline editing state
     const [editingProjectId, setEditingProjectId] = useState<string | null>(null)
     const [editingName, setEditingName] = useState('')
+    const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null)
     const inputRef = useRef<HTMLInputElement>(null)
-
-    // Static projects for fallback (remove once store is working)
-    const staticProjects = [
-        {
-            title: "Board 1",
-            url: "#",
-        },
-        {
-            title: "Board 2",
-            url: "#",
-        },
-        {
-            title: "Board 3",
-            url: "#",
-        },
-    ]
-
-    // Use project store data, fallback to static for development
-    const displayProjects = projects.length > 0 ? projects : staticProjects
 
     const handleProjectClick = (projectId: string) => {
         if (editingProjectId === projectId) return // Don't switch if editing
@@ -57,12 +39,8 @@ export default function SidebarProjectsDropdown() {
     }
 
     const startEditing = (item: any) => {
-        // Handle both ProjectStoreData and static objects
-        const projectId = 'project' in item ? item.project.id : item.title
-        const projectName = 'project' in item ? item.project.name : item.title
-
-        setEditingProjectId(projectId)
-        setEditingName(projectName)
+        setEditingProjectId(item.project.id)
+        setEditingName(item.project.name)
     }
 
     // Auto-focus input when editing starts
@@ -75,10 +53,7 @@ export default function SidebarProjectsDropdown() {
 
     const saveEdit = () => {
         if (editingProjectId && editingName.trim()) {
-            // Only call rename if we have a real project ID (not static data)
-            if (projects.length > 0) {
-                renameProject(editingProjectId, editingName.trim())
-            }
+            renameProject(editingProjectId, editingName.trim())
         }
         setEditingProjectId(null)
         setEditingName('')
@@ -119,26 +94,31 @@ export default function SidebarProjectsDropdown() {
                         </CollapsibleTrigger>
                         <CollapsibleContent>
                             <SidebarMenuSub
-                                className="overflow-y-scroll"
+                                className="overflow-y-auto"
                                 style={{
+                                    height: 'calc(100vh - 170px)',
                                     scrollbarWidth: 'thin',
-                                    scrollbarColor: '#6b7280 transparent'
+                                    scrollbarColor: 'hsl(var(--muted)) hsl(var(--sidebar-background))'
                                 }}
                             >
                                 <SidebarProjectsNew />
 
-                                {displayProjects.map((item) => {
-                                    // Handle both ProjectStoreData and static objects
-                                    const projectId = 'project' in item ? item.project.id : item.title
-                                    const projectName = 'project' in item ? item.project.name : item.title
+                                {projects.map((item) => {
+                                    const projectId = item.project.id
+                                    const projectName = item.project.name
                                     const isActive = projectId === activeProjectId
                                     const isEditing = editingProjectId === projectId
 
                                     return (
-                                        <SidebarMenuSubItem key={projectId} className="relative group/menu-item flex items-center">
+                                        <SidebarMenuSubItem
+                                            key={projectId}
+                                            className="relative flex items-center"
+                                            onMouseEnter={() => setHoveredProjectId(projectId)}
+                                            onMouseLeave={() => setHoveredProjectId(null)}
+                                        >
                                             <SidebarMenuSubButton
                                                 asChild
-                                                className={`flex-1 ${isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''}`}
+                                                className={`flex-1 ${isActive ? 'bg-sidebar-accent text-foreground' : 'text-muted-foreground hover:bg-sidebar-background hover:text-foreground'} `}
                                             >
                                                 <div
                                                     className="flex items-center w-full cursor-pointer"
@@ -152,7 +132,7 @@ export default function SidebarProjectsDropdown() {
                                                         onDoubleClick={() => !isEditing && startEditing(item)}
                                                         onBlur={saveEdit}
                                                         onKeyDown={handleKeyDown}
-                                                        className={`bg-transparent border-none outline-none w-full ${isEditing ? 'bg-background border border-border rounded px-1 cursor-text' : 'cursor-pointer'}`}
+                                                        className={`bg-transparent border-none outline-none w-full  ${isEditing ? 'bg-background border border-border rounded px-1 cursor-text' : 'cursor-pointer'}`}
                                                     />
                                                 </div>
                                             </SidebarMenuSubButton>
@@ -160,6 +140,7 @@ export default function SidebarProjectsDropdown() {
                                                 projectId={projectId}
                                                 projectName={projectName}
                                                 onRename={() => startEditing(item)}
+                                                isVisible={hoveredProjectId === projectId}
                                             />
                                         </SidebarMenuSubItem>
                                     )
