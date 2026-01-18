@@ -12,7 +12,7 @@ import useStore from '@/stores/flow-store';
 import { type AppState, type CanvasProps } from '@/stores/types';
 import CanvasBackground from '@/components/canvas/background';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
-import TaskCard from '@/components/task-card-node-v2/task-card-node';
+import TaskCard from '@/components/task-card-node/task-card-node';
 
 const nodeTypes = { task: TaskCard };
 const panOnDrag = [1, 2];
