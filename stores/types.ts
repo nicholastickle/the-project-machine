@@ -149,6 +149,11 @@ export type AppState = {
   tasks: Task[];
   history: { nodes: Node[]; edges: Edge[]; tasks: Task[] }[];
   historyIndex: number;
+  projectId: string | null;
+  lastSavedAt: string | null;
+  isDirty: boolean;
+  isSaving: boolean;
+
   onNodesChange: OnNodesChange<Node>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
@@ -157,6 +162,10 @@ export type AppState = {
   // Node management methods
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
+  setProjectId: (projectId: string | null) => void;
+  markDirty: () => void;
+  markClean: () => void;
+
   addTaskNode: (taskData?: Partial<Task>, nodeOptions?: {
     position?: { x: number; y: number };
     id?: string;
