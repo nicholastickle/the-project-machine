@@ -21,9 +21,9 @@ describe('Flow Store', () => {
         useStore.getState().resetCanvas()
     })
 
-    it('starts with initial nodes', () => {
+    it('starts with empty canvas after reset', () => {
         const { nodes } = useStore.getState()
-        expect(nodes.length).toBeGreaterThan(0)
+        expect(nodes.length).toBe(0)
     })
 
     it('adds a task node', () => {
@@ -34,35 +34,46 @@ describe('Flow Store', () => {
             status: 'in-progress'
         })
 
-        const { nodes } = useStore.getState()
+        const { nodes, tasks } = useStore.getState()
         const newNode = nodes.find(n => n.id === id)
+        const newTask = tasks.find(t => t.node_id === id)
 
         expect(newNode).toBeDefined()
-        expect(newNode?.data.title).toBe('New Task')
-        expect(newNode?.data.status).toBe('in-progress')
+        expect(newTask).toBeDefined()
+        expect(newTask?.title).toBe('New Task')
+        expect(newTask?.status).toBe('in-progress')
     })
 
     it('updates a node', () => {
-        const { addTaskNode, updateNodeData } = useStore.getState()
-        const id = addTaskNode({ title: 'Task 1' })
+        const { addTaskNode, updateTask } = useStore.getState()
+        const nodeId = addTaskNode({ title: 'Task 1' })
+        
+        // Find the task by node_id
+        const { tasks } = useStore.getState()
+        const task = tasks.find(t => t.node_id === nodeId)
+        
+        if (task) {
+            updateTask(task.id, { status: 'completed' })
+        }
 
-        updateNodeData(id, { status: 'completed' })
+        const { tasks: updatedTasks } = useStore.getState()
+        const updatedTask = updatedTasks.find(t => t.node_id === nodeId)
 
-        const { nodes } = useStore.getState()
-        const node = nodes.find(n => n.id === id)
-
-        expect(node?.data.status).toBe('completed')
+        expect(updatedTask?.status).toBe('completed')
     })
 
-    it('deletes a node', () => {
-        const { addTaskNode, deleteNode } = useStore.getState()
+    it('deletes nodes via ReactFlow', () => {
+        const { addTaskNode, onNodesChange } = useStore.getState()
         const id = addTaskNode({ title: 'Delete Me' })
 
-        deleteNode(id)
+        // Simulate ReactFlow node deletion
+        onNodesChange([{ type: 'remove', id }])
 
-        const { nodes } = useStore.getState()
+        const { nodes, tasks } = useStore.getState()
         const node = nodes.find(n => n.id === id)
+        const task = tasks.find(t => t.node_id === id)
 
         expect(node).toBeUndefined()
+        expect(task).toBeUndefined()
     })
 })

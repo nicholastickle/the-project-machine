@@ -21,6 +21,7 @@ const useStore = create<AppState>()(
                 lastSavedAt: null,
                 isDirty: false,
                 isSaving: false,
+                cursorMode: 'select',
 
                 setProjectId: (projectId) => {
                     set({ projectId, isDirty: false });
@@ -32,6 +33,10 @@ const useStore = create<AppState>()(
 
                 markClean: () => {
                     set({ isDirty: false });
+                },
+
+                setCursorMode: (mode) => {
+                    set({ cursorMode: mode });
                 },
 
                 saveHistory: () => {
@@ -117,7 +122,7 @@ const useStore = create<AppState>()(
                     const newEdge = {
                         ...connection,
                         project_id: 'p1', // TODO: Get from current project context
-                        type: 'smoothstep',
+                        type: 'default',
                         markerEnd: {
                             type: 'arrowclosed',
                             color: 'hsl(var(--edges))'
@@ -126,8 +131,9 @@ const useStore = create<AppState>()(
                         animated: true,
                         style: {
                             stroke: 'hsl(var(--edges))',
-                            strokeWidth: 2,
+                            strokeWidth: 10,
                             animationDuration: '1s',
+                            strokeDasharray: '5,5',
                         },
                     };
                     set({
