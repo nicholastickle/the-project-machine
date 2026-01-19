@@ -93,15 +93,15 @@ export default function ShareButton() {
                     <span>Share</span>
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80" align="center">
+            <PopoverContent className="w-80 bg-sidebar-options-background border border-sidebar-border rounded-md" align="end">
                 {/* Title Row */}
                 <div className="flex items-center gap-2 mb-4">
-                    <h3 className="text-sm font-semibold">Share this project</h3>
+                    <h3 className="text-md font-semibold text-foreground">Share this project</h3>
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <a
-                                    href="/user-manual"
+                                    href="https://alkaline-apple-00d.notion.site/Project-Machine-User-Manual-121aa4c8ef4d4fac8976882a65642716" target="_blank" rel="noopener noreferrer"
                                     className="text-muted-foreground hover:text-foreground transition-colors"
                                 >
                                     <HelpCircle className="size-4" />
@@ -114,7 +114,7 @@ export default function ShareButton() {
                 </div>
 
                 {/* Email Input Row */}
-                <div className="flex gap-2 mb-3">
+                <div className="flex flex-row gap-3 mb-3">
                     <Input
                         type="email"
                         placeholder="Enter email..."
@@ -123,7 +123,7 @@ export default function ShareButton() {
                             setEmail(e.target.value)
                             if (emailError) setEmailError(null)
                         }}
-                        className={cn("flex-1", emailError && "border-destructive")}
+                        className={cn("flex-1", emailError && "border-destructive", "text-foreground outline-none focus:border-none")}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 handleSendInvite()
@@ -132,12 +132,12 @@ export default function ShareButton() {
                     />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="gap-1 min-w-24 bg-transparent">
+                            <Button variant="outline" className="gap-1 min-w-24 text-foreground bg-sidebar-accent">
                                 {selectedRole}
                                 <ChevronDown className="size-3" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" className="bg-sidebar-options-background border border-sidebar-border rounded-md text-foreground">
                             <DropdownMenuItem onClick={() => setSelectedRole("Editor")}>
                                 {selectedRole === "Editor" && <Check className="size-4 mr-2" />}
                                 <span className={selectedRole !== "Editor" ? "ml-6" : ""}>
@@ -156,36 +156,34 @@ export default function ShareButton() {
                 )}
 
                 {/* Send Invite Button */}
-                <Button onClick={handleSendInvite} className="w-full mb-4">
+                <Button onClick={handleSendInvite} className="w-full mb-4 text-foreground bg-sidebar-accent hover:bg-sidebar-accent">
                     Send Invite
                 </Button>
 
-                <Separator className="mb-4" />
-
                 {/* Project Members Section */}
-                <div>
-                    <h4 className="text-sm font-medium mb-3">Project members</h4>
+                <div className="border-t border-sidebar-border">
+                    <h4 className="text-sm font-medium my-2 text-foreground underline">Project members</h4>
                     <div className="space-y-1">
                         {members.map((member) => (
                             <div
                                 key={member.id}
-                                className="flex items-center justify-between py-2 px-2 -mx-2 rounded-md hover:bg-muted transition-colors"
+                                className="flex items-center justify-between py-1 px-2 -mx-2 rounded-md text-foreground transition-colors"
                                 onMouseEnter={() => setHoveredMemberId(member.id)}
                                 onMouseLeave={() => setHoveredMemberId(null)}
                             >
-                                <div className="flex flex-col">
+                                <div className="flex flex-row gap-1">
                                     <span className="text-sm">
                                         {member.name}
                                         {member.isCurrentUser && (
                                             <span className="text-muted-foreground"> (you)</span>
                                         )}
                                         {member.isPending && (
-                                            <span className="text-muted-foreground text-xs ml-2">
-                                                pending
+                                            <span className="text-muted-foreground text-xs ml-2 items-center">
+                                                (pending)
                                             </span>
                                         )}
                                     </span>
-                                    <span className="text-xs text-muted-foreground">
+                                    <span className="text-xs text-muted-foreground justify-center items-center flex">
                                         {member.role}
                                     </span>
                                 </div>
@@ -199,14 +197,14 @@ export default function ShareButton() {
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                 <Button variant="ghost" size="icon" className="size-8">
-                                                    <MoreHorizontal className="size-4" />
+                                                    <MoreHorizontal className="size-3" />
                                                     <span className="sr-only">Member options</span>
                                                 </Button>
                                             </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
+                                            <DropdownMenuContent align="end" className="bg-sidebar-options-background border border-sidebar-border rounded-md text-foreground">
                                                 <DropdownMenuItem
                                                     onClick={() => handleDeleteMember(member.id)}
-                                                    className="text-destructive focus:text-destructive"
+                                                    className="text-foreground focus:text-foreground bg-sidebar-options-background" 
                                                 >
                                                     <Trash2 className="size-4 mr-2" />
                                                     Remove from project
