@@ -13,29 +13,21 @@ export default function AIMessage({ message }: AIMessageProps) {
                     <div className="whitespace-pre-wrap break-words" style={{
                         wordBreak: 'break-word',
                         hyphens: 'auto',
-                        minHeight: '1.2em' // Ensure minimum height to prevent layout shift
+                        minHeight: '1.2em'
                     }}>
                         {message.content}
                     </div>
                 </div>
-
-                {/* Feedback icons - outside the speech bubble */}
                 <div className="flex items-center ml-2">
                     <button
                         className="p-1 rounded hover:bg-chat-panel-accent transition-colors"
-                        onClick={() => {
-                            // TODO: Implement feedback functionality
-                            console.log('Thumbs up feedback for message:', message.id)
-                        }}
+                        onClick={() => {}}
                     >
                         <ThumbsUp className="h-3 w-3 text-muted-foreground hover:text-chat-panel-foreground" />
                     </button>
                     <button
                         className="p-1 rounded hover:bg-chat-panel-accent transition-colors"
-                        onClick={() => {
-                            // TODO: Implement feedback functionality  
-                            console.log('Thumbs down feedback for message:', message.id)
-                        }}
+                        onClick={() => {}}
                     >
                         <ThumbsDown className="h-3 w-3 text-muted-foreground hover:text-chat-panel-foreground" />
                     </button>

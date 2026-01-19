@@ -1,13 +1,14 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
-import { useChatUI, type ChatMessage } from '@/hooks/use-chat-ui'
+import { useChatUI } from '@/hooks/use-chat-ui'
+import useChatsStore from '@/stores/chats-store'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { MessageSquare, ArrowLeft } from 'lucide-react'
+import { MessageSquare } from 'lucide-react'
 import UserMessage from './user-message'
 import AIMessage from './ai-message'
-import ChatInput from './chat-input'
+import ChatInput, { type ChatInputRef } from './chat-input'
 import ChatWelcome from './chat-welcome'
 import ChatHeader from './chat-header'
 import RecentChats from './recent-chats'
@@ -21,89 +22,40 @@ export default function ChatPanel({ onVisibilityChange }: ChatPanelProps) {
     isVisible,
     inputValue,
     isTyping,
+    isNewChat,
+    currentChatTitle,
     toggleVisibility,
     setInputValue,
     sendMessage,
     clearMessages,
+    setIsNewChat,
+    startNewChatSession,
   } = useChatUI()
 
-  // Notify parent when visibility changes (always docked now)
+
   useEffect(() => {
-    onVisibilityChange?.(isVisible, true) // Always considered docked
+    onVisibilityChange?.(isVisible, true)
   }, [isVisible, onVisibilityChange])
 
-  // PRESERVED: Typewriter effect state for future AI messages
-  // TODO: This will be used when real AI responses are integrated
-  const [displayedMessages, setDisplayedMessages] = useState<ChatMessage[]>([])
-  const [currentTypingIndex, setCurrentTypingIndex] = useState(0)
   const [isUserScrolling, setIsUserScrolling] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const chatInputRef = useRef<ChatInputRef>(null)
 
-  // PRESERVED: Typewriter effect for AI messages (for future use)
-  // TODO: Re-enable this when real AI responses are implemented
-  useEffect(() => {
-    if (messages.length === 0) {
-      setDisplayedMessages([])
-      return
-    }
-
-    const lastMessage = messages[messages.length - 1]
-    const lastDisplayed = displayedMessages[displayedMessages.length - 1]
-
-    // Add any new message (user or AI)
-    if (lastMessage.id !== lastDisplayed?.id) {
-      // User messages appear instantly, AI messages start typewriter
-      if (lastMessage.role === 'user') {
-        setDisplayedMessages(messages)
-      } else {
-        // AI message: start with empty content for typewriter effect
-        setDisplayedMessages(messages.slice(0, -1).concat({ ...lastMessage, content: '' }))
-      }
-      setCurrentTypingIndex(0)
-      setIsUserScrolling(false)
-    }
-  }, [messages])
-
-  // PRESERVED: Typewriter animation for AI messages (for future use)
-  // TODO: Re-enable this when real AI responses are implemented
-  useEffect(() => {
-    if (displayedMessages.length === 0) return
-
-    const lastMessage = messages[messages.length - 1]
-    const lastDisplayed = displayedMessages[displayedMessages.length - 1]
-
-    if (!lastMessage || !lastDisplayed) return
-    if (lastMessage.role === 'user') return // Only typewrite AI messages
-    if (lastDisplayed.content === lastMessage.content) return
-
-    const fullContent = lastMessage.content
-    const currentLength = lastDisplayed.content.length
-
-    if (currentLength < fullContent.length) {
-      const timer = setTimeout(() => {
-        setDisplayedMessages(prev => {
-          const updated = [...prev]
-          updated[updated.length - 1] = {
-            ...lastDisplayed,
-            content: fullContent.slice(0, currentLength + 1)
-          }
-          return updated
-        })
-      }, 30) // 30ms delay per character
-
-      return () => clearTimeout(timer)
-    }
-  }, [displayedMessages, messages]) // Added displayedMessages dependency
-
-  // Handle sending message
   const handleSendMessage = () => {
     if (inputValue.trim()) {
       sendMessage(inputValue)
+      // Focus the input after sending message to keep cursor active
+      // Try immediate focus
+      chatInputRef.current?.focus()
+      // Also try with requestAnimationFrame as backup
+      requestAnimationFrame(() => {
+        chatInputRef.current?.focus()
+      })
     }
   }
 
-  // Handle Enter key for sending
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -111,7 +63,7 @@ export default function ChatPanel({ onVisibilityChange }: ChatPanelProps) {
     }
   }
 
-  // Handle scroll behavior
+
   const handleScroll = () => {
     if (messagesContainerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current
@@ -120,14 +72,13 @@ export default function ChatPanel({ onVisibilityChange }: ChatPanelProps) {
     }
   }
 
-  // Auto-scroll to bottom when new messages arrive (unless user is scrolling)
+
   useEffect(() => {
     if (!isUserScrolling && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
-  }, [displayedMessages, isUserScrolling])
+  }, [messages, isUserScrolling])
 
-  // Show toggle button when chat is hidden
   if (!isVisible) {
     return (
       <Button
@@ -140,7 +91,6 @@ export default function ChatPanel({ onVisibilityChange }: ChatPanelProps) {
     )
   }
 
-  // Render as docked Sheet on the right side
   return (
     <Sheet open={isVisible} onOpenChange={toggleVisibility} modal={false}>
       <SheetContent
@@ -156,43 +106,53 @@ export default function ChatPanel({ onVisibilityChange }: ChatPanelProps) {
         </SheetHeader>
 
         <ChatHeader
-          displayedMessages={displayedMessages}
+          displayedMessages={messages}
           onClearMessages={clearMessages}
+          onBack={startNewChatSession}
+          showBackButton={!isNewChat}
+          currentChatTitle={currentChatTitle}
         />
 
-        {/* Recent Chats - only show when no messages */}
-        {displayedMessages.length === 0 && (
+
+        {isNewChat && (
           <RecentChats
+            maxChats={3}
             onChatSelect={(chatId) => {
-              // TODO: Load selected chat
-              console.log('Loading chat:', chatId)
+
+              const { openChat } = useChatsStore.getState()
+              openChat(chatId)
+              setIsNewChat(false)
             }}
             onArchiveChat={(chatId) => {
-              // TODO: Archive selected chat
-              console.log('Archiving chat:', chatId)
+              const { deleteChat } = useChatsStore.getState()
+              deleteChat(chatId)
             }}
           />
         )}
 
-        {/* Messages */}
         <div
           ref={messagesContainerRef}
           onScroll={handleScroll}
-          className={`p-3 space-y-3 flex-1 ${displayedMessages.length > 0
+          className={`p-3 space-y-3 flex-1 ${!isNewChat && messages.length > 0
             ? 'overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent'
             : ''
             }`}
-          style={displayedMessages.length > 0 ? {
+          style={!isNewChat && messages.length > 0 ? {
             scrollbarWidth: 'thin',
             scrollbarColor: 'hsl(var(--chat-panel-accent)) transparent'
           } : {}}
         >
-          {/* Welcome screen when no messages */}
-          {displayedMessages.length === 0 && (
-            <ChatWelcome onSendMessage={sendMessage} inputValue={inputValue} />
+
+          {isNewChat && (
+            <ChatWelcome
+              onSendMessage={(content) => {
+                sendMessage(content)
+              }}
+              inputValue={inputValue}
+            />
           )}
 
-          {displayedMessages.map((msg) => (
+          {!isNewChat && messages.map((msg) => (
             msg.role === 'user' ? (
               <UserMessage key={msg.id} message={msg} />
             ) : (
@@ -200,8 +160,7 @@ export default function ChatPanel({ onVisibilityChange }: ChatPanelProps) {
             )
           ))}
 
-          {/* Typing indicator when AI is responding */}
-          {isTyping && (
+          {!isNewChat && isTyping && (
             <div className="flex justify-start">
               <div className="max-w-[85%] rounded-lg p-3 bg-chat-panel-background text-chat-panel-foreground text-sm border border-chat-panel-border">
                 <div className="flex items-center gap-1">
@@ -217,6 +176,7 @@ export default function ChatPanel({ onVisibilityChange }: ChatPanelProps) {
         </div>
 
         <ChatInput
+          ref={chatInputRef}
           inputValue={inputValue}
           isTyping={isTyping}
           onInputChange={setInputValue}

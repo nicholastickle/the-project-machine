@@ -1,78 +1,134 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import useChatsStore from '@/stores/chats-store'
+import useProjectStore from '@/stores/project-store'
+import type { AIChatMessage } from '@/stores/types'
 
 export interface ChatMessage {
-  id: string
-  role: 'user' | 'ai'
-  content: string
-  timestamp: Date
+    id: string
+    role: 'user' | 'ai'
+    content: string
+    timestamp: Date
 }
 
 interface UseChatUIReturn {
-  messages: ChatMessage[]
-  isVisible: boolean
-  inputValue: string
-  isTyping: boolean
-  toggleVisibility: () => void
-  setInputValue: (value: string) => void
-  sendMessage: (content: string) => void
-  clearMessages: () => void
+    messages: ChatMessage[]
+    isVisible: boolean
+    inputValue: string
+    isTyping: boolean
+    isNewChat: boolean
+    currentChatTitle: string
+    toggleVisibility: () => void
+    setInputValue: (value: string) => void
+    sendMessage: (content: string) => void
+    clearMessages: () => void
+    setIsNewChat: (isNew: boolean) => void
+    startNewChatSession: () => void
 }
 
+const mapAIChatMessage = (msg: AIChatMessage): ChatMessage => ({
+    id: msg.id,
+    role: msg.role === 'assistant' ? 'ai' : 'user',
+    content: msg.content,
+    timestamp: new Date() 
+})
+
 export function useChatUI(): UseChatUIReturn {
-  const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [isVisible, setIsVisible] = useState(true) // Default open
-  const [inputValue, setInputValue] = useState('')
-  const [isTyping, setIsTyping] = useState(false)
+    const [isVisible, setIsVisible] = useState(true)
+    const [inputValue, setInputValue] = useState('')
+    const [isTyping, setIsTyping] = useState(false)
+    const [isNewChat, setIsNewChat] = useState(true)
+    const [refreshTrigger, setRefreshTrigger] = useState(0)
+    const getActiveProjectId = useCallback(() => {
+        const activeProject = useProjectStore.getState().getActiveProject()
+        return activeProject?.project.id || null
+    }, [])
+    const getStoredMessages = useCallback(() => {
+        try {
+            const storeMessages = useChatsStore.getState().getActiveMessages()
+            return storeMessages.map(mapAIChatMessage)
+        } catch {
+            return []
+        }
+    }, [refreshTrigger])
 
-  // Toggle chat visibility
-  const toggleVisibility = useCallback(() => {
-    setIsVisible(prev => !prev)
-  }, [])
+    const messages = getStoredMessages()
+    const getCurrentChatTitle = useCallback(() => {
+        try {
+            const activeThread = useChatsStore.getState().getActiveThread()
+            return activeThread?.title || 'Chat'
+        } catch {
+            return 'Chat'
+        }
+    }, [refreshTrigger])
 
-  // Send a user message (for now, just adds to local state)
-  const sendMessage = useCallback((content: string) => {
-    if (!content.trim()) return
+    const currentChatTitle = getCurrentChatTitle()
+    useEffect(() => {
+        const unsubscribe = useChatsStore.subscribe(() => {
+            setRefreshTrigger(prev => prev + 1)
+        })
+        return unsubscribe
+    }, [])
 
-    const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
-      role: 'user',
-      content: content.trim(),
-      timestamp: new Date()
+    const toggleVisibility = useCallback(() => {
+        setIsVisible(prev => !prev)
+    }, [])
+
+    const sendMessage = useCallback((content: string) => {
+        if (!content.trim()) return
+
+        const activeProjectId = getActiveProjectId()
+
+        if (activeProjectId) {
+            const { getActiveThread, startNewChat, sendMessage: sendStoreMessage } = useChatsStore.getState()
+            let activeThread = getActiveThread()
+            let threadId = activeThread?.id
+            if (!threadId || isNewChat) {
+                const timestamp = new Date().toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+                threadId = startNewChat(activeProjectId, `New Chat ${timestamp}`)
+                setIsNewChat(false) 
+            }
+
+            sendStoreMessage(threadId, content.trim(), 'user')
+            setInputValue('')
+
+            setIsTyping(true)
+            setTimeout(() => {
+                const aiResponse = `I understand you're asking about "${content.trim()}". This is a placeholder response while we build out the AI integration. Real responses coming soon!`
+                sendStoreMessage(threadId, aiResponse, 'assistant')
+                setIsTyping(false)
+            }, 1500)
+        }
+    }, [getActiveProjectId, isNewChat])
+
+    const clearMessages = useCallback(() => {
+        const activeProjectId = getActiveProjectId()
+
+        if (activeProjectId) {
+            const { clearChatsForProject } = useChatsStore.getState()
+            clearChatsForProject(activeProjectId)
+        }
+    }, [getActiveProjectId])
+
+    const startNewChatSession = useCallback(() => {
+        setIsNewChat(true)
+    }, [])
+
+    return {
+        messages,
+        isVisible,
+        inputValue,
+        isTyping,
+        isNewChat,
+        currentChatTitle,
+        toggleVisibility,
+        setInputValue: setInputValue,
+        sendMessage,
+        clearMessages,
+        setIsNewChat,
+        startNewChatSession,
     }
-
-    setMessages(prev => [...prev, userMessage])
-    setInputValue('')
-
-    // TODO: Future AI integration will go here
-    // For now, just simulate AI typing response
-    setIsTyping(true)
-    
-    // Placeholder AI response (remove when real AI is integrated)
-    setTimeout(() => {
-      const aiMessage: ChatMessage = {
-        id: `ai-${Date.now()}`,
-        role: 'ai',
-        content: 'I understand you need help with that. Real AI responses will be implemented soon!',
-        timestamp: new Date()
-      }
-      setMessages(prev => [...prev, aiMessage])
-      setIsTyping(false)
-    }, 1000)
-  }, [])
-
-  // Clear all messages
-  const clearMessages = useCallback(() => {
-    setMessages([])
-  }, [])
-
-  return {
-    messages,
-    isVisible,
-    inputValue,
-    isTyping,
-    toggleVisibility,
-    setInputValue,
-    sendMessage,
-    clearMessages,
-  }
 }

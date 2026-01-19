@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Send, Paperclip } from 'lucide-react'
@@ -14,13 +14,16 @@ interface ChatInputProps {
     onKeyPress: (e: React.KeyboardEvent) => void
 }
 
-export default function ChatInput({
+export interface ChatInputRef {
+    focus: () => void
+}
+
+const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
     inputValue,
-    isTyping,
     onInputChange,
     onSendMessage,
     onKeyPress
-}: ChatInputProps) {
+}, ref) => {
     const [attachments, setAttachments] = useState<AttachmentItem[]>([])
     const [aiMode, setAiMode] = useState<'ask' | 'agent'>('ask')
     const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -46,22 +49,26 @@ export default function ChatInput({
     const adjustTextareaHeight = () => {
         const textarea = textareaRef.current
         if (textarea) {
-            // Reset height to auto to get the correct scrollHeight
             textarea.style.height = 'auto'
-
-            // Calculate max height (1/3 of viewport)
             const maxHeight = Math.floor(window.innerHeight / 3)
-
-            // Set height to content height, but not exceeding max height
             const newHeight = Math.min(textarea.scrollHeight, maxHeight)
             textarea.style.height = `${newHeight}px`
         }
     }
 
-    // Adjust height when component mounts or inputValue changes
     useEffect(() => {
         adjustTextareaHeight()
     }, [inputValue])
+
+    useImperativeHandle(ref, () => ({
+        focus: () => {
+            if (textareaRef.current) {
+                textareaRef.current.focus()
+                const length = textareaRef.current.value.length
+                textareaRef.current.setSelectionRange(length, length)
+            }
+        }
+    }), [])
 
     return (
         <div className="border-t border-chat-panel-border bg-chat-panel-background flex-shrink-0">
@@ -78,7 +85,6 @@ export default function ChatInput({
                         onKeyDown={onKeyPress}
                         placeholder="What can I help you with today?"
                         className="min-h-[40px] w-full resize-none bg-chat-panel-background border-none text-chat-panel-foreground placeholder:text-muted overflow-y-auto"
-                        disabled={isTyping}
                         style={{ height: '40px' }}
                     />
                     <div className="flex justify-between items-center gap-1 p-1">
@@ -100,7 +106,7 @@ export default function ChatInput({
                                 variant="ghost"
                                 size="icon"
                                 className="h-7 w-7 text-chat-panel-foreground bg-transparent hover:bg-chat-panel-accent"
-                                disabled={!inputValue.trim() || isTyping}
+                                disabled={!inputValue.trim()}
                             >
                                 <Send className="h-4 w-4 text-chat-panel-foreground" />
                             </Button>
@@ -110,4 +116,8 @@ export default function ChatInput({
             </div>
         </div>
     )
-}
+})
+
+ChatInput.displayName = 'ChatInput'
+
+export default ChatInput
