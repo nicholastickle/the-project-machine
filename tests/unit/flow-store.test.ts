@@ -32,7 +32,7 @@ describe('Flow Store', () => {
 
         const id = addTaskNode({
             title: 'New Task',
-            status: 'in-progress'
+            status: 'in_progress'
         })
 
         const { nodes, tasks } = useStore.getState()
@@ -42,17 +42,17 @@ describe('Flow Store', () => {
         expect(newNode).toBeDefined()
         expect(newTask).toBeDefined()
         expect(newTask?.title).toBe('New Task')
-        expect(newTask?.status).toBe('in-progress')
+        expect(newTask?.status).toBe('in_progress')
     })
 
     it('updates a node', () => {
         const { addTaskNode, updateTask } = useStore.getState()
         const nodeId = addTaskNode({ title: 'Task 1' })
-        
+
         // Find the task by node_id
         const { tasks } = useStore.getState()
         const task = tasks.find(t => t.node_id === nodeId)
-        
+
         if (task) {
             updateTask(task.id, { status: 'completed' })
         }
