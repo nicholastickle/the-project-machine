@@ -321,17 +321,7 @@ const useStore = create<AppState>()(
                     get().saveHistory();
                 },
 
-                resetCanvas: () => {
-                    set({
-                        nodes: initialNodes,
-                        edges: initialEdges,
-                        tasks: initialTasks,
-                    });
 
-                    get().saveHistory();
-                },
-
-               
 
                 addSubtask: (taskId: string) => {
                     const newSubtask = {

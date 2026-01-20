@@ -1,17 +1,25 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { sessionUtils } from '@/utils/session'
 
 export function useAuthRedirect() {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+    // Check authentication status on mount (client-side only)
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setIsAuthenticated(sessionUtils.isAuthenticated())
+        }
+    }, [])
 
     const redirectToAuth = useCallback(() => {
-        const isAuthenticated = sessionUtils.isAuthenticated()
+        const authStatus = typeof window !== 'undefined' ? sessionUtils.isAuthenticated() : false
 
-        if (isAuthenticated) {
+        if (authStatus) {
             // User is already authenticated, redirect to canvas
             router.push('/canvas')
         } else {
@@ -22,12 +30,12 @@ export function useAuthRedirect() {
 
     const redirectWithLoading = useCallback(async (destination: string, delay: number = 800) => {
         setIsLoading(true)
-        
+
         // Add a delay to show loading state
         await new Promise(resolve => setTimeout(resolve, delay))
-        
+
         router.push(destination)
-        
+
         // Reset loading state after a short delay
         setTimeout(() => setIsLoading(false), 100)
     }, [router])
@@ -39,8 +47,6 @@ export function useAuthRedirect() {
         // Redirect to landing page
         router.push('/')
     }, [router])
-
-    const isAuthenticated = sessionUtils.isAuthenticated()
 
     return {
         redirectToAuth,

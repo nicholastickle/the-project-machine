@@ -27,9 +27,10 @@ interface OptionsProjectProps {
     projectId: string
     projectName: string
     onRename: () => void
+    isVisible: boolean
 }
 
-export default function SidebarProjectsOptions({ projectId, projectName, onRename }: OptionsProjectProps) {
+export default function SidebarProjectsOptions({ projectId, projectName, onRename, isVisible }: OptionsProjectProps) {
     const { isMobile } = useSidebar()
     const { duplicateProject, deleteProject } = useProjectStore()
     const { syncWithActiveProject } = useStore()
@@ -56,7 +57,7 @@ export default function SidebarProjectsOptions({ projectId, projectName, onRenam
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <SidebarMenuAction showOnHover>
+                <SidebarMenuAction className={`transition-opacity duration-200 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
                     <MoreHorizontal />
                     <span className="sr-only">More</span>
                 </SidebarMenuAction>

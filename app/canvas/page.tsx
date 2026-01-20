@@ -7,7 +7,6 @@ import CanvasSidebar from "@/components/sidebar/sidebar"
 import CanvasToolbar from "@/components/toolbar/canvas-toolbar"
 import CanvasSidebarTrigger from "@/components/sidebar/sidebar-trigger"
 import ExportButtons from "@/components/export/export-buttons"
-import TaskBook from "@/components/task-book/task-book"
 import { bridgeDesignTasks } from "@/components/chat/chat-mock-data"
 import useStore from "@/stores/flow-store"
 import { useEffect, useRef, useState } from "react"
@@ -95,7 +94,6 @@ export default function CanvasPage() {
                     onVisibilityChange={handleChatVisibilityChange}
                 />
                 <ExportButtons isChatVisible={isChatDocked} />
-                <TaskBook />
                 <CanvasSidebar />
                 <CanvasToolbar />
                 <CanvasSidebarTrigger />
