@@ -72,7 +72,7 @@ export interface AIChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
   metadata?: any; // JSONB
-  created_by: string; // Null if assistant/system
+  created_by: string | null;
 }
 export interface Node extends ReactFlowNode {
   project_id: string;
@@ -206,9 +206,6 @@ export type AppState = {
   saveToActiveProject: () => void;
 
 };
-
-
-
 
 // Canvas component props
 export interface CanvasProps {
