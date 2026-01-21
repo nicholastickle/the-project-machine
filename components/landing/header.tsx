@@ -12,13 +12,19 @@ import { ModeToggle } from "@/components/theme-provider/theme-toggle"
 import { SignInUpButton } from "@/components/landing/sign-in-up-button"
 import { SubscribeButton } from "@/components/landing/subscribe-button"
 
+type NavItem = {
+  name: string
+  href: string
+  external?: boolean
+}
+
 export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
-  const navItems = [
+  const navItems: NavItem[] = [
     { name: "Features", href: "#features-section" },
     { name: "About", href: "#about-section" },
     { name: "FAQ", href: "#faq-section" },
-
+    { name: "Resources", href: "https://alkaline-apple-00d.notion.site/Project-Machine-User-Manual-121aa4c8ef4d4fac8976882a65642716", external: true },
   ]
 
   const handleScroll = useCallback(
@@ -92,12 +98,13 @@ export default function Header() {
         </div>
         <nav className="hidden lg:flex items-center gap-2">
           {navItems.map((item) => {
-
             return (
               <Link
                 key={item.name}
                 href={item.href}
-                onClick={(e) => handleScroll(e, item.href)}
+                onClick={item.external ? undefined : (e) => handleScroll(e, item.href)}
+                target={item.external ? "_blank" : undefined}
+                rel={item.external ? "noopener noreferrer" : undefined}
                 className="text-muted hover:text-foreground px-4 py-2 rounded-full font-medium text-sm transition-colors"
               >
                 {item.name}
@@ -134,7 +141,9 @@ export default function Header() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    onClick={(e) => handleMobileNavClick(e, item.href)}
+                    onClick={item.external ? undefined : (e) => handleMobileNavClick(e, item.href)}
+                    target={item.external ? "_blank" : undefined}
+                    rel={item.external ? "noopener noreferrer" : undefined}
                     className="text-muted hover:text-foreground justify-start text-md py-2"
                   >
                     {item.name}
