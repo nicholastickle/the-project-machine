@@ -100,197 +100,200 @@ const createDefaultProject = (name: string = 'Default Project', description?: st
 
 const useProjectStore = create<ProjectStoreState>()(
     persist(
-        (set, get) => ({
-            projects: [createDefaultProject()],
-            activeProjectId: null,
+        (set, get) => {
+            const defaultProject = createDefaultProject();
+            return {
+                projects: [defaultProject],
+                activeProjectId: defaultProject.project.id, // Auto-select the default project
 
-            addProject: (name: string, description?: string) => {
-                const newProject = createDefaultProject(name, description);
-                set({
-                    projects: [...get().projects, newProject]
-                    // Remove activeProjectId update - don't auto-select new project
-                });
-                return newProject.project.id;
-            },
-
-            deleteProject: (projectId: string) => {
-                const { projects, activeProjectId } = get();
-                const updatedProjects = projects.filter(p => p.project.id !== projectId);
-
-                // If we're deleting the last project, create a new default one
-                if (updatedProjects.length === 0) {
-                    const defaultProject = createDefaultProject();
+                addProject: (name: string, description?: string) => {
+                    const newProject = createDefaultProject(name, description);
                     set({
-                        projects: [defaultProject],
-                        activeProjectId: defaultProject.project.id
+                        projects: [...get().projects, newProject]
+                        // Remove activeProjectId update - don't auto-select new project
                     });
-                    return;
-                }
+                    return newProject.project.id;
+                },
 
-                // If we're deleting the active project, set the first remaining project as active
-                const newActiveProjectId = activeProjectId === projectId
-                    ? updatedProjects[0].project.id
-                    : activeProjectId;
+                deleteProject: (projectId: string) => {
+                    const { projects, activeProjectId } = get();
+                    const updatedProjects = projects.filter(p => p.project.id !== projectId);
 
-                set({
-                    projects: updatedProjects,
-                    activeProjectId: newActiveProjectId
-                });
-            },
-
-            duplicateProject: (projectId: string, newName?: string) => {
-                const originalProject = get().projects.find(p => p.project.id === projectId);
-                if (!originalProject) return '';
-
-                // Create separate ID maps for nodes and tasks
-                const nodeIdMap = new Map<string, string>();
-                const taskIdMap = new Map<string, string>();
-
-                // Generate new IDs for nodes first
-                originalProject.nodes.forEach(node => {
-                    nodeIdMap.set(node.id, uuidv4());
-                });
-
-                // Generate new IDs for tasks and map them to their corresponding new node IDs
-                originalProject.tasks.forEach(task => {
-                    const newTaskId = uuidv4();
-                    taskIdMap.set(task.id, newTaskId);
-                });
-
-                // Clone tasks with new IDs and updated node_id references
-                const clonedTasks = originalProject.tasks.map(task => {
-                    const clonedTask = JSON.parse(JSON.stringify(task));
-                    clonedTask.id = taskIdMap.get(task.id)!;
-                    clonedTask.node_id = nodeIdMap.get(task.node_id) || task.node_id;
-                    return clonedTask;
-                });
-
-                // Clone nodes with new IDs and updated taskId references
-                const clonedNodes = originalProject.nodes.map(node => {
-                    const clonedNode = JSON.parse(JSON.stringify(node));
-                    clonedNode.id = nodeIdMap.get(node.id)!;
-                    // Update content_id to reference the new task ID
-                    if (node.content_id && taskIdMap.has(node.content_id)) {
-                        clonedNode.content_id = taskIdMap.get(node.content_id)!;
+                    // If we're deleting the last project, create a new default one
+                    if (updatedProjects.length === 0) {
+                        const defaultProject = createDefaultProject();
+                        set({
+                            projects: [defaultProject],
+                            activeProjectId: defaultProject.project.id
+                        });
+                        return;
                     }
-                    // Update taskId in node data if it exists (for compatibility)
-                    if (clonedNode.data && clonedNode.data.taskId) {
-                        clonedNode.data.taskId = taskIdMap.get(clonedNode.data.taskId) || clonedNode.data.taskId;
-                    }
-                    return clonedNode;
-                });
 
-                // Clone edges with updated source/target references
-                const clonedEdges = originalProject.edges.map(edge => {
-                    const clonedEdge = JSON.parse(JSON.stringify(edge));
-                    clonedEdge.id = uuidv4();
-                    clonedEdge.source = nodeIdMap.get(edge.source) || edge.source;
-                    clonedEdge.target = nodeIdMap.get(edge.target) || edge.target;
-                    return clonedEdge;
-                });
+                    // If we're deleting the active project, set the first remaining project as active
+                    const newActiveProjectId = activeProjectId === projectId
+                        ? updatedProjects[0].project.id
+                        : activeProjectId;
 
-                const duplicatedProject: ProjectStoreData = {
-                    ...originalProject,
-                    project: {
-                        ...originalProject.project,
-                        id: uuidv4(),
-                        name: newName || `${originalProject.project.name} (copy)`,
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
-                    },
-                    tasks: clonedTasks,
-                    nodes: clonedNodes,
-                    edges: clonedEdges,
-                    subtasks: cloneWithNewIds(originalProject.subtasks || []),
-                    comments: cloneWithNewIds(originalProject.comments || []),
-                    history: [{
+                    set({
+                        projects: updatedProjects,
+                        activeProjectId: newActiveProjectId
+                    });
+                },
+
+                duplicateProject: (projectId: string, newName?: string) => {
+                    const originalProject = get().projects.find(p => p.project.id === projectId);
+                    if (!originalProject) return '';
+
+                    // Create separate ID maps for nodes and tasks
+                    const nodeIdMap = new Map<string, string>();
+                    const taskIdMap = new Map<string, string>();
+
+                    // Generate new IDs for nodes first
+                    originalProject.nodes.forEach(node => {
+                        nodeIdMap.set(node.id, uuidv4());
+                    });
+
+                    // Generate new IDs for tasks and map them to their corresponding new node IDs
+                    originalProject.tasks.forEach(task => {
+                        const newTaskId = uuidv4();
+                        taskIdMap.set(task.id, newTaskId);
+                    });
+
+                    // Clone tasks with new IDs and updated node_id references
+                    const clonedTasks = originalProject.tasks.map(task => {
+                        const clonedTask = JSON.parse(JSON.stringify(task));
+                        clonedTask.id = taskIdMap.get(task.id)!;
+                        clonedTask.node_id = nodeIdMap.get(task.node_id) || task.node_id;
+                        return clonedTask;
+                    });
+
+                    // Clone nodes with new IDs and updated taskId references
+                    const clonedNodes = originalProject.nodes.map(node => {
+                        const clonedNode = JSON.parse(JSON.stringify(node));
+                        clonedNode.id = nodeIdMap.get(node.id)!;
+                        // Update content_id to reference the new task ID
+                        if (node.content_id && taskIdMap.has(node.content_id)) {
+                            clonedNode.content_id = taskIdMap.get(node.content_id)!;
+                        }
+                        // Update taskId in node data if it exists (for compatibility)
+                        if (clonedNode.data && clonedNode.data.taskId) {
+                            clonedNode.data.taskId = taskIdMap.get(clonedNode.data.taskId) || clonedNode.data.taskId;
+                        }
+                        return clonedNode;
+                    });
+
+                    // Clone edges with updated source/target references
+                    const clonedEdges = originalProject.edges.map(edge => {
+                        const clonedEdge = JSON.parse(JSON.stringify(edge));
+                        clonedEdge.id = uuidv4();
+                        clonedEdge.source = nodeIdMap.get(edge.source) || edge.source;
+                        clonedEdge.target = nodeIdMap.get(edge.target) || edge.target;
+                        return clonedEdge;
+                    });
+
+                    const duplicatedProject: ProjectStoreData = {
+                        ...originalProject,
+                        project: {
+                            ...originalProject.project,
+                            id: uuidv4(),
+                            name: newName || `${originalProject.project.name} (copy)`,
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        },
+                        tasks: clonedTasks,
                         nodes: clonedNodes,
                         edges: clonedEdges,
-                        tasks: clonedTasks
-                    }]
-                };
+                        subtasks: cloneWithNewIds(originalProject.subtasks || []),
+                        comments: cloneWithNewIds(originalProject.comments || []),
+                        history: [{
+                            nodes: clonedNodes,
+                            edges: clonedEdges,
+                            tasks: clonedTasks
+                        }]
+                    };
 
-                set({
-                    projects: [...get().projects, duplicatedProject]
-                    // Remove auto-selection as requested by user
-                });
+                    set({
+                        projects: [...get().projects, duplicatedProject]
+                        // Remove auto-selection as requested by user
+                    });
 
-                return duplicatedProject.project.id;
-            },
+                    return duplicatedProject.project.id;
+                },
 
-            renameProject: (projectId: string, newName: string) => {
-                set({
-                    projects: get().projects.map(project =>
-                        project.project.id === projectId
-                            ? {
-                                ...project,
-                                project: {
-                                    ...project.project,
-                                    name: newName,
-                                    updated_at: new Date().toISOString()
+                renameProject: (projectId: string, newName: string) => {
+                    set({
+                        projects: get().projects.map(project =>
+                            project.project.id === projectId
+                                ? {
+                                    ...project,
+                                    project: {
+                                        ...project.project,
+                                        name: newName,
+                                        updated_at: new Date().toISOString()
+                                    }
                                 }
-                            }
-                            : project
-                    )
-                });
-            },
+                                : project
+                        )
+                    });
+                },
 
-            setActiveProject: (projectId: string) => {
-                const projectExists = get().projects.some(p => p.project.id === projectId);
-                if (projectExists) {
-                    set({ activeProjectId: projectId });
-                }
-            },
-
-            getActiveProject: () => {
-                const { projects, activeProjectId } = get();
-                if (!activeProjectId) {
-                    // Auto-select first project if none is active
-                    const firstProject = projects[0];
-                    if (firstProject) {
-                        set({ activeProjectId: firstProject.project.id });
-                        return firstProject;
+                setActiveProject: (projectId: string) => {
+                    const projectExists = get().projects.some(p => p.project.id === projectId);
+                    if (projectExists) {
+                        set({ activeProjectId: projectId });
                     }
-                    return null;
+                },
+
+                getActiveProject: () => {
+                    const { projects, activeProjectId } = get();
+                    if (!activeProjectId) {
+                        // Auto-select first project if none is active
+                        const firstProject = projects[0];
+                        if (firstProject) {
+                            set({ activeProjectId: firstProject.project.id });
+                            return firstProject;
+                        }
+                        return null;
+                    }
+                    return projects.find(p => p.project.id === activeProjectId) || null;
+                },
+
+                updateProjectData: (projectId: string, data: Partial<ProjectStoreData>) => {
+                    set({
+                        projects: get().projects.map(project =>
+                            project.project.id === projectId
+                                ? {
+                                    ...project,
+                                    ...data,
+                                    project: {
+                                        ...project.project,
+                                        ...data.project,
+                                        updated_at: new Date().toISOString()
+                                    }
+                                }
+                                : project
+                        )
+                    });
+                },
+
+                updateProjectViewport: (projectId: string, viewport: { x: number; y: number; zoom: number }) => {
+                    set({
+                        projects: get().projects.map(project =>
+                            project.project.id === projectId
+                                ? {
+                                    ...project,
+                                    project: {
+                                        ...project.project,
+                                        viewport,
+                                        updated_at: new Date().toISOString()
+                                    }
+                                }
+                                : project
+                        )
+                    });
                 }
-                return projects.find(p => p.project.id === activeProjectId) || null;
-            },
-
-            updateProjectData: (projectId: string, data: Partial<ProjectStoreData>) => {
-                set({
-                    projects: get().projects.map(project =>
-                        project.project.id === projectId
-                            ? {
-                                ...project,
-                                ...data,
-                                project: {
-                                    ...project.project,
-                                    ...data.project,
-                                    updated_at: new Date().toISOString()
-                                }
-                            }
-                            : project
-                    )
-                });
-            },
-
-            updateProjectViewport: (projectId: string, viewport: { x: number; y: number; zoom: number }) => {
-                set({
-                    projects: get().projects.map(project =>
-                        project.project.id === projectId
-                            ? {
-                                ...project,
-                                project: {
-                                    ...project.project,
-                                    viewport,
-                                    updated_at: new Date().toISOString()
-                                }
-                            }
-                            : project
-                    )
-                });
             }
-        }),
+        },
         {
             name: 'project-store'
         }

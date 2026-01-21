@@ -83,9 +83,10 @@ export default function SidebarUsers() {
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-sidebar-border" />
+            {/* <DropdownMenuSeparator className="bg-sidebar-border" /> */}
             
-            <DropdownMenuGroup>
+            {/* Theme changer temporarily disabled */}
+            {/* <DropdownMenuGroup>
               <SidebarThemeChanger>
                 <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                   <div className="flex items-center justify-between w-full">
@@ -97,8 +98,8 @@ export default function SidebarUsers() {
                   </div>
                 </DropdownMenuItem>
               </SidebarThemeChanger>
-
-            </DropdownMenuGroup>
+            </DropdownMenuGroup> */}
+            
             <DropdownMenuSeparator className="bg-sidebar-border" />
             <DropdownMenuItem className="hover:bg-sidebar-accent hover:text-foreground text-xs" asChild>
               <SignOutButton

@@ -1,139 +1,84 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
-import { useChatScript } from '@/hooks/use-chat-script'
-import { INITIAL_MESSAGE } from '@/components/chat/chat-script'
+import { useChatUI } from '@/hooks/use-chat-ui'
+import useChatsStore from '@/stores/chats-store'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { Send, Check, Paperclip, X, MessageSquare } from 'lucide-react'
-
+import { MessageSquare } from 'lucide-react'
+import UserMessage from './user-message'
+import AIMessage from './ai-message'
+import ChatInput, { type ChatInputRef } from './chat-input'
+import ChatWelcome from './chat-welcome'
+import ChatHeader from './chat-header'
+import RecentChats from './recent-chats'
 interface ChatPanelProps {
-  onConfirm?: () => void
   onVisibilityChange?: (isVisible: boolean, isDocked: boolean) => void
 }
 
-export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelProps) {
+export default function ChatPanel({ onVisibilityChange }: ChatPanelProps) {
   const {
     messages,
-    isCentered,
     isVisible,
-    sendInitialMessage,
-    confirmPlan,
+    inputValue,
+    isTyping,
+    isNewChat,
+    currentChatTitle,
     toggleVisibility,
-    canSend,
-    canConfirm,
-  } = useChatScript()
+    setInputValue,
+    sendMessage,
+    clearMessages,
+    setIsNewChat,
+    startNewChatSession,
+  } = useChatUI()
 
-  // Notify parent when visibility changes
+
   useEffect(() => {
-    // When chat is not visible, it should not be considered docked
-    onVisibilityChange?.(isVisible, isVisible && !isCentered)
-  }, [isVisible, isCentered, onVisibilityChange])
+    onVisibilityChange?.(isVisible, true)
+  }, [isVisible, onVisibilityChange])
 
-  // Typewriter effect state for the last AI message
-  const [displayedMessages, setDisplayedMessages] = useState<typeof messages>([])
-  const [currentTypingIndex, setCurrentTypingIndex] = useState(0)
   const [isUserScrolling, setIsUserScrolling] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const chatInputRef = useRef<ChatInputRef>(null)
 
-  // Handle typewriter effect for AI messages only
-  useEffect(() => {
-    if (messages.length === 0) {
-      setDisplayedMessages([])
-      return
+  const handleSendMessage = () => {
+    if (inputValue.trim()) {
+      sendMessage(inputValue)
+      // Focus the input after sending message to keep cursor active
+      // Try immediate focus
+      chatInputRef.current?.focus()
+      // Also try with requestAnimationFrame as backup
+      requestAnimationFrame(() => {
+        chatInputRef.current?.focus()
+      })
     }
+  }
 
-    const lastMessage = messages[messages.length - 1]
-    const lastDisplayed = displayedMessages[displayedMessages.length - 1]
 
-    // Add any new message (user or AI)
-    if (lastMessage.id !== lastDisplayed?.id) {
-      // User messages appear instantly, AI messages start typewriter
-      if (lastMessage.role === 'user') {
-        setDisplayedMessages(messages)
-      } else {
-        // AI message: start with empty content
-        setDisplayedMessages(messages.slice(0, -1).concat({ ...lastMessage, content: '' }))
-      }
-      setCurrentTypingIndex(0)
-      setIsUserScrolling(false) // Reset scroll lock when new message arrives
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSendMessage()
     }
-  }, [messages])
+  }
 
-  // Complete typewriter instantly when conversation can be confirmed (but allow some typing first)
-  useEffect(() => {
-    if (canConfirm && messages.length > 0) {
-      const lastMessage = messages[messages.length - 1]
-      const lastDisplayed = displayedMessages[displayedMessages.length - 1]
 
-      if (lastMessage.role === 'ai' && lastDisplayed && lastDisplayed.content.length > 10) {
-        // Only complete instantly if we've typed at least 10 characters
-        setDisplayedMessages(messages) // Show complete content instantly
-      }
-    }
-  }, [canConfirm, messages, displayedMessages])
-
-  // Typewriter animation for AI messages only
-  useEffect(() => {
-    if (displayedMessages.length === 0) return
-
-    const lastMessage = messages[messages.length - 1]
-    const lastDisplayed = displayedMessages[displayedMessages.length - 1]
-
-    if (!lastMessage || !lastDisplayed) return
-    if (lastMessage.role === 'user') return // Only typewrite AI messages
-    if (lastDisplayed.content === lastMessage.content) return
-
-    const fullContent = lastMessage.content
-    const currentLength = lastDisplayed.content.length
-
-    if (currentLength < fullContent.length) {
-      const timer = setTimeout(() => {
-        setDisplayedMessages(prev => {
-          const updated = [...prev]
-          updated[updated.length - 1] = {
-            ...lastDisplayed,
-            content: fullContent.slice(0, currentLength + 1)
-          }
-          return updated
-        })
-        setCurrentTypingIndex(currentLength + 1)
-      }, 15) // Sped up from 30ms to 15ms per character for faster typing
-
-      return () => clearTimeout(timer)
-    }
-  }, [displayedMessages, messages, currentTypingIndex])
-
-  // Auto-scroll to bottom only if user isn't manually scrolling
-  useEffect(() => {
-    if (!isUserScrolling) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }
-  }, [displayedMessages, isUserScrolling])
-
-  // Detect user scrolling
   const handleScroll = () => {
-    if (!messagesContainerRef.current) return
-
-    const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current
-    const isAtBottom = scrollHeight - scrollTop - clientHeight < 50
-
-    // If user scrolls up, disable auto-scroll
-    if (!isAtBottom) {
-      setIsUserScrolling(true)
-    } else {
-      setIsUserScrolling(false)
+    if (messagesContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 50
+      setIsUserScrolling(!isNearBottom)
     }
   }
 
-  const handleConfirm = () => {
-    confirmPlan()
-    onConfirm?.()
-  }
 
-  // Floating toggle button when chat is hidden
+  useEffect(() => {
+    if (!isUserScrolling && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [messages, isUserScrolling])
+
   if (!isVisible) {
     return (
       <Button
@@ -146,178 +91,98 @@ export default function ChatPanel({ onConfirm, onVisibilityChange }: ChatPanelPr
     )
   }
 
-  // When centered, render as floating card
-  if (isCentered) {
-    return (
-      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 w-[500px] z-10 bg-chat-panel-background rounded-full border border-chat-panel-border flex flex-col">
-
-        {/* Input Area */}
-
-        {canSend && (
-          <div className="flex items-start items-center">
-            <div className="flex items-center justify-center">
-              <Button
-                variant="ghost"
-                size="lg"
-                className=" p-3 ml-3 hover:bg-chat-panel-accent rounded-full"
-                onClick={() => {
-                  alert('Soon you\'ll be able to attach additional context like:\n\n• Old project plans from Excel\n• Reference documents\n• Previous estimates\n• Client requirements\n\nThis will help me create a more accurate plan tailored to your needs!')
-                }}
-              >
-                <Paperclip className="h-8 w-8 text-chat-panel-foreground" />
-              </Button>
-            </div>
-            <Textarea
-              value={INITIAL_MESSAGE}
-              readOnly
-              className="flex-1 min-h-[80px] bg-chat-panel-background border-none cursor-not-allowed resize-none"
-            />
-            <div className="">
-              <Button
-                onClick={sendInitialMessage}
-                size="icon"
-                className="rounded-full bg-orange-600 hover:bg-orange-700 animate-pulse mr-4"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {!canSend && !canConfirm && (
-          <div className="flex items-start gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="flex-shrink-0 mt-1"
-              disabled
-            >
-              <Paperclip className="h-4 w-4 text-muted-foreground" />
-            </Button>
-            <Textarea
-              placeholder="Conversation in progress..."
-              disabled
-              className="flex-1 min-h-[80px] resize-none"
-            />
-            <Button
-              size="icon"
-              className="flex-shrink-0 mt-1"
-              disabled
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-      </div>
-
-
-    )
-  }
-
-  // When docked, render as shadcn Sheet on the right side
   return (
     <Sheet open={isVisible} onOpenChange={toggleVisibility} modal={false}>
       <SheetContent
         side="right"
-        className="w-[350px] p-0 flex flex-col border border-chat-panel-border bg-chat-panel-background"
+        className="w-[350px] p-0 flex flex-col border border-chat-panel-border bg-chat-panel-background gap-0"
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <SheetHeader className="bg-chat-panel-background px-3 py-2">
+        <SheetHeader className="border-b border-chat-panel-border bg-chat-panel-background px-3 py-2">
           <SheetTitle className="flex items-center justify-center text-sm font-medium">
             Chat
           </SheetTitle>
         </SheetHeader>
 
-        {/* Messages */}
+        <ChatHeader
+          displayedMessages={messages}
+          onClearMessages={clearMessages}
+          onBack={startNewChatSession}
+          showBackButton={!isNewChat}
+          currentChatTitle={currentChatTitle}
+        />
+
+
+        {isNewChat && (
+          <RecentChats
+            maxChats={3}
+            onChatSelect={(chatId) => {
+
+              const { openChat } = useChatsStore.getState()
+              openChat(chatId)
+              setIsNewChat(false)
+            }}
+            onArchiveChat={(chatId) => {
+              const { deleteChat } = useChatsStore.getState()
+              deleteChat(chatId)
+            }}
+          />
+        )}
+
         <div
           ref={messagesContainerRef}
           onScroll={handleScroll}
-          className="overflow-y-scroll p-2 space-y-2 flex-1 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
-          style={{
+          className={`p-3 space-y-3 flex-1 ${!isNewChat && messages.length > 0
+            ? 'overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent'
+            : ''
+            }`}
+          style={!isNewChat && messages.length > 0 ? {
             scrollbarWidth: 'thin',
             scrollbarColor: 'hsl(var(--chat-panel-accent)) transparent'
-          }}
+          } : {}}
         >
-          {displayedMessages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`
-                flex
-                ${msg.role === 'user' ? 'justify-end' : 'justify-start'}
-                ${msg.role === 'user' ? 'animate-in fade-in slide-in-from-right-4 duration-[1500ms]' : ''}
-              `}
-            >
-              <div
-                className={`
-                  max-w-[95%] rounded-lg p-2  text-chat-panel-foreground
-                  ${msg.role === 'user'
-                    ? 'bg-chat-panel-accent text-sm border border-chat-panel-border'
-                    : 'bg-chat-panel-background text-xs leading-5'
-                  }
-                  
-                `}
-              >
-                <div className="whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none">
-                  {msg.content.split('\n').map((line, i) => {
-                    const boldPattern = /\*\*(.+?)\*\*/g
-                    const parts = line.split(boldPattern)
 
-                    return (
-                      <p key={i} className={i > 0 ? 'mt-1' : ''}>
-                        {parts.map((part, j) =>
-                          j % 2 === 1 ? <strong key={j}>{part}</strong> : part
-                        )}
-                      </p>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
+          {isNewChat && (
+            <ChatWelcome
+              onSendMessage={(content) => {
+                sendMessage(content)
+              }}
+              inputValue={inputValue}
+            />
+          )}
+
+          {!isNewChat && messages.map((msg) => (
+            msg.role === 'user' ? (
+              <UserMessage key={msg.id} message={msg} />
+            ) : (
+              <AIMessage key={msg.id} message={msg} />
+            )
           ))}
 
-          {/* Confirm button appears after AI finishes typing */}
-          {canConfirm && displayedMessages.length > 0 && (
-            <div className="flex justify-center mt-4">
-              <Button
-                onClick={handleConfirm}
-                className="gap-2 bg-primary/80 hover:bg-primary"
-                size="lg"
-              >
-                <Check className="w-4 h-4" />
-                Confirm & Add to Canvas
-              </Button>
+          {!isNewChat && isTyping && (
+            <div className="flex justify-start">
+              <div className="max-w-[85%] rounded-lg p-3 bg-chat-panel-background text-chat-panel-foreground text-sm border border-chat-panel-border">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" />
+                  <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:0.1s]" />
+                  <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:0.2s]" />
+                </div>
+              </div>
             </div>
           )}
 
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area */}
-        <div className="p-4 border-t border-chat-panel-border bg-chat-panel-background flex-shrink-0">
-          <div className="flex items-center justify-center gap-2 bg-chat-panel-accent rounded-full p-2">
-            <Button
-              variant="ghost"
-              size="icon"
-
-              disabled
-            >
-              <Paperclip className="h-8 w-8 text-chat-panel-foreground" />
-            </Button>
-            <Textarea
-              placeholder="Conversation in progress..."
-              disabled
-              className="flex-1 min-h-[30px] resize-none border-none bg-transparent"
-            />
-            <Button
-              size="icon"
-              className="flex-shrink-0 mt-1 bg-chat-panel-accent rounded-full"
-              disabled
-            >
-              <Send className="h-8 w-8 text-chat-panel-foreground" />
-            </Button>
-          </div>
-        </div>
+        <ChatInput
+          ref={chatInputRef}
+          inputValue={inputValue}
+          isTyping={isTyping}
+          onInputChange={setInputValue}
+          onSendMessage={handleSendMessage}
+          onKeyPress={handleKeyPress}
+        />
       </SheetContent>
     </Sheet>
   )

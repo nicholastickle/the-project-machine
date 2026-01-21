@@ -7,7 +7,6 @@ import CanvasSidebar from "@/components/sidebar/sidebar"
 import CanvasToolbar from "@/components/toolbar/canvas-toolbar"
 import CanvasSidebarTrigger from "@/components/sidebar/sidebar-trigger"
 import ExportButtons from "@/components/export/export-buttons"
-import { bridgeDesignTasks } from "@/components/chat/chat-mock-data"
 import useStore from "@/stores/flow-store"
 import { useEffect, useRef, useState } from "react"
 import type { ReactFlowInstance } from "@xyflow/react"
@@ -16,10 +15,9 @@ import type { Node, Edge } from "@/stores/types"
 export default function CanvasPage() {
     const reactFlowInstance = useRef<ReactFlowInstance<Node, Edge> | null>(null)
     const [isChatVisible, setIsChatVisible] = useState(true)
-    const [isChatDocked, setIsChatDocked] = useState(false)
+    const [isChatDocked, setIsChatDocked] = useState(true) // Default to docked
     const undo = useStore((state) => state.undo)
     const redo = useStore((state) => state.redo)
-    const addTaskNode = useStore((state) => state.addTaskNode)
 
 
     const setReactFlowInstance = (instance: ReactFlowInstance<Node, Edge>) => {
@@ -53,32 +51,6 @@ export default function CanvasPage() {
         return () => window.removeEventListener('keydown', handleKeyDown)
     }, [undo, redo])
 
-    // Handle confirmation from chat - add scripted tasks to canvas
-    const handleChatConfirm = () => {
-        // Sprint 2: Add 13 pre-defined bridge design tasks when user confirms
-        const scriptedTasks = bridgeDesignTasks
-
-        // Add tasks sequentially with animation (one at a time)
-        scriptedTasks.forEach((task, index) => {
-            setTimeout(() => {
-                addTaskNode(task)
-
-                // Fit view after last task is added
-                if (index === scriptedTasks.length - 1) {
-                    setTimeout(() => {
-                        if (reactFlowInstance.current) {
-                            reactFlowInstance.current.fitView({
-                                padding: 0.3,
-                                duration: 1000,
-                                maxZoom: 0.8,
-                            })
-                        }
-                    }, 200)
-                }
-            }, index * 400) // 400ms delay between each task
-        })
-    }
-
     // Handle chat visibility changes
     const handleChatVisibilityChange = (isVisible: boolean, isDocked: boolean) => {
         setIsChatVisible(isVisible)
@@ -89,11 +61,8 @@ export default function CanvasPage() {
         <SidebarProvider defaultOpen={false}>
             <div className="fixed inset-0 h-screen w-screen overflow-hidden">
                 <Canvas onInit={setReactFlowInstance} />
-                <ChatPanel
-                    onConfirm={handleChatConfirm}
-                    onVisibilityChange={handleChatVisibilityChange}
-                />
-                <ExportButtons isChatVisible={isChatDocked} />
+                <ChatPanel onVisibilityChange={handleChatVisibilityChange} />
+                <ExportButtons isChatVisible={isChatVisible && isChatDocked} />
                 <CanvasSidebar />
                 <CanvasToolbar />
                 <CanvasSidebarTrigger />

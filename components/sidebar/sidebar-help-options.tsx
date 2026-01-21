@@ -45,7 +45,7 @@ export default function SidebarHelpOptions({ children }: OptionsHelpProps) {
                 </DropdownMenuItem>
                 <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                     <MessageSquare className="text-muted-foreground" />
-                    <Link href="https://www.featurebase.app/" target="_blank" rel="noopener noreferrer">Give feedback</Link>
+                    <Link href="https://projectmachine.featurebase.app" target="_blank" rel="noopener noreferrer">Give feedback</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-sidebar-border" />
                 <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">

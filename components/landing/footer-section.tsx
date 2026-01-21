@@ -58,7 +58,7 @@ export default function FooterSection() {
                 asLink={true}
                 className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200"
               />
-              <Link href="/legal" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Legal</Link>
+              <Link href="https://alkaline-apple-00d.notion.site/Legal-Summary-2e9227fa135b800d8c29ff19c850f961" target="_blank" rel="noopener noreferrer" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Legal</Link>
             </nav>
           </div>
 
@@ -67,8 +67,7 @@ export default function FooterSection() {
             <h3 className="font-semibold text-muted text-sm uppercase tracking-wider">Social</h3>
             <nav className="flex flex-col space-y-3">
               <Link href="https://www.linkedin.com/company/the-project-machine/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">LinkedIn</Link>
-              <Link href="https://discord.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Discord</Link>
-              <Link href="https://business.whatsapp.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">WhatsApp</Link>
+              <Link href="https://discord.gg/zDZjrq6M" target="_blank" rel="noopener noreferrer" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Discord</Link>
             </nav>
           </div>
 
@@ -77,7 +76,7 @@ export default function FooterSection() {
             <h3 className="font-semibold text-muted text-sm uppercase tracking-wider">Contact</h3>
             <nav className="flex flex-col space-y-3">
               <Link href="mailto:nicholas@projectmachine.com" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">nicholas@projectmachine.com</Link>
-              <Link href="https://www.featurebase.app/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Give feedback</Link>
+              <Link href="https://projectmachine.featurebase.app" target="_blank" rel="noopener noreferrer" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Give feedback</Link>
               <span className="text-muted/50 text-sm">London, United Kingdom</span>
             </nav>
           </div>
