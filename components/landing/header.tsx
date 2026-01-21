@@ -117,7 +117,7 @@ export default function Header() {
 
         <div className="hidden md:flex gap-1">
           <SubscribeButton />
-          <ModeToggle />
+          {/* <ModeToggle /> */}
           <SignInUpButton />
         </div>
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
@@ -152,7 +152,7 @@ export default function Header() {
               })}
               <div className="md:hidden flex flex-col gap-2 ">
                 <SubscribeButton />
-                <ModeToggle />
+                {/* <ModeToggle /> */}
                 <SignInUpButton />
               </div>
             </nav>
