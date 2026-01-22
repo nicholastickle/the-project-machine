@@ -1,6 +1,7 @@
 import {
-    MoreHorizontal
+    MoreHorizontal, Trash2
 } from "lucide-react"
+import { useState } from "react"
 
 import {
     DropdownMenu,
@@ -10,31 +11,50 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { Button } from "@/components/ui/button"
+import {
     SidebarMenuAction,
     useSidebar,
 } from "@/components/ui/sidebar"
+import useProjectStore from "@/stores/project-store"
+import useStore from "@/stores/flow-store"
 
 interface OptionsProjectProps {
+    projectId: string
     projectName: string
+    onRename: () => void
 }
 
-export default function SidebarProjectsOptions({ projectName }: OptionsProjectProps) {
+export default function SidebarProjectsOptions({ projectId, projectName, onRename }: OptionsProjectProps) {
     const { isMobile } = useSidebar()
+    const { duplicateProject, deleteProject } = useProjectStore()
+    const { syncWithActiveProject } = useStore()
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
     const handleRenameProject = () => {
-        console.log(`Rename Project clicked: ${projectName}`)
+        onRename()
     }
 
     const handleDuplicateProject = () => {
-        console.log(`Duplicate Project clicked: ${projectName}`)
+        duplicateProject(projectId, `${projectName} (copy)`)
     }
 
-    const handleDeleteProject = () => {
-        console.log(`Delete Project clicked: ${projectName}`)
+    const handleDeleteConfirm = () => {
+        deleteProject(projectId)
+        syncWithActiveProject()
+        setIsDeleteOpen(false)
+    }
+
+    const handleDeleteCancel = () => {
+        setIsDeleteOpen(false)
     }
 
     return (
-        <DropdownMenu modal={false}>
+        <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <SidebarMenuAction showOnHover>
                     <MoreHorizontal />
@@ -46,16 +66,55 @@ export default function SidebarProjectsOptions({ projectName }: OptionsProjectPr
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
             >
-                <DropdownMenuItem onClick={handleRenameProject}  className="focus:bg-sidebar-accent focus:text-foreground text-xs">
+                <DropdownMenuItem onClick={handleRenameProject} className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                     Rename
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleDuplicateProject} className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                     Duplicate
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-sidebar-border" />
-                <DropdownMenuItem onClick={handleDeleteProject} className="focus:bg-sidebar-accent focus:text-foreground text-xs">
-                    Delete
-                </DropdownMenuItem>
+                <Popover open={isDeleteOpen} onOpenChange={setIsDeleteOpen} modal={true}>
+                    <PopoverTrigger asChild>
+                        <DropdownMenuItem
+                            className="focus:bg-sidebar-accent focus:text-foreground text-xs"
+                            onSelect={(e) => {
+                                e.preventDefault();
+                                setIsDeleteOpen(true);
+                            }}
+                        >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                        </DropdownMenuItem>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-4 bg-white" align="start" side="right">
+                        <div className="space-y-3">
+                            <div className="text-sm font-medium text-foreground">
+                                Delete this project?
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                                This action cannot be undone. All tasks and progress will be lost.
+                            </div>
+                            <div className="flex gap-2">
+                                <Button
+                                    onClick={handleDeleteConfirm}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="flex-1 text-foreground"
+                                >
+                                    Yes, delete
+                                </Button>
+                                <Button
+                                    onClick={handleDeleteCancel}
+                                    variant="outline"
+                                    size="sm"
+                                    className="flex-1 text-foreground"
+                                >
+                                    Cancel
+                                </Button>
+                            </div>
+                        </div>
+                    </PopoverContent>
+                </Popover>
             </DropdownMenuContent>
         </DropdownMenu>
     )

@@ -26,9 +26,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import SidebarThemeChanger from "@/components/sidebar/sidebar-theme-changer"
+import { useAuth } from "@/components/auth/auth-provider"
 
 export default function SidebarUsers() {
   const { isMobile } = useSidebar()
+  const { signOut } = useAuth()
 
   interface UserProps {
     name: string,
@@ -99,7 +101,10 @@ export default function SidebarUsers() {
 
             </DropdownMenuGroup>
             <DropdownMenuSeparator className="bg-sidebar-border" />
-            <DropdownMenuItem className="focus:bg-sidebar-accent focus:text-foreground text-xs">
+            <DropdownMenuItem 
+              className="hover:bg-sidebar-accent hover:text-foreground text-xs"
+              onClick={() => signOut()}
+            >
               <LogOut />
               Sign Out
             </DropdownMenuItem>

@@ -5,14 +5,13 @@ import {
     ReactFlow,
     SelectionMode,
     ConnectionMode,
-
 } from '@xyflow/react';
 
 import useStore from '@/stores/flow-store';
 import { type AppState, type CanvasProps } from '@/stores/types';
 import CanvasBackground from '@/components/canvas/background';
 import NavControlBar from '@/components/navigation-controls/nav-control-bar';
-import TaskCard from '@/components/task-card-node-v2/task-card-node';
+import TaskCard from '@/components/task-card-node/task-card-node';
 
 const nodeTypes = { task: TaskCard };
 const panOnDrag = [1, 2];
@@ -51,7 +50,12 @@ export default function Canvas({ onInit }: CanvasProps) {
                 nodesDraggable={nodesDraggable}
                 nodesConnectable={nodesConnectable}
                 defaultEdgeOptions={{
-                    interactionWidth: 20
+                    interactionWidth: 20,
+                    style: {
+                        stroke: 'hsl(var(--edges))',
+                        strokeWidth: 9,
+                        strokeDasharray: '5,5',
+                    }
                 }}
                 panOnDrag={panOnDrag}
                 selectionMode={SelectionMode.Partial}
