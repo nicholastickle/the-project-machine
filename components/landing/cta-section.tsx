@@ -1,8 +1,12 @@
+"use client"
 
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
 import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
+import { Button } from "@/components/ui/button"
+import { useAuth } from "@/components/auth/auth-provider"
+
 export default function CTASection() {
+  const { openAuthModal } = useAuth()
+  
   return (
 
     <div className="flex flex-row justify-center border-x border-border-dark ">
@@ -117,15 +121,14 @@ export default function CTASection() {
                 Start today to visualize every step, build your library of proven task templates, and best of all... the more you plan, the smarter it gets.
               </p>
             </div>
-            <Link href="/canvas">
-              <Button
-                variant="outline"
-                className="flex items-center"
-                size="lg"
-              >
-                Get Started
-              </Button>
-            </Link>
+            <Button
+              onClick={() => openAuthModal()}
+              variant="outline"
+              className="flex items-center"
+              size="lg"
+            >
+              Get Started
+            </Button>
           </div>
         </section>
 
@@ -136,9 +139,3 @@ export default function CTASection() {
   )
 }
 
-
-//  <Link href="/canvas">
-//   <Button variant="outline" className="w-full justify-center">
-//     Get started
-//   </Button>
-// </Link>

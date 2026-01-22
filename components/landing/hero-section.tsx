@@ -1,12 +1,14 @@
-import React from "react"
-import { Button } from "@/components/ui/button"
+"use client"
 
+import React from "react"
 import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 import { TypewriterSubheadline } from "@/components/landing/typewriter-subheadline"
-import Link from "next/link"
-import { Send } from "lucide-react"
-import { SubscribeButton } from "@/components/landing/subscribe-button"
+import { Button } from "@/components/ui/button"
+import { useAuth } from "@/components/auth/auth-provider"
+
 export default function HeroSection() {
+  const { openAuthModal } = useAuth()
+  
   return (
     <div className="flex flex-row justify-center border-x border-border-dark ">
       <div className=" w-[60px] diagonal-lines border-x border-border-dark">
@@ -451,11 +453,13 @@ export default function HeroSection() {
                 className="flex flex-row justify-start gap-4 mb-8 h-10"
               >
 
-                 <Link href="/canvas">
-                  <Button variant="outline" className="w-full justify-center">
-                    Get started
-                  </Button>
-                </Link>
+                <Button
+                  onClick={() => openAuthModal()}
+                  variant="outline"
+                  className="p-6 justify-center"
+                >
+                  Get started
+                </Button>
 
               
               </div>

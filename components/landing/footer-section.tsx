@@ -3,8 +3,11 @@
 import { useCallback } from "react"
 import Link from "next/link"
 import { ProjectMachineLogoFooter } from "@/components/logo/project-machine-logo-footer"
+import { Button } from "@/components/ui/button"
+import { useAuth } from "@/components/auth/auth-provider"
 
 export default function FooterSection() {
+  const { openAuthModal } = useAuth()
   const handleScroll = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
       if (!href.startsWith('#')) {
@@ -28,16 +31,10 @@ export default function FooterSection() {
     []
   )
 
-    const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear()
 
   return (
     <div className="flex flex-row justify-center border-x border-border-dark">
-
- {/* <div className="flex flex-row justify-center border border-border-dark ">
-                <div className=" w-[60px] diagonal-lines border-l border-border-dark">
-                </div>
-                <AnimatedSectionWhileInView className=" flex-1 max-w-[1320px relative flex flex-col items-center text-center overflow-hidden w-full md:w-[98vw] lg:w-[98vw] xl:w-[1220px] max-w-[1220px] " delay={0.2}></AnimatedSectionWhileInView> */}
-
 
       <div className="w-[60px] diagonal-lines border-x border-border-dark"></div>
 
@@ -58,7 +55,12 @@ export default function FooterSection() {
               <Link href="#features-section" onClick={(e) => handleScroll(e, "#features-section")} className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Features</Link>
               <Link href="#about-section" onClick={(e) => handleScroll(e, "#about-section")} className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">About</Link>
               <Link href="#faq-section" onClick={(e) => handleScroll(e, "#faq-section")} className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">FAQ</Link>
-              <Link href="/canvas" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Get Started</Link>
+              <button
+                onClick={() => openAuthModal()}
+                className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200 text-left"
+              >
+                Get Started
+              </button>
               <Link href="/legal" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Legal</Link>
             </nav>
           </div>
