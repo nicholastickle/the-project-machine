@@ -141,6 +141,13 @@ export interface ProjectData {
   members: ProjectMember[];
 }
 
+// Extended ProjectData with canvas-specific state for project store
+export interface ProjectStoreData extends ProjectData {
+  history: { nodes: Node[]; edges: Edge[]; tasks: Task[] }[];
+  historyIndex: number;
+  cursorMode: CursorMode;
+}
+
 export type CursorMode = 'select' | 'pan';
 
 export type AppState = {
@@ -169,12 +176,12 @@ export type AppState = {
   addTaskNode: (taskData?: Partial<Task>, nodeOptions?: {
     position?: { x: number; y: number };
     id?: string;
-  }) => string;
+  }) => Promise<string>;
   deleteTaskNode: (nodeId: string) => void;
   connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => void;
 
   // Task management methods
-  updateTask: (taskId: string, data: Partial<Task>, saveToHistory?: boolean) => void;
+  updateTask: (taskId: string, data: Partial<Task>, saveToHistory?: boolean) => Promise<void>;
   addSubtask: (taskId: string) => void;
   updateSubtask: (taskId: string, subtaskId: string, data: Partial<Subtask>) => void;
   deleteSubtask: (taskId: string, subtaskId: string) => void;
@@ -193,7 +200,11 @@ export type AppState = {
   redo: () => void;
 
   // Cursor mode methods
-  setCursorMode: (mode: CursorMode) => void; // Add this new method
+  setCursorMode: (mode: CursorMode) => void;
+
+  // Project sync methods
+  syncWithActiveProject: () => void;
+  saveToActiveProject: () => void;
 
 };
 

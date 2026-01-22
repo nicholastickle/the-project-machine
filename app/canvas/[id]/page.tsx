@@ -9,18 +9,23 @@ import CanvasSidebarTrigger from "@/components/sidebar/sidebar-trigger"
 import ExportButtons from "@/components/export/export-buttons"
 import TaskBook from "@/components/task-book/task-book"
 import useStore from "@/stores/flow-store"
+import useProjectStore from "@/stores/project-store"
+import { loadProjectCanvas } from "@/lib/canvas-sync"
 import { useEffect, useRef, useState } from "react"
 import type { ReactFlowInstance } from "@xyflow/react"
+import type { Node, Edge } from "@/stores/types"
 
 export default function CanvasProjectPage({ params }: { params: Promise<{ id: string }> }) {
     const reactFlowInstance = useRef<ReactFlowInstance | null>(null)
     const [isChatVisible, setIsChatVisible] = useState(true)
     const [isChatDocked, setIsChatDocked] = useState(false)
     const [projectId, setProjectId] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
     
-    // TODO: Sprint 3 - Re-enable after wiring Nick's services to backend
-    // const loadProject = useStore((state) => state.loadProject)
-    // const subscribeToRealtime = useStore((state) => state.subscribeToRealtime)
+    const setNodes = useStore((state) => state.setNodes)
+    const setEdges = useStore((state) => state.setEdges)
+    const setProjectIdInStore = useStore((state) => state.setProjectId)
+    const setActiveProject = useProjectStore((state) => state.setActiveProject)
 
     const setReactFlowInstance = (instance: ReactFlowInstance) => {
         reactFlowInstance.current = instance
@@ -33,22 +38,42 @@ export default function CanvasProjectPage({ params }: { params: Promise<{ id: st
         params.then(p => setProjectId(p.id))
     }, [params])
 
-    // TODO: Sprint 3 - Re-enable after backend integration
-    // useEffect(() => {
-    //     if (!projectId) return
-    //     console.log('[Canvas Page] Loading project:', projectId)
-    //     loadProject(projectId)
-    //     const unsubscribe = subscribeToRealtime()
-    //     return () => {
-    //       console.log('[Canvas Page] Cleaning up realtime subscription')
-    //       unsubscribe()
-    //     }
-    // }, [projectId, loadProject, subscribeToRealtime])
+    // Load project data from backend
+    useEffect(() => {
+        if (!projectId) return
+
+        const loadProject = async () => {
+            setIsLoading(true)
+            console.log('[Canvas Page] Loading project:', projectId)
+            
+            // Set active project in store
+            setActiveProject(projectId)
+            setProjectIdInStore(projectId)
+            
+            // Load canvas data (nodes/edges) from backend
+            const { nodes, edges } = await loadProjectCanvas(projectId)
+            setNodes(nodes)
+            setEdges(edges)
+            
+            setIsLoading(false)
+            console.log('[Canvas Page] Project loaded:', nodes.length, 'nodes')
+        }
+
+        loadProject()
+    }, [projectId, setActiveProject, setProjectIdInStore, setNodes, setEdges])
 
     // Handle chat visibility changes
     const handleChatVisibilityChange = (isVisible: boolean, isDocked: boolean) => {
         setIsChatVisible(isVisible)
         setIsChatDocked(isDocked)
+    }
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <p className="text-muted-foreground">Loading project...</p>
+            </div>
+        )
     }
 
     return (

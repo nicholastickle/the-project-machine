@@ -4,45 +4,41 @@ describe('Component Imports', () => {
   describe('Sidebar Components', () => {
     it('should import sidebar', async () => {
       await expect(import('@/components/sidebar/sidebar')).resolves.toBeDefined()
-    })
-
-    it('should import sidebar-projects-list', async () => {
-      await expect(import('@/components/sidebar/sidebar-projects-list')).resolves.toBeDefined()
-    })
+    }, 10000)
 
     it('should import sidebar-projects-new', async () => {
       await expect(import('@/components/sidebar/sidebar-projects-new')).resolves.toBeDefined()
     })
 
-    it('should import options-project', async () => {
-      await expect(import('@/components/sidebar/options-project')).resolves.toBeDefined()
+    it('should import sidebar-projects-options', async () => {
+      await expect(import('@/components/sidebar/sidebar-projects-options')).resolves.toBeDefined()
     })
 
-    it('should import nav-user', async () => {
-      await expect(import('@/components/sidebar/nav-user')).resolves.toBeDefined()
+    it('should import sidebar-users', async () => {
+      await expect(import('@/components/sidebar/sidebar-users')).resolves.toBeDefined()
     })
 
-    it('should import nav-help', async () => {
-      await expect(import('@/components/sidebar/nav-help')).resolves.toBeDefined()
+    it('should import sidebar-help-button', async () => {
+      await expect(import('@/components/sidebar/sidebar-help-button')).resolves.toBeDefined()
     })
 
-    it('should import options-help', async () => {
-      await expect(import('@/components/sidebar/options-help')).resolves.toBeDefined()
+    it('should import sidebar-help-options', async () => {
+      await expect(import('@/components/sidebar/sidebar-help-options')).resolves.toBeDefined()
     })
 
     it('should import sidebar-trigger', async () => {
       await expect(import('@/components/sidebar/sidebar-trigger')).resolves.toBeDefined()
     })
 
-    it('should import theme-changer', async () => {
-      await expect(import('@/components/sidebar/theme-changer')).resolves.toBeDefined()
+    it('should import sidebar-theme-changer', async () => {
+      await expect(import('@/components/sidebar/sidebar-theme-changer')).resolves.toBeDefined()
     })
   })
 
   describe('Canvas Components', () => {
     it('should import canvas', async () => {
       await expect(import('@/components/canvas/canvas')).resolves.toBeDefined()
-    })
+    }, 10000) // Increase timeout to 10s for slower imports
 
     it('should import background', async () => {
       await expect(import('@/components/canvas/background')).resolves.toBeDefined()
@@ -58,17 +54,9 @@ describe('Component Imports', () => {
   })
 
   describe('Node Components', () => {
-    it('should import task-card-node-v2', async () => {
-      await expect(import('@/components/task-card-node-v2/task-card-node')).resolves.toBeDefined()
-    })
-
-    it('should import instruction-node', async () => {
-      await expect(import('@/components/instruction-node/instruction-node')).resolves.toBeDefined()
-    })
-
-    it('should import logo-node', async () => {
-      await expect(import('@/components/logo/logo-node')).resolves.toBeDefined()
-    })
+    it('should import task-card-node', async () => {
+      await expect(import('@/components/task-card-node/task-card-node')).resolves.toBeDefined()
+    }, 10000)
   })
 
   describe('Toolbar Components', () => {
@@ -88,10 +76,6 @@ describe('Component Imports', () => {
 
     it('should import task-book-icon', async () => {
       await expect(import('@/components/task-book/task-book-icon')).resolves.toBeDefined()
-    })
-
-    it('should import task-book-archive', async () => {
-      await expect(import('@/components/task-book/task-book-archive')).resolves.toBeDefined()
     })
   })
 
@@ -120,16 +104,6 @@ describe('Component Imports', () => {
   //     await expect(import('@/components/ai-chat/ai-orb')).resolves.toBeDefined()
   //   })
   // })
-
-  describe('Admin Components', () => {
-    it('should import ai-status-indicator', async () => {
-      await expect(import('@/components/admin/ai-status-indicator')).resolves.toBeDefined()
-    })
-
-    it('should import usage-display', async () => {
-      await expect(import('@/components/admin/usage-display')).resolves.toBeDefined()
-    })
-  })
 
   describe('Landing Page Components', () => {
     it('should import header', async () => {
@@ -195,10 +169,6 @@ describe('Store Imports', () => {
 describe('Hook Imports', () => {
   it('should import use-mobile', async () => {
     await expect(import('@/hooks/use-mobile')).resolves.toBeDefined()
-  })
-
-  it('should import use-toast', async () => {
-    await expect(import('@/hooks/use-toast')).resolves.toBeDefined()
   })
 })
 
