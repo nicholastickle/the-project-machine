@@ -52,8 +52,8 @@ export default function CanvasProjectPage({ params }: { params: Promise<{ id: st
             
             // Load canvas data (nodes/edges) from backend
             const { nodes, edges } = await loadProjectCanvas(projectId)
-            setNodes(nodes)
-            setEdges(edges)
+            setNodes(nodes as any)
+            setEdges(edges as any)
             
             setIsLoading(false)
             console.log('[Canvas Page] Project loaded:', nodes.length, 'nodes')
@@ -79,7 +79,7 @@ export default function CanvasProjectPage({ params }: { params: Promise<{ id: st
     return (
         <SidebarProvider defaultOpen={false}>
             <div className="fixed inset-0 h-screen w-screen overflow-hidden">
-                <Canvas onInit={setReactFlowInstance} />
+                <Canvas onInit={setReactFlowInstance as any} />
                 <ChatPanel
                     onVisibilityChange={handleChatVisibilityChange}
                 />

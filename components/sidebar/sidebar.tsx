@@ -22,7 +22,7 @@ export default function CanvasSidebar(props: React.ComponentProps<typeof Sidebar
                 
             </SidebarContent>
             <SidebarFooter>
-                <div className="flex items-center justify-between w-full">
+                <div className="flex items-center justify-between w-full border-t border-sidebar-border">
                     <SidebarUsers />
                     <SidebarHelpButton />
                 </div>

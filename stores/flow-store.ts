@@ -41,6 +41,20 @@ const useStore = create<AppState>()(
                     set({ cursorMode: mode });
                 },
 
+            resetCanvas: () => {
+                set({
+                    nodes: initialNodes,
+                    edges: initialEdges,
+                    tasks: initialTasks,
+                    history: [{ nodes: initialNodes, edges: initialEdges, tasks: initialTasks }],
+                    historyIndex: 0,
+                    projectId: null,
+                    lastSavedAt: null,
+                    isDirty: false,
+                    isSaving: false,
+                });
+            },
+
             saveHistory: () => {
                 const { nodes, edges, tasks, history, historyIndex } = get();
                 const newHistory = history.slice(0, historyIndex + 1);
@@ -347,17 +361,7 @@ const useStore = create<AppState>()(
                     get().saveHistory();
                 },
 
-                resetCanvas: () => {
-                    set({
-                        nodes: initialNodes,
-                        edges: initialEdges,
-                        tasks: initialTasks,
-                    });
 
-                    get().saveHistory();
-                },
-
-               
 
                 addSubtask: (taskId: string) => {
                     const newSubtask = {

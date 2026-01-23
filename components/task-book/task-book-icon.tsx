@@ -11,7 +11,7 @@ interface TaskBookIconProps {
 export default function TaskBookIcon({ size = 24, onClick, isOpen = false, hasNewTask = false }: TaskBookIconProps) {
     return (
         <div
-            className={`relative cursor-pointer hover:opacity-60 transition-opacity ${hasNewTask && !isOpen ? 'animate-pulse' : ''}`}
+            className={`relative cursor-pointer ${hasNewTask && !isOpen ? 'animate-pulse' : ''}`}
             onClick={onClick}
             style={{
                 ...(hasNewTask && !isOpen && {
@@ -22,7 +22,7 @@ export default function TaskBookIcon({ size = 24, onClick, isOpen = false, hasNe
             }}
         >
             <div>
-                {isOpen ? <BookOpen size={size} className='text-task-book-icon-foreground' /> : <BookType size={size} className='text-task-book-icon-foreground/70' />}
+                {isOpen ? <BookOpen size={size} className='text-toolbar-foreground' /> : <BookType size={size} className='text-toolbar-foreground' />}
             </div>
             {hasNewTask && !isOpen && (
                 <Badge

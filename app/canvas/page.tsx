@@ -16,7 +16,7 @@ export default function CanvasPage() {
     useEffect(() => {
         // Redirect to first project once loaded
         if (!isLoading && projects.length > 0) {
-            const targetProjectId = activeProjectId || projects[0].id
+            const targetProjectId = activeProjectId || projects[0].project.id
             router.replace(`/canvas/${targetProjectId}`)
         }
     }, [isLoading, projects, activeProjectId, router])

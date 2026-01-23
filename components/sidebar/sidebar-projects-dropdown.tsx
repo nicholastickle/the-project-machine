@@ -109,8 +109,8 @@ export default function SidebarProjectsDropdown() {
                                 <SidebarProjectsNew />
 
                                 {projects.map((item) => {
-                                    const projectId = item.id
-                                    const projectName = item.name
+                                    const projectId = item.project.id
+                                    const projectName = item.project.name
                                     const isActive = projectId === activeProjectId
                                     const isEditing = editingProjectId === projectId
 

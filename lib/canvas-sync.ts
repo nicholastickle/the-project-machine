@@ -1,4 +1,5 @@
-import { type Node, type Edge } from '@xyflow/react'
+import { type Edge } from '@/stores/types'
+import { type Node } from '@/stores/types'
 import { createClient } from '@/lib/supabase/client'
 
 export interface TaskFromBackend {
@@ -282,6 +283,8 @@ function createNodeFromTask(task: TaskFromBackend, index: number): Node {
       x: -500 + (index * 700), // Horizontal layout
       y: 200 
     },
-    data: mapTaskToNodeData(task)
+    data: mapTaskToNodeData(task),
+    project_id: task.project_id,
+    content_id: task.id
   }
 }

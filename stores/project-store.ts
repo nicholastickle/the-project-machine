@@ -82,14 +82,14 @@ const useProjectStore = create<ProjectStoreState>()(
 
                     if (response.ok) {
                         const { projects, activeProjectId } = get();
-                        const updatedProjects = projects.filter(p => p.id !== projectId);
+                    const updatedProjects = projects.filter(p => p.project.id !== projectId);
 
-                        // If deleting active project, select first remaining project
-                        const newActiveProjectId = activeProjectId === projectId
-                            ? (updatedProjects[0]?.id ?? null)
-                            : activeProjectId;
+                    // If deleting active project, select first remaining project
+                    const newActiveProjectId = activeProjectId === projectId
+                        ? (updatedProjects[0]?.project.id ?? null)
+                        : activeProjectId;
 
-                        set({
+                    set({
                             projects: updatedProjects,
                             activeProjectId: newActiveProjectId
                         });
@@ -112,8 +112,8 @@ const useProjectStore = create<ProjectStoreState>()(
                     if (response.ok) {
                         set({
                             projects: get().projects.map(p =>
-                                p.id === projectId
-                                    ? { ...p, name: newName, updated_at: new Date().toISOString() }
+                                p.project.id === projectId
+                                    ? { ...p, project: { ...p.project, name: newName, updated_at: new Date().toISOString() } }
                                     : p
                             )
                         });
@@ -135,12 +135,12 @@ const useProjectStore = create<ProjectStoreState>()(
                     // Auto-select first project if none selected
                     const firstProject = projects[0];
                     if (firstProject) {
-                        set({ activeProjectId: firstProject.id });
+                        set({ activeProjectId: firstProject.project.id });
                         return firstProject;
                     }
                     return null;
                 }
-                return projects.find(p => p.id === activeProjectId) || null;
+                return projects.find(p => p.project.id === activeProjectId) || null;
             }
         }),
         { name: 'project-store' }
