@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import ExcelJS from 'exceljs';
 import useProjectStore from '@/stores/project-store';
+import useStore from '@/stores/flow-store';
 import { type Task, type Subtask, type ProjectMember } from '@/stores/types';
 
 // Format hours to 2 decimal places
@@ -26,6 +27,7 @@ const getAssigneeNames = (members: ProjectMember[] | undefined): string => {
 
 export const useExcelExport = () => {
     const { getActiveProject } = useProjectStore();
+    const tasks = useStore((state) => state.tasks);
 
     const exportProjectToExcel = useCallback(async () => {
         const activeProject = getActiveProject();
@@ -41,7 +43,7 @@ export const useExcelExport = () => {
             // Set workbook properties
             workbook.creator = 'The Project Machine';
             workbook.created = new Date();
-            workbook.title = `${activeProject.project.name} - Project Export`;
+            workbook.title = `${activeProject.name} - Project Export`;
 
             // Single Combined Worksheet
             const worksheet = workbook.addWorksheet('Project Data');
@@ -68,15 +70,15 @@ export const useExcelExport = () => {
             worksheet.getRow(2).height = 15;
 
             // Calculate project summary stats
-            const totalTasks = activeProject.tasks.length;
-            const completedTasks = activeProject.tasks.filter(t => t.status === 'completed').length;
-            const inProgressTasks = activeProject.tasks.filter(t => t.status === 'in_progress').length;
-            const stuckTasks = activeProject.tasks.filter(t => t.status === 'stuck').length;
-            const backlogTasks = activeProject.tasks.filter(t => t.status === 'backlog').length;
-            const plannedTasks = activeProject.tasks.filter(t => t.status === 'planned').length;
-            const cancelledTasks = activeProject.tasks.filter(t => t.status === 'cancelled').length;
-            const totalEstimatedHours = activeProject.tasks.reduce((sum, task) => sum + task.estimated_hours, 0);
-            const totalTimeSpent = activeProject.tasks.reduce((sum, task) => sum + task.time_spent, 0);
+            const totalTasks = tasks.length;
+            const completedTasks = tasks.filter(t => t.status === 'completed').length;
+            const inProgressTasks = tasks.filter(t => t.status === 'in_progress').length;
+            const stuckTasks = tasks.filter(t => t.status === 'stuck').length;
+            const backlogTasks = tasks.filter(t => t.status === 'backlog').length;
+            const plannedTasks = tasks.filter(t => t.status === 'planned').length;
+            const cancelledTasks = tasks.filter(t => t.status === 'cancelled').length;
+            const totalEstimatedHours = tasks.reduce((sum, task) => sum + task.estimated_hours, 0);
+            const totalTimeSpent = tasks.reduce((sum, task) => sum + task.time_spent, 0);
 
             // Add project summary section
             let currentRow = 3;
@@ -87,17 +89,17 @@ export const useExcelExport = () => {
             worksheet.mergeCells(`A${currentRow}:I${currentRow}`);
             currentRow++;
 
-            worksheet.getCell(`A${currentRow}`).value = `Project: ${activeProject.project.name}`;
+            worksheet.getCell(`A${currentRow}`).value = `Project: ${activeProject.name}`;
             worksheet.mergeCells(`A${currentRow}:I${currentRow}`);
             currentRow++;
 
-            if (activeProject.project.description) {
-                worksheet.getCell(`A${currentRow}`).value = `Description: ${activeProject.project.description}`;
+            if (activeProject.description) {
+                worksheet.getCell(`A${currentRow}`).value = `Description: ${activeProject.description}`;
                 worksheet.mergeCells(`A${currentRow}:I${currentRow}`);
                 currentRow++;
             }
 
-            worksheet.getCell(`A${currentRow}`).value = `Created: ${formatDate(activeProject.project.created_at)} | Last Updated: ${formatDate(activeProject.project.updated_at)}`;
+            worksheet.getCell(`A${currentRow}`).value = `Created: ${formatDate(activeProject.created_at)} | Last Updated: ${formatDate(activeProject.updated_at)}`;
             worksheet.mergeCells(`A${currentRow}:I${currentRow}`);
             currentRow++;
 
@@ -159,7 +161,7 @@ export const useExcelExport = () => {
             currentRow++;
 
             // Add task and subtask data
-            activeProject.tasks.forEach((task, taskIndex) => {
+            tasks.forEach((task, taskIndex) => {
                 // Add main task row
                 const taskRow = worksheet.getRow(currentRow);
                 taskRow.values = [
@@ -208,15 +210,15 @@ export const useExcelExport = () => {
                 }
 
                 // Add blank row between tasks (except for the last task)
-                if (taskIndex < activeProject.tasks.length - 1) {
+                if (taskIndex < tasks.length - 1) {
                     currentRow++;
                 }
             });
 
             // Apply borders to the data table area
-            const dataStartRow = currentRow - activeProject.tasks.reduce((count, task) => {
+            const dataStartRow = currentRow - tasks.reduce((count, task) => {
                 return count + 1 + (task.subtasks?.length || 0) + (task.subtasks?.length ? 0 : 0);
-            }, 0) - (activeProject.tasks.length - 1); // Account for blank rows
+            }, 0) - (tasks.length - 1); // Account for blank rows
 
             // Generate and download the file
             const buffer = await workbook.xlsx.writeBuffer();
@@ -229,7 +231,7 @@ export const useExcelExport = () => {
             link.href = url;
 
             const timestamp = new Date().toISOString().split('T')[0];
-            const projectName = activeProject.project.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            const projectName = activeProject.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
             link.download = `TheProjectMachine_${projectName}_${timestamp}.xlsx`;
 
             document.body.appendChild(link);

@@ -101,7 +101,7 @@ export async function loadProjectCanvas(
           },
           // CRITICAL: Ensure content_id is always set
           content_id: currentTask.id,
-          project_id: currentTask.project_id
+          project_id: currentTask.projectId
         }
       }
       return node
@@ -291,8 +291,8 @@ function mapTaskToNodeData(task: TaskFromBackend) {
     title: task.title,
     description: task.description || '',
     status: mapStatusToFrontend(task.status),
-    estimatedHours: task.estimated_hours,
-    timeSpent: task.time_spent,
+    estimatedHours: task.estimatedHours,
+    timeSpent: task.timeSpent,
     subtasks: [] // TODO: Load from subtasks table if needed
   }
 }
@@ -309,7 +309,6 @@ function createNodeFromTask(task: TaskFromBackend, index: number): Node {
       y: 200 
     },
     data: mapTaskToNodeData(task),
-    project_id: task.project_id,
-    content_id: task.id
+    project_id: task.projectId,    content_id: task.id
   }
 }

@@ -121,14 +121,14 @@ const useStore = create<AppState>()(
                     const updatedNodes = applyNodeChanges(changes, currentState.nodes).map(node => {
                         // Restore custom properties after React Flow processing
                         const savedProps = nodePropertiesMap.get(node.id);
-                        if (savedProps) {
+                        if (savedProps && savedProps.content_id && savedProps.project_id) {
                             return {
                                 ...node,
                                 content_id: savedProps.content_id,
                                 project_id: savedProps.project_id
-                            };
+                            } as Node;
                         }
-                        return node;
+                        return node as Node;
                     });
                     
                     const updatedTasks = deletedTaskIds.length > 0

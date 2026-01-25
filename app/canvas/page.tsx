@@ -7,7 +7,7 @@ import { useAuth } from "@/components/auth/auth-provider"
 
 export default function CanvasPage() {
     const router = useRouter()
-    const { user, loading } = useAuth()
+    const { user, isLoading: loading } = useAuth()
     const { projects, activeProjectId, fetchProjects, isLoading } = useProjectStore()
 
     // Redirect to landing if not authenticated

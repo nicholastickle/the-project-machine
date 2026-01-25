@@ -19,7 +19,7 @@ import type { Node, Edge } from "@/stores/types"
 
 export default function CanvasProjectPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter()
-    const { user, loading: authLoading } = useAuth()
+    const { user, isLoading: authLoading } = useAuth()
     const reactFlowInstance = useRef<ReactFlowInstance | null>(null)
     const [isChatVisible, setIsChatVisible] = useState(true)
     const [isChatDocked, setIsChatDocked] = useState(false)
