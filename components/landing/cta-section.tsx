@@ -3,9 +3,11 @@
 import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/auth/auth-provider"
+import { useRouter } from "next/navigation"
 
 export default function CTASection() {
-  const { openAuthModal } = useAuth()
+  const { user, openAuthModal } = useAuth()
+  const router = useRouter()
   
   return (
 
@@ -122,12 +124,12 @@ export default function CTASection() {
               </p>
             </div>
             <Button
-              onClick={() => openAuthModal()}
+              onClick={() => user ? router.push('/canvas') : openAuthModal()}
               variant="outline"
               className="flex items-center"
               size="lg"
             >
-              Get Started
+              {user ? 'Go to Canvas' : 'Get Started'}
             </Button>
           </div>
         </section>

@@ -12,10 +12,14 @@ import useStore from "@/stores/flow-store"
 import useProjectStore from "@/stores/project-store"
 import { loadProjectCanvas } from "@/lib/canvas-sync"
 import { useEffect, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/components/auth/auth-provider"
 import type { ReactFlowInstance } from "@xyflow/react"
 import type { Node, Edge } from "@/stores/types"
 
 export default function CanvasProjectPage({ params }: { params: Promise<{ id: string }> }) {
+    const router = useRouter()
+    const { user, loading: authLoading } = useAuth()
     const reactFlowInstance = useRef<ReactFlowInstance | null>(null)
     const [isChatVisible, setIsChatVisible] = useState(true)
     const [isChatDocked, setIsChatDocked] = useState(false)
@@ -24,8 +28,17 @@ export default function CanvasProjectPage({ params }: { params: Promise<{ id: st
     
     const setNodes = useStore((state) => state.setNodes)
     const setEdges = useStore((state) => state.setEdges)
+    const setTasks = useStore((state) => state.setTasks)
     const setProjectIdInStore = useStore((state) => state.setProjectId)
     const setActiveProject = useProjectStore((state) => state.setActiveProject)
+
+    // Redirect to landing if not authenticated
+    useEffect(() => {
+        if (!authLoading && !user) {
+            console.log('[Canvas Page] Not authenticated, redirecting to landing')
+            router.replace('/')
+        }
+    }, [authLoading, user, router])
 
     const setReactFlowInstance = (instance: ReactFlowInstance) => {
         reactFlowInstance.current = instance
@@ -50,17 +63,19 @@ export default function CanvasProjectPage({ params }: { params: Promise<{ id: st
             setActiveProject(projectId)
             setProjectIdInStore(projectId)
             
-            // Load canvas data (nodes/edges) from backend
-            const { nodes, edges } = await loadProjectCanvas(projectId)
+            // Load canvas data (nodes/edges/tasks) from backend
+            const { nodes, edges, tasks } = await loadProjectCanvas(projectId)
+            
             setNodes(nodes as any)
             setEdges(edges as any)
+            setTasks(tasks)
             
             setIsLoading(false)
-            console.log('[Canvas Page] Project loaded:', nodes.length, 'nodes')
+            console.log('[Canvas Page] Project loaded successfully')
         }
 
         loadProject()
-    }, [projectId, setActiveProject, setProjectIdInStore, setNodes, setEdges])
+    }, [projectId, setActiveProject, setProjectIdInStore, setNodes, setEdges, setTasks])
 
     // Handle chat visibility changes
     const handleChatVisibilityChange = (isVisible: boolean, isDocked: boolean) => {

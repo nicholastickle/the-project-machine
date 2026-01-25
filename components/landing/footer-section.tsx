@@ -5,9 +5,11 @@ import Link from "next/link"
 import { ProjectMachineLogoFooter } from "@/components/logo/project-machine-logo-footer"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/auth/auth-provider"
+import { useRouter } from "next/navigation"
 
 export default function FooterSection() {
-  const { openAuthModal } = useAuth()
+  const { user, openAuthModal } = useAuth()
+  const router = useRouter()
   const handleScroll = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
       if (!href.startsWith('#')) {
@@ -56,10 +58,10 @@ export default function FooterSection() {
               <Link href="#about-section" onClick={(e) => handleScroll(e, "#about-section")} className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">About</Link>
               <Link href="#faq-section" onClick={(e) => handleScroll(e, "#faq-section")} className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">FAQ</Link>
               <button
-                onClick={() => openAuthModal()}
+                onClick={() => user ? router.push('/canvas') : openAuthModal()}
                 className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200 text-left"
               >
-                Get Started
+                {user ? 'Go to Canvas' : 'Get Started'}
               </button>
               <Link href="/legal" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Legal</Link>
             </nav>

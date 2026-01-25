@@ -5,9 +5,11 @@ import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 import { TypewriterSubheadline } from "@/components/landing/typewriter-subheadline"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/auth/auth-provider"
+import { useRouter } from "next/navigation"
 
 export default function HeroSection() {
-  const { openAuthModal } = useAuth()
+  const { user, openAuthModal } = useAuth()
+  const router = useRouter()
   
   return (
     <div className="flex flex-row justify-center border-x border-border-dark ">
@@ -454,11 +456,11 @@ export default function HeroSection() {
               >
 
                 <Button
-                  onClick={() => openAuthModal()}
+                  onClick={() => user ? router.push('/canvas') : openAuthModal()}
                   variant="outline"
                   className="p-6 justify-center"
                 >
-                  Get started
+                  {user ? 'Go to Canvas' : 'Get started'}
                 </Button>
 
               

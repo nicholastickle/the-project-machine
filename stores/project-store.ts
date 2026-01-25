@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { ProjectData } from './types';
+import type { Project } from './types';
 
 interface ProjectStoreState {
     // Core State
-    projects: ProjectData[];
+    projects: Project[];
     activeProjectId: string | null;
     isLoading: boolean;
 
@@ -16,7 +16,7 @@ interface ProjectStoreState {
 
     // Project Selection
     setActiveProject: (projectId: string) => void;
-    getActiveProject: () => ProjectData | null;
+    getActiveProject: () => Project | null;
 }
 
 const useProjectStore = create<ProjectStoreState>()(
@@ -82,13 +82,11 @@ const useProjectStore = create<ProjectStoreState>()(
 
                     if (response.ok) {
                         const { projects, activeProjectId } = get();
-                    const updatedProjects = projects.filter(p => p.project.id !== projectId);
+                    const updatedProjects = projects.filter(p => p.id !== projectId);
 
                     // If deleting active project, select first remaining project
                     const newActiveProjectId = activeProjectId === projectId
-                        ? (updatedProjects[0]?.project.id ?? null)
-                        : activeProjectId;
-
+                        ? (updatedProjects[0]?.id ?? null)                        : activeProjectId;
                     set({
                             projects: updatedProjects,
                             activeProjectId: newActiveProjectId
@@ -102,6 +100,16 @@ const useProjectStore = create<ProjectStoreState>()(
             },
 
             renameProject: async (projectId: string, newName: string) => {
+                // Optimistic update
+                const oldProjects = get().projects;
+                set({
+                    projects: oldProjects.map(p =>
+                        p.id === projectId
+                            ? { ...p, name: newName, updated_at: new Date().toISOString() }
+                            : p
+                    )
+                });
+
                 try {
                     const response = await fetch(`/api/projects/${projectId}`, {
                         method: 'PATCH',
@@ -109,18 +117,14 @@ const useProjectStore = create<ProjectStoreState>()(
                         body: JSON.stringify({ name: newName })
                     });
 
-                    if (response.ok) {
-                        set({
-                            projects: get().projects.map(p =>
-                                p.project.id === projectId
-                                    ? { ...p, project: { ...p.project, name: newName, updated_at: new Date().toISOString() } }
-                                    : p
-                            )
-                        });
-                    } else {
+                    if (!response.ok) {
+                        // Revert on failure
+                        set({ projects: oldProjects });
                         console.error('[Project Store] Failed to rename project:', response.statusText);
                     }
                 } catch (error) {
+                    // Revert on error
+                    set({ projects: oldProjects });
                     console.error('[Project Store] Error renaming project:', error);
                 }
             },
@@ -135,12 +139,12 @@ const useProjectStore = create<ProjectStoreState>()(
                     // Auto-select first project if none selected
                     const firstProject = projects[0];
                     if (firstProject) {
-                        set({ activeProjectId: firstProject.project.id });
+                        set({ activeProjectId: firstProject.id });
                         return firstProject;
                     }
                     return null;
                 }
-                return projects.find(p => p.project.id === activeProjectId) || null;
+                return projects.find(p => p.id === activeProjectId) || null;
             }
         }),
         { name: 'project-store' }
