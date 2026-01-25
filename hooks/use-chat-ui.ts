@@ -29,7 +29,7 @@ const mapAIChatMessage = (msg: AIChatMessage): ChatMessage => ({
     id: msg.id,
     role: msg.role === 'assistant' ? 'ai' : 'user',
     content: msg.content,
-    timestamp: new Date() 
+    timestamp: new Date()
 })
 
 export function useChatUI(): UseChatUIReturn {
@@ -40,7 +40,7 @@ export function useChatUI(): UseChatUIReturn {
     const [refreshTrigger, setRefreshTrigger] = useState(0)
     const getActiveProjectId = useCallback(() => {
         const activeProject = useProjectStore.getState().getActiveProject()
-        return activeProject?.project.id || null
+        return activeProject?.id || null
     }, [])
     const getStoredMessages = useCallback(() => {
         try {
@@ -89,7 +89,7 @@ export function useChatUI(): UseChatUIReturn {
                     hour12: true
                 });
                 threadId = startNewChat(activeProjectId, `New Chat ${timestamp}`)
-                setIsNewChat(false) 
+                setIsNewChat(false)
             }
 
             sendStoreMessage(threadId, content.trim(), 'user')

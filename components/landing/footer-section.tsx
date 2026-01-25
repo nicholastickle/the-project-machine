@@ -6,7 +6,7 @@ import { ProjectMachineLogoFooter } from "@/components/logo/project-machine-logo
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useRouter } from "next/navigation"
-import { AuthRedirectButton } from "@/components/auth/auth-redirect-button"
+
 
 export default function FooterSection() {
   const { user, openAuthModal } = useAuth()
@@ -58,11 +58,12 @@ export default function FooterSection() {
               <Link href="#features-section" onClick={(e) => handleScroll(e, "#features-section")} className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Features</Link>
               <Link href="#about-section" onClick={(e) => handleScroll(e, "#about-section")} className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">About</Link>
               <Link href="#faq-section" onClick={(e) => handleScroll(e, "#faq-section")} className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">FAQ</Link>
-              <AuthRedirectButton
-                text="Get Started"
-                asLink={true}
-                className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200"
-              />
+              <button
+                onClick={() => user ? router.push('/canvas') : openAuthModal()}
+                className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200 text-left"
+              >
+                {user ? 'Go to Canvas' : 'Get Started'}
+              </button>
               <Link href="https://alkaline-apple-00d.notion.site/Legal-Summary-2e9227fa135b800d8c29ff19c850f961" target="_blank" rel="noopener noreferrer" className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200">Legal</Link>
             </nav>
           </div>

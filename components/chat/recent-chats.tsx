@@ -17,7 +17,7 @@ export default function RecentChats({ maxChats = 10, onChatSelect, onArchiveChat
 
     const activeProject = getActiveProject()
     const recentChats = activeProject
-        ? getChatsForProject(activeProject.project.id)
+        ? getChatsForProject(activeProject.id)
             .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
             .slice(0, maxChats)
         : []
