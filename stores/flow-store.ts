@@ -97,6 +97,16 @@ const useStore = create<AppState>()(
                 onNodesChange: (changes) => {
                     const currentState = get();
                     const deletedTaskIds: string[] = [];
+                    
+                    // Track nodes that will be modified to preserve custom properties
+                    const nodePropertiesMap = new Map<string, { content_id?: string, project_id?: string }>();
+                    currentState.nodes.forEach(node => {
+                        nodePropertiesMap.set(node.id, {
+                            content_id: node.content_id,
+                            project_id: node.project_id
+                        });
+                    });
+                    
                     changes.forEach(change => {
                         if (change.type === 'remove') {
                             const nodeToDelete = currentState.nodes.find(node => node.id === change.id);
@@ -108,7 +118,19 @@ const useStore = create<AppState>()(
                     });
 
                     
-                    const updatedNodes = applyNodeChanges(changes, currentState.nodes);
+                    const updatedNodes = applyNodeChanges(changes, currentState.nodes).map(node => {
+                        // Restore custom properties after React Flow processing
+                        const savedProps = nodePropertiesMap.get(node.id);
+                        if (savedProps) {
+                            return {
+                                ...node,
+                                content_id: savedProps.content_id,
+                                project_id: savedProps.project_id
+                            };
+                        }
+                        return node;
+                    });
+                    
                     const updatedTasks = deletedTaskIds.length > 0
                         ? currentState.tasks.filter(task => !deletedTaskIds.includes(task.id))
                         : currentState.tasks;
@@ -164,6 +186,10 @@ const useStore = create<AppState>()(
                     set({ edges, isDirty: true });
                 },
 
+                setTasks: (tasks) => {
+                    set({ tasks });
+                },
+
                 addTaskNode: async (task?: Partial<Task>, nodeOptions?: {
                     position?: { x: number; y: number };
                     id?: string;
@@ -199,16 +225,16 @@ const useStore = create<AppState>()(
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
-                                title: task?.title || '',
+                                title: task?.title || 'New Task',
                                 description: task?.description || '',
                                 status: task?.status || 'Backlog',
-                                estimatedHours: task?.estimated_hours || 0,
-                                timeSpent: task?.time_spent || 0
+                                estimatedHours: task?.estimated_hours || 0
                             })
                         });
 
                         if (!response.ok) {
-                            console.error('[Flow Store] Failed to create task in backend');
+                            const errorData = await response.text();
+                            console.error('[Flow Store] Failed to create task in backend:', errorData);
                             return '';
                         }
 

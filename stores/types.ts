@@ -169,6 +169,7 @@ export type AppState = {
   // Node management methods
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
+  setTasks: (tasks: Task[]) => void;
   setProjectId: (projectId: string | null) => void;
   markDirty: () => void;
   markClean: () => void;

@@ -1,18 +1,19 @@
 import { type Edge } from '@/stores/types'
-import { type Node } from '@/stores/types'
+import { type Node, type Task } from '@/stores/types'
 import { createClient } from '@/lib/supabase/client'
 
 export interface TaskFromBackend {
   id: string
-  project_id: string
+  projectId: string
   title: string
   description: string | null
   status: string
-  estimated_hours: number | null
-  time_spent: number
-  sort_order: number
-  created_at: string
-  updated_at: string
+  estimatedHours: number | null
+  timeSpent: number
+  sortOrder: number
+  createdBy: string
+  createdAt: string
+  updatedAt: string
 }
 
 /**
@@ -20,7 +21,7 @@ export interface TaskFromBackend {
  */
 export async function loadProjectCanvas(
   projectId: string
-): Promise<{ nodes: Node[]; edges: Edge[] }> {
+): Promise<{ nodes: Node[]; edges: Edge[]; tasks: Task[] }> {
   try {
     console.log(`[Canvas Sync] Loading project: ${projectId}`)
     
@@ -35,7 +36,7 @@ export async function loadProjectCanvas(
         snapshotStatus: snapshotRes.status,
         tasksStatus: tasksRes.status
       })
-      return { nodes: [], edges: [] }
+      return { nodes: [], edges: [], tasks: [] }
     }
 
     const snapshotData = await snapshotRes.json()
@@ -51,12 +52,32 @@ export async function loadProjectCanvas(
 
     console.log(`[Canvas Sync] Loaded ${tasks.length} tasks, snapshot:`, snapshot ? 'YES' : 'NO')
 
+    // Convert backend tasks to frontend Task format
+    const frontendTasks: Task[] = tasks.map(backendTask => ({
+      id: backendTask.id,
+      node_id: '', // Will be set when creating nodes
+      project_id: backendTask.projectId,
+      title: backendTask.title,
+      description: backendTask.description || '',
+      status: mapStatusToFrontend(backendTask.status) as any,
+      estimated_hours: backendTask.estimatedHours || 0,
+      time_spent: backendTask.timeSpent || 0,
+      subtasks: [],
+      sort_order: backendTask.sortOrder || 0,
+      created_by: backendTask.createdBy,
+      created_at: backendTask.createdAt,
+      updated_at: backendTask.updatedAt
+    }))
+
+    console.log('[Canvas Sync] Converted tasks:', frontendTasks.length)
+
     // No snapshot? Start fresh with tasks only
     if (!snapshot || !snapshot.snapshotData) {
       console.log('[Canvas Sync] No snapshot found, creating nodes from tasks')
       return {
         nodes: tasks.map((task, index) => createNodeFromTask(task, index)),
-        edges: []
+        edges: [],
+        tasks: frontendTasks
       }
     }
 
@@ -65,7 +86,8 @@ export async function loadProjectCanvas(
     const snapshotTaskIds = new Set<string>()
     
     const mergedNodes = snapshotNodes.map((node: Node) => {
-      const taskId = node.data?.taskId || node.data?.id
+      // Try multiple ways to find the task ID (for backwards compatibility)
+      const taskId = node.content_id || node.data?.taskId || node.data?.id
       if (taskId && typeof taskId === 'string') snapshotTaskIds.add(taskId)
       
       const currentTask = tasks.find(t => t.id === taskId)
@@ -76,7 +98,10 @@ export async function loadProjectCanvas(
           data: {
             ...node.data,
             ...mapTaskToNodeData(currentTask)
-          }
+          },
+          // CRITICAL: Ensure content_id is always set
+          content_id: currentTask.id,
+          project_id: currentTask.project_id
         }
       }
       return node
@@ -94,11 +119,11 @@ export async function loadProjectCanvas(
     const edges = snapshot.snapshotData.edges || []
     
     console.log(`[Canvas Sync] ✅ Loaded: ${nodes.length} nodes (${newTaskNodes.length} new), ${edges.length} edges`)
-    return { nodes, edges }
+    return { nodes, edges, tasks: frontendTasks }
 
   } catch (error) {
     console.error('[Canvas Sync] Load error:', error)
-    return { nodes: [], edges: [] }
+    return { nodes: [], edges: [], tasks: [] }
   }
 }
 
@@ -161,14 +186,14 @@ function mapStatusToBackend(frontendStatus: string): string {
  */
 function mapStatusToFrontend(backendStatus: string): string {
   const statusMap: Record<string, string> = {
-    'Backlog': 'Not started',
-    'Planned': 'Not started',
-    'In Progress': 'On-going',
-    'Stuck': 'Stuck',
-    'Completed': 'Complete',
-    'Cancelled': 'Complete'
+    'Backlog': 'backlog',
+    'Planned': 'planned',
+    'In Progress': 'in_progress',
+    'Stuck': 'stuck',
+    'Completed': 'completed',
+    'Cancelled': 'cancelled'
   }
-  return statusMap[backendStatus] || backendStatus
+  return statusMap[backendStatus] || 'backlog'
 }
 
 /**
@@ -278,7 +303,7 @@ function mapTaskToNodeData(task: TaskFromBackend) {
 function createNodeFromTask(task: TaskFromBackend, index: number): Node {
   return {
     id: `task-${task.id}`,
-    type: 'taskCardNode',
+    type: 'task',
     position: { 
       x: -500 + (index * 700), // Horizontal layout
       y: 200 
