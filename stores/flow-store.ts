@@ -40,35 +40,21 @@ const useStore = create<AppState>()(
                 setCursorMode: (mode) => {
                     set({ cursorMode: mode });
                 },
-// Project sync methods
-            syncWithActiveProject: () => {
-                const activeProject = useProjectStore.getState().getActiveProject();
-                if (activeProject) {
-                    set({
-                        nodes: activeProject.nodes,
-                        edges: activeProject.edges,
-                        tasks: activeProject.tasks,
-                        history: activeProject.history,
-                        historyIndex: activeProject.historyIndex,
-                        cursorMode: activeProject.cursorMode
-                    });
-                }
+
+            resetCanvas: () => {
+                set({
+                    nodes: initialNodes,
+                    edges: initialEdges,
+                    tasks: initialTasks,
+                    history: [{ nodes: initialNodes, edges: initialEdges, tasks: initialTasks }],
+                    historyIndex: 0,
+                    projectId: null,
+                    lastSavedAt: null,
+                    isDirty: false,
+                    isSaving: false,
+                });
             },
 
-            saveToActiveProject: () => {
-                const { nodes, edges, tasks, history, historyIndex, cursorMode } = get();
-                const activeProject = useProjectStore.getState().getActiveProject();
-                if (activeProject) {
-                    useProjectStore.getState().updateProjectData(activeProject.project.id, {
-                        nodes,
-                        edges,
-                        tasks,
-                        history,
-                        historyIndex,
-                        cursorMode
-                    });
-                }
-            },
             saveHistory: () => {
                 const { nodes, edges, tasks, history, historyIndex } = get();
                 const newHistory = history.slice(0, historyIndex + 1);
@@ -80,8 +66,6 @@ const useStore = create<AppState>()(
                     history: newHistory,
                     historyIndex: newHistory.length - 1
                 });
-                 // Auto-save to active project
-                get().saveToActiveProject();
             },
 
                 undo: () => {
@@ -113,6 +97,16 @@ const useStore = create<AppState>()(
                 onNodesChange: (changes) => {
                     const currentState = get();
                     const deletedTaskIds: string[] = [];
+                    
+                    // Track nodes that will be modified to preserve custom properties
+                    const nodePropertiesMap = new Map<string, { content_id?: string, project_id?: string }>();
+                    currentState.nodes.forEach(node => {
+                        nodePropertiesMap.set(node.id, {
+                            content_id: node.content_id,
+                            project_id: node.project_id
+                        });
+                    });
+                    
                     changes.forEach(change => {
                         if (change.type === 'remove') {
                             const nodeToDelete = currentState.nodes.find(node => node.id === change.id);
@@ -124,7 +118,19 @@ const useStore = create<AppState>()(
                     });
 
                     
-                    const updatedNodes = applyNodeChanges(changes, currentState.nodes);
+                    const updatedNodes = applyNodeChanges(changes, currentState.nodes).map(node => {
+                        // Restore custom properties after React Flow processing
+                        const savedProps = nodePropertiesMap.get(node.id);
+                        if (savedProps && savedProps.content_id && savedProps.project_id) {
+                            return {
+                                ...node,
+                                content_id: savedProps.content_id,
+                                project_id: savedProps.project_id
+                            } as Node;
+                        }
+                        return node as Node;
+                    });
+                    
                     const updatedTasks = deletedTaskIds.length > 0
                         ? currentState.tasks.filter(task => !deletedTaskIds.includes(task.id))
                         : currentState.tasks;
@@ -180,11 +186,22 @@ const useStore = create<AppState>()(
                     set({ edges, isDirty: true });
                 },
 
-                addTaskNode: (task?: Partial<Task>, nodeOptions?: {
+                setTasks: (tasks) => {
+                    set({ tasks });
+                },
+
+                addTaskNode: async (task?: Partial<Task>, nodeOptions?: {
                     position?: { x: number; y: number };
                     id?: string;
                 }) => {
                     const nodes = get().nodes;
+                    const projectId = get().projectId;
+                    
+                    if (!projectId) {
+                        console.error('[Flow Store] Cannot add task: no project ID set');
+                        return '';
+                    }
+
                     let position = nodeOptions?.position || { x: 200, y: 200 };
 
                     // Horizontal layout - cards placed side by side
@@ -201,45 +218,72 @@ const useStore = create<AppState>()(
                             y: START_Y
                         };
                     }
-                    const nodeId = nodeOptions?.id || `node-${uuidv4()}`;
-                    const taskId = `task-${uuidv4()}`;
-                    const newNode: Node = {
-                        id: nodeId,
-                        type: 'task',
-                        position: position,
-                        project_id: 'p1', // TODO: Get from current project context
-                        content_id: taskId, 
-                        data: {}, 
-                    };
+                    
+                    // Create task in backend first
+                    try {
+                        const response = await fetch(`/api/projects/${projectId}/tasks`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                title: task?.title || 'New Task',
+                                description: task?.description || '',
+                                status: task?.status || 'Backlog',
+                                estimatedHours: task?.estimated_hours || 0
+                            })
+                        });
 
-                   
-                    const newTask: Task = {
-                        id: taskId,
-                        node_id: nodeId, 
-                        project_id: 'p1', // TODO: Get from current project context
-                        title: task?.title ?? "",
-                        status: task?.status ?? 'backlog',
-                        estimated_hours: task?.estimated_hours ?? 0,
-                        time_spent: task?.time_spent ?? 0,
-                        description: task?.description ?? "",
-                        subtasks: task?.subtasks ?? [],
-                        comments: task?.comments ?? [],
-                        members: task?.members ?? [],
-                        sort_order: task?.sort_order ?? 0,
-                        created_by: 'user1', // TODO: Get from auth context
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString(),
-                    };
+                        if (!response.ok) {
+                            const errorData = await response.text();
+                            console.error('[Flow Store] Failed to create task in backend:', errorData);
+                            return '';
+                        }
 
-                    set({
-                        nodes: [...get().nodes, newNode],
-                        tasks: [...get().tasks, newTask]
-                    });
+                        const data = await response.json();
+                        const backendTask = data.task;
+                        
+                        // Create node with backend task ID
+                        const nodeId = nodeOptions?.id || `node-${uuidv4()}`;
+                        const newNode: Node = {
+                            id: nodeId,
+                            type: 'task',
+                            position: position,
+                            project_id: projectId,
+                            content_id: backendTask.id, 
+                            data: {}, 
+                        };
 
-                  
-                    get().saveHistory();
+                        // Create local task matching backend structure
+                        const newTask: Task = {
+                            id: backendTask.id,
+                            node_id: nodeId, 
+                            project_id: projectId,
+                            title: backendTask.title,
+                            status: backendTask.status ? backendTask.status.toLowerCase().replace(/ /g, '-') : 'backlog',
+                            estimated_hours: backendTask.estimated_hours || 0,
+                            time_spent: backendTask.time_spent || 0,
+                            description: backendTask.description || '',
+                            subtasks: [],
+                            comments: [],
+                            members: [],
+                            sort_order: task?.sort_order ?? 0,
+                            created_by: backendTask.created_by,
+                            created_at: backendTask.created_at,
+                            updated_at: backendTask.updated_at,
+                        };
 
-                    return newNode.id;
+                        set({
+                            nodes: [...get().nodes, newNode],
+                            tasks: [...get().tasks, newTask]
+                        });
+
+                        get().saveHistory();
+
+                        console.log('[Flow Store] Task created:', backendTask.id);
+                        return newNode.id;
+                    } catch (error) {
+                        console.error('[Flow Store] Error creating task:', error);
+                        return '';
+                    }
                 },
 
                 updateNodeData: (id: string, data: Partial<Task>, saveToHistory: boolean = true) => {
@@ -269,7 +313,8 @@ const useStore = create<AppState>()(
                 },
 
                
-                updateTask: (taskId: string, data: Partial<Task>, saveToHistory: boolean = true) => {
+                updateTask: async (taskId: string, data: Partial<Task>, saveToHistory: boolean = true) => {
+                    // Update local state first
                     set({
                         tasks: get().tasks.map(task =>
                             task.id === taskId
@@ -280,6 +325,27 @@ const useStore = create<AppState>()(
 
                     if (saveToHistory) {
                         get().saveHistory();
+                    }
+
+                    // Sync to backend
+                    try {
+                        const response = await fetch(`/api/tasks/${taskId}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                title: data.title,
+                                description: data.description,
+                                status: data.status,
+                                estimatedHours: data.estimated_hours,
+                                timeSpent: data.time_spent
+                            })
+                        });
+
+                        if (!response.ok) {
+                            console.error('[Flow Store] Failed to update task in backend');
+                        }
+                    } catch (error) {
+                        console.error('[Flow Store] Error updating task:', error);
                     }
                 },
 

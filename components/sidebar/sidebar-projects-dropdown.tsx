@@ -1,5 +1,6 @@
 import { ChevronRight, LayoutDashboard, LucideIcon } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
 
 import {
     Collapsible,
@@ -18,29 +19,34 @@ import {
 import SidebarProjectsNew from "@/components/sidebar/sidebar-projects-new"
 import SidebarProjectsOptions from "@/components/sidebar/sidebar-projects-options"
 import useProjectStore from "@/stores/project-store"
-import useStore from "@/stores/flow-store"
 
 export default function SidebarProjectsDropdown() {
+    const router = useRouter()
     // Project store integration
-    const { projects, activeProjectId, setActiveProject, renameProject } = useProjectStore()
-    const { syncWithActiveProject } = useStore()
+    const { projects, activeProjectId, setActiveProject, renameProject, fetchProjects } = useProjectStore()
 
     // Inline editing state
     const [editingProjectId, setEditingProjectId] = useState<string | null>(null)
     const [editingName, setEditingName] = useState('')
-    const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null)
     const inputRef = useRef<HTMLInputElement>(null)
+
+    // Load projects on mount
+    useEffect(() => {
+        fetchProjects()
+    }, [fetchProjects])
 
     const handleProjectClick = (projectId: string) => {
         if (editingProjectId === projectId) return // Don't switch if editing
 
         setActiveProject(projectId)
-        syncWithActiveProject()
+        router.push(`/canvas/${projectId}`)
     }
 
     const startEditing = (item: any) => {
-        setEditingProjectId(item.project.id)
-        setEditingName(item.project.name)
+        const projectId = item.id
+        const projectName = item.name
+        setEditingProjectId(projectId)
+        setEditingName(projectName)
     }
 
     // Auto-focus input when editing starts
@@ -94,31 +100,25 @@ export default function SidebarProjectsDropdown() {
                         </CollapsibleTrigger>
                         <CollapsibleContent>
                             <SidebarMenuSub
-                                className="overflow-y-auto"
+                                className="overflow-y-scroll"
                                 style={{
-                                    height: 'calc(100vh - 170px)',
                                     scrollbarWidth: 'thin',
-                                    scrollbarColor: 'hsl(var(--muted)) hsl(var(--sidebar-background))'
+                                    scrollbarColor: '#6b7280 transparent'
                                 }}
                             >
                                 <SidebarProjectsNew />
 
                                 {projects.map((item) => {
-                                    const projectId = item.project.id
-                                    const projectName = item.project.name
+                                    const projectId = item.id
+                                    const projectName = item.name
                                     const isActive = projectId === activeProjectId
                                     const isEditing = editingProjectId === projectId
 
                                     return (
-                                        <SidebarMenuSubItem
-                                            key={projectId}
-                                            className="relative flex items-center"
-                                            onMouseEnter={() => setHoveredProjectId(projectId)}
-                                            onMouseLeave={() => setHoveredProjectId(null)}
-                                        >
+                                        <SidebarMenuSubItem key={projectId} className="relative group/menu-item flex items-center">
                                             <SidebarMenuSubButton
                                                 asChild
-                                                className={`flex-1 ${isActive ? 'bg-sidebar-accent text-foreground' : 'text-muted-foreground hover:bg-sidebar-background hover:text-foreground'} `}
+                                                className={`flex-1 ${isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''}`}
                                             >
                                                 <div
                                                     className="flex items-center w-full cursor-pointer"
@@ -132,7 +132,7 @@ export default function SidebarProjectsDropdown() {
                                                         onDoubleClick={() => !isEditing && startEditing(item)}
                                                         onBlur={saveEdit}
                                                         onKeyDown={handleKeyDown}
-                                                        className={`bg-transparent border-none outline-none w-full  ${isEditing ? 'bg-background border border-border rounded px-1 cursor-text' : 'cursor-pointer'}`}
+                                                        className={`bg-transparent border-none outline-none w-full ${isEditing ? 'bg-background border border-border rounded px-1 cursor-text' : 'cursor-pointer'}`}
                                                     />
                                                 </div>
                                             </SidebarMenuSubButton>
@@ -140,7 +140,6 @@ export default function SidebarProjectsDropdown() {
                                                 projectId={projectId}
                                                 projectName={projectName}
                                                 onRename={() => startEditing(item)}
-                                                isVisible={hoveredProjectId === projectId}
                                             />
                                         </SidebarMenuSubItem>
                                     )

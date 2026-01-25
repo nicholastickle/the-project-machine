@@ -1,7 +1,14 @@
+"use client"
 
 import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
-import { AuthRedirectButton } from "@/components/auth/auth-redirect-button"
+import { Button } from "@/components/ui/button"
+import { useAuth } from "@/components/auth/auth-provider"
+import { useRouter } from "next/navigation"
+
 export default function CTASection() {
+  const { user, openAuthModal } = useAuth()
+  const router = useRouter()
+  
   return (
 
     <div className="flex flex-row justify-center border-x border-border-dark ">
@@ -116,12 +123,14 @@ export default function CTASection() {
                 Start today to visualize every step, build your library of proven task templates, and best of all... the more you plan, the smarter it gets.
               </p>
             </div>
-            <AuthRedirectButton
-              text="Get Started"
+            <Button
+              onClick={() => user ? router.push('/canvas') : openAuthModal()}
               variant="outline"
               className="flex items-center"
               size="lg"
-            />
+            >
+              {user ? 'Go to Canvas' : 'Get Started'}
+            </Button>
           </div>
         </section>
 

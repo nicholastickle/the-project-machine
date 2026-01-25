@@ -26,10 +26,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import SidebarThemeChanger from "@/components/sidebar/sidebar-theme-changer"
-import { SignOutButton } from "@/components/auth/sign-out-button"
+import { useAuth } from "@/components/auth/auth-provider"
 
 export default function SidebarUsers() {
   const { isMobile } = useSidebar()
+  const { signOut } = useAuth()
 
   interface UserProps {
     name: string,
@@ -47,12 +48,12 @@ export default function SidebarUsers() {
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem >
-        <DropdownMenu modal={false} >
-          <DropdownMenuTrigger asChild >
+      <SidebarMenuItem>
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground "
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar
@@ -100,13 +101,12 @@ export default function SidebarUsers() {
 
             </DropdownMenuGroup>
             <DropdownMenuSeparator className="bg-sidebar-border" />
-            <DropdownMenuItem className="hover:bg-sidebar-accent hover:text-foreground text-xs" asChild>
-              <SignOutButton
-                className="hover:bg-sidebar-accent hover:text-foreground text-xs"
-              >
-                <LogOut />
-                Sign Out
-              </SignOutButton>
+            <DropdownMenuItem 
+              className="hover:bg-sidebar-accent hover:text-foreground text-xs"
+              onClick={() => signOut()}
+            >
+              <LogOut />
+              Sign Out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
