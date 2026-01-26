@@ -7,68 +7,57 @@ import { initialTasks } from '@/components/canvas/initial-tasks';
 import { type AppState, type Node, type Edge, type Task, type Subtask } from './types';
 import { v4 as uuidv4 } from 'uuid';
 import useProjectStore from './project-store';
+import { mapStatusToBackend } from '@/lib/canvas-sync';
 
 
 const MAX_HISTORY = 50;
+let updateTaskTimer: NodeJS.Timeout | null = null;
+let subtaskTimers: Record<string, NodeJS.Timeout> = {};
 
 const useStore = create<AppState>()(
     devtools(
         (set, get) => ({
-                nodes: initialNodes,
-                edges: initialEdges,
-                tasks: initialTasks,
-                history: [{ nodes: initialNodes, edges: initialEdges, tasks: initialTasks }],
-                historyIndex: 0,
-                projectId: null,
-                lastSavedAt: null,
-                isDirty: false,
-                isSaving: false,
-                cursorMode: 'select',
+            nodes: initialNodes,
+            edges: initialEdges,
+            tasks: initialTasks,
+            history: [{ nodes: initialNodes, edges: initialEdges, tasks: initialTasks }],
+            historyIndex: 0,
+            projectId: null,
+            lastSavedAt: null,
+            isDirty: false,
+            isSaving: false,
+            cursorMode: 'select',
 
-                setProjectId: (projectId) => {
-                    set({ projectId, isDirty: false });
-                },
-
-                markDirty: () => {
-                    set({ isDirty: true });
-                },
-
-                markClean: () => {
-                    set({ isDirty: false });
-                },
-
-                setCursorMode: (mode) => {
-                    set({ cursorMode: mode });
-                },
-// Project sync methods
-            syncWithActiveProject: () => {
-                const activeProject = useProjectStore.getState().getActiveProject();
-                if (activeProject) {
-                    set({
-                        nodes: activeProject.nodes,
-                        edges: activeProject.edges,
-                        tasks: activeProject.tasks,
-                        history: activeProject.history,
-                        historyIndex: activeProject.historyIndex,
-                        cursorMode: activeProject.cursorMode
-                    });
-                }
+            setProjectId: (projectId) => {
+                set({ projectId, isDirty: false });
             },
 
-            saveToActiveProject: () => {
-                const { nodes, edges, tasks, history, historyIndex, cursorMode } = get();
-                const activeProject = useProjectStore.getState().getActiveProject();
-                if (activeProject) {
-                    useProjectStore.getState().updateProjectData(activeProject.project.id, {
-                        nodes,
-                        edges,
-                        tasks,
-                        history,
-                        historyIndex,
-                        cursorMode
-                    });
-                }
+            markDirty: () => {
+                set({ isDirty: true });
             },
+
+            markClean: () => {
+                set({ isDirty: false });
+            },
+
+            setCursorMode: (mode) => {
+                set({ cursorMode: mode });
+            },
+
+            resetCanvas: () => {
+                set({
+                    nodes: initialNodes,
+                    edges: initialEdges,
+                    tasks: initialTasks,
+                    history: [{ nodes: initialNodes, edges: initialEdges, tasks: initialTasks }],
+                    historyIndex: 0,
+                    projectId: null,
+                    lastSavedAt: null,
+                    isDirty: false,
+                    isSaving: false,
+                });
+            },
+
             saveHistory: () => {
                 const { nodes, edges, tasks, history, historyIndex } = get();
                 const newHistory = history.slice(0, historyIndex + 1);
@@ -80,111 +69,168 @@ const useStore = create<AppState>()(
                     history: newHistory,
                     historyIndex: newHistory.length - 1
                 });
-                 // Auto-save to active project
-                get().saveToActiveProject();
             },
 
-                undo: () => {
-                    const { history, historyIndex } = get();
-                    if (historyIndex > 0) {
-                        const prevState = history[historyIndex - 1];
-                        set({
-                            nodes: prevState.nodes,
-                            edges: prevState.edges,
-                            tasks: prevState.tasks,
-                            historyIndex: historyIndex - 1
-                        });
-                    }
-                },
+            undo: () => {
+                const { history, historyIndex } = get();
+                if (historyIndex > 0) {
+                    const prevState = history[historyIndex - 1];
+                    set({
+                        nodes: prevState.nodes,
+                        edges: prevState.edges,
+                        tasks: prevState.tasks,
+                        historyIndex: historyIndex - 1
+                    });
+                }
+            },
 
-                redo: () => {
-                    const { history, historyIndex } = get();
-                    if (historyIndex < history.length - 1) {
-                        const nextState = history[historyIndex + 1];
-                        set({
-                            nodes: nextState.nodes,
-                            edges: nextState.edges,
-                            tasks: nextState.tasks,
-                            historyIndex: historyIndex + 1
-                        });
-                    }
-                },
+            redo: () => {
+                const { history, historyIndex } = get();
+                if (historyIndex < history.length - 1) {
+                    const nextState = history[historyIndex + 1];
+                    set({
+                        nodes: nextState.nodes,
+                        edges: nextState.edges,
+                        tasks: nextState.tasks,
+                        historyIndex: historyIndex + 1
+                    });
+                }
+            },
 
-                onNodesChange: (changes) => {
-                    const currentState = get();
-                    const deletedTaskIds: string[] = [];
-                    changes.forEach(change => {
-                        if (change.type === 'remove') {
-                            const nodeToDelete = currentState.nodes.find(node => node.id === change.id);
-                            if (nodeToDelete?.content_id) {
-                                deletedTaskIds.push(nodeToDelete.content_id);
-                                console.log('ReactFlow deletion - removing task:', nodeToDelete.content_id, 'for node:', change.id);
-                            }
+            onNodesChange: (changes) => {
+                const currentState = get();
+                const deletedTaskIds: string[] = [];
+
+                // Track nodes that will be modified to preserve custom properties
+                const nodePropertiesMap = new Map<string, { content_id?: string, project_id?: string }>();
+                currentState.nodes.forEach(node => {
+                    nodePropertiesMap.set(node.id, {
+                        content_id: node.content_id,
+                        project_id: node.project_id
+                    });
+                });
+
+                changes.forEach(change => {
+                    if (change.type === 'remove') {
+                        const nodeToDelete = currentState.nodes.find(node => node.id === change.id);
+                        if (nodeToDelete?.content_id) {
+                            deletedTaskIds.push(nodeToDelete.content_id);
+                            console.log('ReactFlow deletion - removing task:', nodeToDelete.content_id, 'for node:', change.id);
                         }
-                    });
-
-                    
-                    const updatedNodes = applyNodeChanges(changes, currentState.nodes);
-                    const updatedTasks = deletedTaskIds.length > 0
-                        ? currentState.tasks.filter(task => !deletedTaskIds.includes(task.id))
-                        : currentState.tasks;
-
-                    set({
-                        nodes: updatedNodes,
-                        tasks: updatedTasks,
-                    });
-
-                   
-                    if (deletedTaskIds.length > 0) {
-                        console.log('Tasks removed via ReactFlow deletion:', deletedTaskIds.length);
-                        get().saveHistory();
                     }
-                },
+                });
 
-                onEdgesChange: (changes) => {
-                    set({
-                        edges: applyEdgeChanges(changes, get().edges) as Edge[],
+
+                const updatedNodes = applyNodeChanges(changes, currentState.nodes).map(node => {
+                    // Restore custom properties after React Flow processing
+                    const savedProps = nodePropertiesMap.get(node.id);
+                    if (savedProps && savedProps.content_id && savedProps.project_id) {
+                        return {
+                            ...node,
+                            content_id: savedProps.content_id,
+                            project_id: savedProps.project_id
+                        } as Node;
+                    }
+                    return node as Node;
+                });
+
+                const updatedTasks = deletedTaskIds.length > 0
+                    ? currentState.tasks.filter(task => !deletedTaskIds.includes(task.id))
+                    : currentState.tasks;
+
+                set({
+                    nodes: updatedNodes,
+                    tasks: updatedTasks,
+                    isDirty: true,
+                });
+
+
+                if (deletedTaskIds.length > 0) {
+                    console.log('Tasks removed via ReactFlow deletion:', deletedTaskIds.length);
+                    get().saveHistory();
+                }
+            },
+
+            onEdgesChange: (changes) => {
+                set({
+                    edges: applyEdgeChanges(changes, get().edges) as Edge[],
+                    isDirty: true,
+                });
+            },
+
+            onConnect: (connection) => {
+
+
+                const newEdge = {
+                    ...connection,
+                    project_id: 'p1', // TODO: Get from current project context
+                    type: 'default',
+                    markerEnd: {
+                        type: 'arrowclosed',
+                        color: 'hsl(var(--edges))'
+                    },
+
+                    animated: true,
+                    style: {
+                        stroke: 'hsl(var(--edges))',
+                        strokeWidth: 10,
+                        animationDuration: '1s',
+                        strokeDasharray: '5,5',
+                    },
+                };
+                set({
+                    edges: addEdge(newEdge, get().edges) as Edge[],
+                    isDirty: true,
+                });
+            },
+
+            setNodes: (nodes) => {
+                set({ nodes, isDirty: true });
+            },
+
+            setEdges: (edges) => {
+                set({ edges, isDirty: true });
+            },
+
+            setTasks: (tasks) => {
+                set({ tasks });
+            },
+
+            addTaskNode: async (task?: Partial<Task>, nodeOptions?: {
+                position?: { x: number; y: number };
+                id?: string;
+            }) => {
+                const projectId = get().projectId;
+
+                if (!projectId) {
+                    console.error('[Flow Store] Cannot add task: no project ID set');
+                    return '';
+                }
+
+                // Create task in backend first
+                try {
+                    const response = await fetch(`/api/projects/${projectId}/tasks`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            title: task?.title || 'New Task',
+                            description: task?.description || '',
+                            status: task?.status || 'Backlog',
+                            estimatedHours: task?.estimated_hours || 0
+                        })
                     });
-                },
 
-                onConnect: (connection) => {
+                    if (!response.ok) {
+                        const errorData = await response.text();
+                        console.error('[Flow Store] Failed to create task in backend:', errorData);
+                        return '';
+                    }
 
+                    const data = await response.json();
+                    const backendTask = data.task;
 
-                    const newEdge = {
-                        ...connection,
-                        project_id: 'p1', // TODO: Get from current project context
-                        type: 'default',
-                        markerEnd: {
-                            type: 'arrowclosed',
-                            color: 'hsl(var(--edges))'
-                        },
-
-                        animated: true,
-                        style: {
-                            stroke: 'hsl(var(--edges))',
-                            strokeWidth: 10,
-                            animationDuration: '1s',
-                            strokeDasharray: '5,5',
-                        },
-                    };
-                    set({
-                        edges: addEdge(newEdge, get().edges) as Edge[],
-                    });
-                },
-
-                setNodes: (nodes) => {
-                    set({ nodes, isDirty: true });
-                },
-
-                setEdges: (edges) => {
-                    set({ edges, isDirty: true });
-                },
-
-                addTaskNode: (task?: Partial<Task>, nodeOptions?: {
-                    position?: { x: number; y: number };
-                    id?: string;
-                }) => {
-                    const nodes = get().nodes;
+                    // Calculate position with FRESH state right before adding
+                    const currentNodes = get().nodes;
                     let position = nodeOptions?.position || { x: 200, y: 200 };
 
                     // Horizontal layout - cards placed side by side
@@ -193,42 +239,45 @@ const useStore = create<AppState>()(
                         const START_X = -500;
                         const START_Y = 200;
 
-                        const taskNodes = nodes.filter(n => n.type === 'task');
+                        const taskNodes = currentNodes.filter(n => n.type === 'task');
                         const cardIndex = taskNodes.length;
 
                         position = {
                             x: START_X + (cardIndex * HORIZONTAL_SPACING),
                             y: START_Y
                         };
+                        
+                        console.log(`[Flow Store] Positioning new task: index=${cardIndex}, x=${position.x}, y=${position.y}, existing tasks=${taskNodes.length}`);
                     }
+
+                    // Create node with backend task ID
                     const nodeId = nodeOptions?.id || `node-${uuidv4()}`;
-                    const taskId = `task-${uuidv4()}`;
                     const newNode: Node = {
                         id: nodeId,
                         type: 'task',
                         position: position,
-                        project_id: 'p1', // TODO: Get from current project context
-                        content_id: taskId, 
-                        data: {}, 
+                        project_id: projectId,
+                        content_id: backendTask.id,
+                        data: {},
                     };
 
-                   
+                    // Create local task matching backend structure
                     const newTask: Task = {
-                        id: taskId,
-                        node_id: nodeId, 
-                        project_id: 'p1', // TODO: Get from current project context
-                        title: task?.title ?? "",
-                        status: task?.status ?? 'backlog',
-                        estimated_hours: task?.estimated_hours ?? 0,
-                        time_spent: task?.time_spent ?? 0,
-                        description: task?.description ?? "",
-                        subtasks: task?.subtasks ?? [],
-                        comments: task?.comments ?? [],
-                        members: task?.members ?? [],
+                        id: backendTask.id,
+                        node_id: nodeId,
+                        project_id: projectId,
+                        title: backendTask.title,
+                        status: backendTask.status ? backendTask.status.toLowerCase().replace(/ /g, '-') : 'backlog',
+                        estimated_hours: backendTask.estimated_hours || 0,
+                        time_spent: backendTask.time_spent || 0,
+                        description: backendTask.description || '',
+                        subtasks: [],
+                        comments: [],
+                        members: [],
                         sort_order: task?.sort_order ?? 0,
-                        created_by: 'user1', // TODO: Get from auth context
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString(),
+                        created_by: backendTask.created_by,
+                        created_at: backendTask.created_at,
+                        updated_at: backendTask.updated_at,
                     };
 
                     set({
@@ -236,180 +285,540 @@ const useStore = create<AppState>()(
                         tasks: [...get().tasks, newTask]
                     });
 
-                  
                     get().saveHistory();
 
+                    console.log('[Flow Store] Task created:', backendTask.id);
                     return newNode.id;
-                },
+                } catch (error) {
+                    console.error('[Flow Store] Error creating task:', error);
+                    return '';
+                }
+            },
 
-                updateNodeData: (id: string, data: Partial<Task>, saveToHistory: boolean = true) => {
-                    set({
-                        nodes: get().nodes.map(node =>
-                            node.id === id
-                                ? { ...node, data: { ...node.data, ...data } }
-                                : node
-                        )
-                    });
+            updateNodeData: (id: string, data: Partial<Task>, saveToHistory: boolean = true) => {
+                set({
+                    nodes: get().nodes.map(node =>
+                        node.id === id
+                            ? { ...node, data: { ...node.data, ...data } }
+                            : node
+                    )
+                });
 
-                   
-                    if (saveToHistory) {
-                        get().saveHistory();
-                    }
-                },
 
-            
-                getTaskByNodeId: (nodeId: string) => {
-                    const node = get().nodes.find(n => n.id === nodeId);
-                    if (!node) return undefined;
-                    return get().tasks.find(t => t.id === node.content_id);
-                },
-
-                getNodeByTaskId: (taskId: string) => {
-                    return get().nodes.find(n => n.content_id === taskId);
-                },
-
-               
-                updateTask: (taskId: string, data: Partial<Task>, saveToHistory: boolean = true) => {
-                    set({
-                        tasks: get().tasks.map(task =>
-                            task.id === taskId
-                                ? { ...task, ...data, updated_at: new Date().toISOString() }
-                                : task
-                        )
-                    });
-
-                    if (saveToHistory) {
-                        get().saveHistory();
-                    }
-                },
-
-                deleteTaskNode: (nodeId: string) => {
-                    const currentState = get();
-                    const nodeToDelete = currentState.nodes.find(node => node.id === nodeId);
-
-                  
-
-                    
-                    const filteredNodes = currentState.nodes.filter(node => node.id !== nodeId);
-                    const filteredEdges = currentState.edges.filter(edge =>
-                        edge.source !== nodeId && edge.target !== nodeId
-                    );
-
-                    let filteredTasks = currentState.tasks;
-                    if (nodeToDelete?.content_id) {
-                        filteredTasks = currentState.tasks.filter(task => task.id !== nodeToDelete.content_id);
-                    }
-
-                    set({
-                        nodes: filteredNodes,
-                        edges: filteredEdges,
-                        tasks: filteredTasks
-                    });
-
+                if (saveToHistory) {
                     get().saveHistory();
-                },
+                }
+            },
 
-                connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => {
-                    const connection = {
-                        source: sourceId,
-                        target: targetId,
-                        sourceHandle: handles?.sourceHandle || 'right',
-                        targetHandle: handles?.targetHandle || 'left'
-                    };
-                    get().onConnect(connection);
 
+            getTaskByNodeId: (nodeId: string) => {
+                const node = get().nodes.find(n => n.id === nodeId);
+                if (!node) return undefined;
+                return get().tasks.find(t => t.id === node.content_id);
+            },
+
+            getNodeByTaskId: (taskId: string) => {
+                return get().nodes.find(n => n.content_id === taskId);
+            },
+
+
+            updateTask: async (taskId: string, data: Partial<Task>, saveToHistory: boolean = true) => {
+                // Update local state immediately (optimistic)
+                set({
+                    tasks: get().tasks.map(task =>
+                        task.id === taskId
+                            ? { ...task, ...data, updated_at: new Date().toISOString() }
+                            : task
+                    )
+                });
+
+                if (saveToHistory) {
                     get().saveHistory();
-                },
+                }
+
+                // Debounce backend sync (500ms)
+                if (updateTaskTimer) {
+                    clearTimeout(updateTaskTimer);
+                }
+
+                updateTaskTimer = setTimeout(async () => {
+                    try {
+                        // Map status to backend format if present
+                        const backendData: any = {};
+                        if (data.title !== undefined) backendData.title = data.title;
+                        if (data.description !== undefined) backendData.description = data.description;
+                        if (data.status !== undefined) backendData.status = mapStatusToBackend(data.status);
+                        if (data.estimated_hours !== undefined) backendData.estimatedHours = data.estimated_hours;
+                        if (data.time_spent !== undefined) backendData.timeSpent = data.time_spent;
+
+                        const response = await fetch(`/api/tasks/${taskId}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(backendData)
+                        });
+
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            console.error('[Flow Store] Failed to update task in backend:', errorText);
+                        } else {
+                            console.log('[Flow Store] Task updated in backend:', taskId);
+                        }
+                    } catch (error) {
+                        console.error('[Flow Store] Error updating task:', error);
+                    }
+                }, 500);
+            },
+
+            deleteTaskNode: async (nodeId: string) => {
+                const currentState = get();
+                const nodeToDelete = currentState.nodes.find(node => node.id === nodeId);
+
+                if (!nodeToDelete) {
+                    console.warn('[Flow Store] Node not found for deletion:', nodeId);
+                    return;
+                }
+
+                // Delete from backend first
+                if (nodeToDelete.content_id) {
+                    try {
+                        const response = await fetch(`/api/tasks/${nodeToDelete.content_id}`, {
+                            method: 'DELETE'
+                        });
+
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            console.error('[Flow Store] Failed to delete task from backend:', errorText);
+                            // Don't continue with local deletion if backend fails
+                            return;
+                        } else {
+                            console.log('[Flow Store] Task deleted from backend:', nodeToDelete.content_id);
+                        }
+                    } catch (error) {
+                        console.error('[Flow Store] Error deleting task:', error);
+                        // Don't continue with local deletion if backend fails
+                        return;
+                    }
+                }
+
+                // Local deletion - only if backend succeeded
+                const filteredNodes = currentState.nodes.filter(node => node.id !== nodeId);
+                const filteredEdges = currentState.edges.filter(edge =>
+                    edge.source !== nodeId && edge.target !== nodeId
+                );
+
+                let filteredTasks = currentState.tasks;
+                if (nodeToDelete.content_id) {
+                    filteredTasks = currentState.tasks.filter(task => task.id !== nodeToDelete.content_id);
+                }
+
+                set({
+                    nodes: filteredNodes,
+                    edges: filteredEdges,
+                    tasks: filteredTasks,
+                    isDirty: true
+                });
+
+                get().saveHistory();
+                
+                // Trigger immediate autosave after deletion
+                console.log('[Flow Store] Deletion complete, triggering autosave...');
+            },
+
+            connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => {
+                const connection = {
+                    source: sourceId,
+                    target: targetId,
+                    sourceHandle: handles?.sourceHandle || 'right',
+                    targetHandle: handles?.targetHandle || 'left'
+                };
+                get().onConnect(connection);
+
+                get().saveHistory();
+            },
 
 
 
-                addSubtask: (taskId: string) => {
-                    const newSubtask = {
-                        id: uuidv4(),
-                        task_id: taskId,
-                        title: "",
-                        is_completed: false,
-                        estimated_duration: 0,
-                        time_spent: 0,
-                        sort_order: 0,
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString(),
-                    };
+            addSubtask: async (taskId: string) => {
+                const task = get().tasks.find(t => t.id === taskId);
+                if (!task) {
+                    console.error('[Flow Store] Cannot add subtask: task not found', taskId);
+                    return;
+                }
 
-                    set({
-                        tasks: get().tasks.map(task => {
-                            if (task.id === taskId) {
-                                const updatedSubtasks = [...(task.subtasks || []), newSubtask];
-                                const totalEstimated = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.estimated_duration || 0), 0);
-                                const totalTimeSpent = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.time_spent || 0), 0);
-                                return {
-                                    ...task,
-                                    subtasks: updatedSubtasks,
-                                    estimated_hours: totalEstimated,
-                                    time_spent: totalTimeSpent,
-                                    updated_at: new Date().toISOString(),
-                                };
-                            }
-                            return task;
+                const newSubtask = {
+                    id: uuidv4(),
+                    task_id: taskId,
+                    title: "New Subtask",
+                    is_completed: false,
+                    estimated_duration: 0,
+                    time_spent: 0,
+                    sort_order: (task.subtasks || []).length,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                };
+
+                // Update local state immediately (optimistic)
+                set({
+                    tasks: get().tasks.map(task => {
+                        if (task.id === taskId) {
+                            const updatedSubtasks = [...(task.subtasks || []), newSubtask];
+                            const totalEstimated = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.estimated_duration || 0), 0);
+                            const totalTimeSpent = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.time_spent || 0), 0);
+                            return {
+                                ...task,
+                                subtasks: updatedSubtasks,
+                                estimated_hours: totalEstimated,
+                                time_spent: totalTimeSpent,
+                                updated_at: new Date().toISOString(),
+                            };
+                        }
+                        return task;
+                    })
+                });
+
+                get().saveHistory();
+
+                // Sync to backend
+                try {
+                    const response = await fetch(`/api/tasks/${taskId}/subtasks`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            title: newSubtask.title,
+                            estimatedDuration: newSubtask.estimated_duration,
+                            sortOrder: newSubtask.sort_order
                         })
                     });
 
-                    get().saveHistory();
-                },
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('[Flow Store] Failed to create subtask in backend:', errorText);
+                        // Rollback on failure
+                        set({
+                            tasks: get().tasks.map(task => {
+                                if (task.id === taskId) {
+                                    const updatedSubtasks = (task.subtasks || []).filter(st => st.id !== newSubtask.id);
+                                    const totalEstimated = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.estimated_duration || 0), 0);
+                                    const totalTimeSpent = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.time_spent || 0), 0);
+                                    return {
+                                        ...task,
+                                        subtasks: updatedSubtasks,
+                                        estimated_hours: totalEstimated,
+                                        time_spent: totalTimeSpent,
+                                    };
+                                }
+                                return task;
+                            })
+                        });
+                    } else {
+                        const data = await response.json();
+                        const backendSubtask = data.subtask;
+                        
+                        // Update local subtask with backend ID
+                        set({
+                            tasks: get().tasks.map(task => {
+                                if (task.id === taskId) {
+                                    return {
+                                        ...task,
+                                        subtasks: (task.subtasks || []).map(st => 
+                                            st.id === newSubtask.id ? { ...st, id: backendSubtask.id } : st
+                                        )
+                                    };
+                                }
+                                return task;
+                            })
+                        });
+                        
+                        console.log('[Flow Store] Subtask created in backend:', backendSubtask.id);
+                    }
+                } catch (error) {
+                    console.error('[Flow Store] Error creating subtask:', error);
+                }
+            },
 
-                updateSubtask: (taskId: string, subtaskId: string, data: Partial<Subtask>) => {
-                    set({
-                        tasks: get().tasks.map(task => {
-                            if (task.id === taskId) {
-                                const updatedSubtasks = (task.subtasks || []).map((subtask) =>
-                                    subtask.id === subtaskId
-                                        ? { ...subtask, ...data, updated_at: new Date().toISOString() }
-                                        : subtask
-                                );
+            updateSubtask: async (taskId: string, subtaskId: string, data: Partial<Subtask>) => {
+                // Update local state immediately (optimistic)
+                set({
+                    tasks: get().tasks.map(task => {
+                        if (task.id === taskId) {
+                            const updatedSubtasks = (task.subtasks || []).map((subtask) =>
+                                subtask.id === subtaskId
+                                    ? { ...subtask, ...data, updated_at: new Date().toISOString() }
+                                    : subtask
+                            );
 
-            
-                                const totalEstimated = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.estimated_duration || 0), 0);
-                                const totalTimeSpent = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.time_spent || 0), 0);
+                            const totalEstimated = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.estimated_duration || 0), 0);
+                            const totalTimeSpent = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.time_spent || 0), 0);
 
-                                return {
-                                    ...task,
-                                    subtasks: updatedSubtasks,
-                                    estimated_hours: totalEstimated,
-                                    time_spent: totalTimeSpent,
-                                    updated_at: new Date().toISOString(),
-                                };
-                            }
-                            return task;
-                        })
+                            return {
+                                ...task,
+                                subtasks: updatedSubtasks,
+                                estimated_hours: totalEstimated,
+                                time_spent: totalTimeSpent,
+                                updated_at: new Date().toISOString(),
+                            };
+                        }
+                        return task;
+                    })
+                });
+
+                get().saveHistory();
+
+                // Checkbox changes sync immediately, title changes debounce
+                const isCheckbox = data.is_completed !== undefined;
+                const syncDelay = isCheckbox ? 0 : 500;
+
+                // Clear any existing timer for this subtask
+                const timerKey = `${taskId}-${subtaskId}`;
+                if (subtaskTimers[timerKey]) {
+                    clearTimeout(subtaskTimers[timerKey]);
+                }
+
+                subtaskTimers[timerKey] = setTimeout(async () => {
+                    try {
+                        // Map frontend fields to backend format
+                        const backendData: any = {};
+                        if (data.title !== undefined) backendData.title = data.title;
+                        if (data.is_completed !== undefined) backendData.isCompleted = data.is_completed;
+                        if (data.estimated_duration !== undefined) backendData.estimatedDuration = data.estimated_duration;
+                        if (data.time_spent !== undefined) backendData.timeSpent = data.time_spent;
+                        if (data.sort_order !== undefined) backendData.sortOrder = data.sort_order;
+
+                        const response = await fetch(`/api/tasks/${taskId}/subtasks/${subtaskId}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(backendData)
+                        });
+
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            console.error('[Flow Store] Failed to update subtask in backend:', errorText);
+                        } else {
+                            console.log(`[Flow Store] Subtask updated in backend: ${subtaskId}`);
+                        }
+                    } catch (error) {
+                        console.error('[Flow Store] Error updating subtask:', error);
+                    }
+
+                    delete subtaskTimers[timerKey];
+                }, syncDelay);
+            },
+
+            deleteSubtask: async (taskId: string, subtaskId: string) => {
+                // Delete from backend first
+                try {
+                    const response = await fetch(`/api/tasks/${taskId}/subtasks/${subtaskId}`, {
+                        method: 'DELETE'
                     });
 
-                    get().saveHistory();
-                },
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('[Flow Store] Failed to delete subtask from backend:', errorText);
+                        return; // Don't proceed with local deletion if backend fails
+                    }
 
-                deleteSubtask: (taskId: string, subtaskId: string) => {
-                    set({
-                        tasks: get().tasks.map(task => {
-                            if (task.id === taskId) {
-                                const updatedSubtasks = (task.subtasks || []).filter((subtask) => subtask.id !== subtaskId);
+                    console.log('[Flow Store] Subtask deleted from backend:', subtaskId);
+                } catch (error) {
+                    console.error('[Flow Store] Error deleting subtask:', error);
+                    return; // Don't proceed with local deletion if backend fails
+                }
 
-                                // Calculate totals from remaining subtasks
-                                const totalEstimated = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.estimated_duration || 0), 0);
-                                const totalTimeSpent = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.time_spent || 0), 0);
+                // Local deletion - only if backend succeeded
+                set({
+                    tasks: get().tasks.map(task => {
+                        if (task.id === taskId) {
+                            const updatedSubtasks = (task.subtasks || []).filter((subtask) => subtask.id !== subtaskId);
 
-                                return {
-                                    ...task,
-                                    subtasks: updatedSubtasks,
-                                    estimated_hours: totalEstimated,
-                                    time_spent: totalTimeSpent,
-                                    updated_at: new Date().toISOString(),
-                                };
-                            }
-                            return task;
-                        })
+                            // Calculate totals from remaining subtasks
+                            const totalEstimated = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.estimated_duration || 0), 0);
+                            const totalTimeSpent = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.time_spent || 0), 0);
+
+                            return {
+                                ...task,
+                                subtasks: updatedSubtasks,
+                                estimated_hours: totalEstimated,
+                                time_spent: totalTimeSpent,
+                                updated_at: new Date().toISOString(),
+                            };
+                        }
+                        return task;
+                    })
+                });
+
+                get().saveHistory();
+            },
+
+            addComment: async (taskId: string, content: string) => {
+                if (!content.trim()) {
+                    console.error('[Flow Store] Cannot add comment: content is empty');
+                    return;
+                }
+
+                const tempComment = {
+                    id: `temp-${Date.now()}`,
+                    task_id: taskId,
+                    user_id: 'current-user',
+                    user_name: 'You',
+                    content: content.trim(),
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                };
+
+                // Update local state immediately (optimistic)
+                set({
+                    tasks: get().tasks.map(task => {
+                        if (task.id === taskId) {
+                            return {
+                                ...task,
+                                comments: [...(task.comments || []), tempComment],
+                                updated_at: new Date().toISOString(),
+                            };
+                        }
+                        return task;
+                    })
+                });
+
+                get().saveHistory();
+
+                // Sync to backend
+                try {
+                    const response = await fetch(`/api/tasks/${taskId}/comments`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content: content.trim() })
                     });
 
-                    get().saveHistory();
-                },
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('[Flow Store] Failed to create comment in backend:', errorText);
+                        // Rollback on failure
+                        set({
+                            tasks: get().tasks.map(task => {
+                                if (task.id === taskId) {
+                                    return {
+                                        ...task,
+                                        comments: (task.comments || []).filter(c => c.id !== tempComment.id),
+                                    };
+                                }
+                                return task;
+                            })
+                        });
+                    } else {
+                        const data = await response.json();
+                        const backendComment = data.comment;
+
+                        // Update local comment with backend data
+                        set({
+                            tasks: get().tasks.map(task => {
+                                if (task.id === taskId) {
+                                    return {
+                                        ...task,
+                                        comments: (task.comments || []).map(c =>
+                                            c.id === tempComment.id
+                                                ? {
+                                                    id: backendComment.id,
+                                                    task_id: taskId,
+                                                    user_id: backendComment.userId,
+                                                    user_name: backendComment.userName || 'You',
+                                                    content: backendComment.content,
+                                                    created_at: backendComment.createdAt,
+                                                    updated_at: backendComment.updatedAt
+                                                }
+                                                : c
+                                        )
+                                    };
+                                }
+                                return task;
+                            })
+                        });
+
+                        console.log('[Flow Store] Comment created in backend:', backendComment.id);
+                    }
+                } catch (error) {
+                    console.error('[Flow Store] Error creating comment:', error);
+                }
+            },
+
+            updateComment: async (taskId: string, commentId: string, content: string) => {
+                if (!content.trim()) {
+                    console.error('[Flow Store] Cannot update comment: content is empty');
+                    return;
+                }
+
+                // Update local state immediately (optimistic)
+                set({
+                    tasks: get().tasks.map(task => {
+                        if (task.id === taskId) {
+                            return {
+                                ...task,
+                                comments: (task.comments || []).map(c =>
+                                    c.id === commentId
+                                        ? { ...c, content: content.trim(), updated_at: new Date().toISOString() }
+                                        : c
+                                ),
+                                updated_at: new Date().toISOString(),
+                            };
+                        }
+                        return task;
+                    })
+                });
+
+                get().saveHistory();
+
+                // Sync to backend
+                try {
+                    const response = await fetch(`/api/comments/${commentId}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content: content.trim() })
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('[Flow Store] Failed to update comment in backend:', errorText);
+                    } else {
+                        console.log('[Flow Store] Comment updated in backend:', commentId);
+                    }
+                } catch (error) {
+                    console.error('[Flow Store] Error updating comment:', error);
+                }
+            },
+
+            deleteComment: async (taskId: string, commentId: string) => {
+                // Delete from backend first
+                try {
+                    const response = await fetch(`/api/comments/${commentId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('[Flow Store] Failed to delete comment from backend:', errorText);
+                        return; // Don't proceed with local deletion if backend fails
+                    }
+
+                    console.log('[Flow Store] Comment deleted from backend:', commentId);
+                } catch (error) {
+                    console.error('[Flow Store] Error deleting comment:', error);
+                    return; // Don't proceed with local deletion if backend fails
+                }
+
+                // Local deletion - only if backend succeeded
+                set({
+                    tasks: get().tasks.map(task => {
+                        if (task.id === taskId) {
+                            return {
+                                ...task,
+                                comments: (task.comments || []).filter(c => c.id !== commentId),
+                                updated_at: new Date().toISOString(),
+                            };
+                        }
+                        return task;
+                    })
+                });
+
+                get().saveHistory();
+            },
 
         })
     )

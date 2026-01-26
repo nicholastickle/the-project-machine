@@ -35,6 +35,7 @@ const openApiSpec = {
     { name: 'Reflections', description: 'Daily reflections' },
     { name: 'Export', description: 'Data export endpoints' },
     { name: 'Invitations', description: 'Collaboration invites' },
+    { name: 'Taskbook', description: 'Task template library' },
     { name: 'Analytics', description: 'Usage tracking' },
   ],
   paths: {
@@ -362,6 +363,148 @@ const openApiSpec = {
             },
           },
           401: { description: 'Unauthorized' },
+        },
+      },
+    },
+    '/api/taskbook': {
+      get: {
+        tags: ['Taskbook'],
+        summary: 'Get user task templates',
+        description: 'Fetch all taskbook templates for the authenticated user',
+        responses: {
+          200: {
+            description: 'List of taskbook templates',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    taskbook: {
+                      type: 'array',
+                      items: { $ref: '#/components/schemas/TaskbookEntry' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+        },
+      },
+      post: {
+        tags: ['Taskbook'],
+        summary: 'Create task template',
+        description: 'Create a new reusable task template',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['title'],
+                properties: {
+                  title: { type: 'string', example: 'Design Review Meeting' },
+                  description: { type: 'string', nullable: true },
+                  category: { type: 'string', nullable: true, example: 'meetings' },
+                  defaultSubtasks: { 
+                    type: 'array', 
+                    nullable: true,
+                    items: { $ref: '#/components/schemas/Subtask' }
+                  },
+                  projectId: { type: 'string', format: 'uuid', nullable: true },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'Template created',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    entry: { $ref: '#/components/schemas/TaskbookEntry' },
+                  },
+                },
+              },
+            },
+          },
+          400: { description: 'Invalid input - title required' },
+          401: { description: 'Unauthorized' },
+        },
+      },
+    },
+    '/api/taskbook/{id}': {
+      patch: {
+        tags: ['Taskbook'],
+        summary: 'Update task template',
+        description: 'Update an existing taskbook template',
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+        ],
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  title: { type: 'string' },
+                  description: { type: 'string', nullable: true },
+                  category: { type: 'string', nullable: true },
+                  defaultSubtasks: { 
+                    type: 'array', 
+                    nullable: true,
+                    items: { $ref: '#/components/schemas/Subtask' }
+                  },
+                  usageCount: { type: 'integer' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Template updated',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    entry: { $ref: '#/components/schemas/TaskbookEntry' },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          404: { description: 'Template not found or not owned by user' },
+        },
+      },
+      delete: {
+        tags: ['Taskbook'],
+        summary: 'Delete task template',
+        description: 'Soft delete a taskbook template',
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+        ],
+        responses: {
+          200: {
+            description: 'Template deleted',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: { type: 'string', example: 'Taskbook entry deleted' },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          404: { description: 'Template not found or not owned by user' },
         },
       },
     },
@@ -1220,6 +1363,26 @@ const openApiSpec = {
           token: { type: 'string' },
           expiresAt: { type: 'string', format: 'date-time' },
           createdAt: { type: 'string', format: 'date-time' },
+        },
+      },
+      TaskbookEntry: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          userId: { type: 'string', format: 'uuid' },
+          projectId: { type: 'string', format: 'uuid', nullable: true },
+          title: { type: 'string' },
+          description: { type: 'string', nullable: true },
+          category: { type: 'string', nullable: true },
+          defaultSubtasks: { 
+            type: 'array', 
+            items: { $ref: '#/components/schemas/Subtask' },
+            nullable: true 
+          },
+          usageCount: { type: 'integer', default: 0 },
+          createdAt: { type: 'string', format: 'date-time' },
+          updatedAt: { type: 'string', format: 'date-time' },
+          deletedAt: { type: 'string', format: 'date-time', nullable: true },
         },
       },
     },

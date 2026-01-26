@@ -1,11 +1,31 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import AuthModal from './auth-modal'
 
+interface AuthContextType {
+  user: User | null
+  isLoading: boolean
+  openAuthModal: () => void
+  closeAuthModal: () => void
+  signOut: () => Promise<void>
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+export function useAuth() {
+  const context = useContext(AuthContext)
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
+}
+
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -17,11 +37,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       setIsLoading(false)
-      
-      // Show auth modal if no user
-      if (!session?.user) {
-        setTimeout(() => setIsAuthModalOpen(true), 1000)
-      }
     })
 
     // Listen for auth changes
@@ -38,6 +53,14 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     setIsAuthModalOpen(true)
   }
 
+  const value: AuthContextType = {
+    user,
+    isLoading,
+    openAuthModal: () => setIsAuthModalOpen(true),
+    closeAuthModal: () => setIsAuthModalOpen(false),
+    signOut: handleSignOut,
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -47,7 +70,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   }
 
   return (
-    <>
+    <AuthContext.Provider value={value}>
       {/* Main content */}
       {children}
 
@@ -56,9 +79,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onSuccess={() => {
-          // Refresh will happen automatically via onAuthStateChange
+          setIsAuthModalOpen(false)
+          router.push('/canvas')
         }}
       />
-    </>
+    </AuthContext.Provider>
   )
 }

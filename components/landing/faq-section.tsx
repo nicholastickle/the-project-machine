@@ -87,7 +87,7 @@ export default function FAQSection() {
                                     <Button
                                         variant="outline"
                                         className="w-full justify-center"
-                                        onClick={() => window.open('https://www.featurebase.app/', '_blank')}
+                                        onClick={() => window.open('https://projectmachine.featurebase.app', '_blank')}
                                     >
                                         Give feedback
                                     </Button>

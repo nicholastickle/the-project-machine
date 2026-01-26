@@ -33,8 +33,8 @@ export default function CanvasToolbar() {
     const canUndo = historyIndex > 0 && history.length > 1
     const canRedo = historyIndex < history.length - 1
 
-    const handleAddTask = () => {
-        addTaskNode()
+    const handleAddTask = async () => {
+        await addTaskNode()
     }
 
     const handleTaskBookClick = () => {
@@ -150,9 +150,9 @@ export default function CanvasToolbar() {
 
                     <div className="h-px w-10 bg-toolbar-border" />
 
-                    <SidebarHelpOptions>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <SidebarHelpOptions>
                                 <Button
                                     size="lg"
                                     variant="ghost"
@@ -160,12 +160,12 @@ export default function CanvasToolbar() {
                                 >
                                     <HelpCircle className="h-10 w-10" />
                                 </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="right">
-                                <p>Help</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </SidebarHelpOptions>
+                            </SidebarHelpOptions>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                            <p>Help</p>
+                        </TooltipContent>
+                    </Tooltip>
 
 
 

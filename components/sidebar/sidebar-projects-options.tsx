@@ -27,26 +27,19 @@ interface OptionsProjectProps {
     projectId: string
     projectName: string
     onRename: () => void
-    isVisible: boolean
 }
 
-export default function SidebarProjectsOptions({ projectId, projectName, onRename, isVisible }: OptionsProjectProps) {
+export default function SidebarProjectsOptions({ projectId, projectName, onRename }: OptionsProjectProps) {
     const { isMobile } = useSidebar()
-    const { duplicateProject, deleteProject } = useProjectStore()
-    const { syncWithActiveProject } = useStore()
+    const { deleteProject } = useProjectStore()
     const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
     const handleRenameProject = () => {
         onRename()
     }
 
-    const handleDuplicateProject = () => {
-        duplicateProject(projectId, `${projectName} (copy)`)
-    }
-
     const handleDeleteConfirm = () => {
         deleteProject(projectId)
-        syncWithActiveProject()
         setIsDeleteOpen(false)
     }
 
@@ -57,7 +50,7 @@ export default function SidebarProjectsOptions({ projectId, projectName, onRenam
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <SidebarMenuAction className={`transition-opacity duration-200 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+                <SidebarMenuAction showOnHover>
                     <MoreHorizontal />
                     <span className="sr-only">More</span>
                 </SidebarMenuAction>
@@ -69,9 +62,6 @@ export default function SidebarProjectsOptions({ projectId, projectName, onRenam
             >
                 <DropdownMenuItem onClick={handleRenameProject} className="focus:bg-sidebar-accent focus:text-foreground text-xs">
                     Rename
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleDuplicateProject} className="focus:bg-sidebar-accent focus:text-foreground text-xs">
-                    Duplicate
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-sidebar-border" />
                 <Popover open={isDeleteOpen} onOpenChange={setIsDeleteOpen} modal={true}>

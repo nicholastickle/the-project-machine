@@ -13,13 +13,14 @@
 3. [Subtasks](#subtasks) ⭐ **New**
 4. [Assignments](#assignments) ⭐ **New**
 5. [Comments](#comments) ⭐ **New**
-6. [Snapshots](#snapshots)
-7. [Reflections](#reflections)
-8. [Files](#files)
-9. [Exports](#exports)
-10. [AI Chat](#ai-chat)
-11. [Usage Tracking](#usage-tracking)
-12. [Collaboration](#collaboration) *(Coming Soon)*
+6. [Taskbook Templates](#taskbook-templates) ⭐ **New**
+7. [Snapshots](#snapshots)
+8. [Reflections](#reflections)
+9. [Files](#files)
+10. [Exports](#exports)
+11. [AI Chat](#ai-chat)
+12. [Usage Tracking](#usage-tracking)
+13. [Collaboration](#collaboration) *(Coming Soon)*
 
 ---
 
@@ -559,6 +560,174 @@
 - Only the comment author can delete (enforced by RLS)
 - This is a **soft delete** - sets `deletedAt` timestamp
 - Deleted comments hidden from list endpoints
+
+---
+
+## Taskbook Templates
+
+### `GET /api/taskbook`
+**Get all taskbook templates for current user**
+
+**Response**:
+```json
+{
+  "taskbook": [
+    {
+      "id": "uuid",
+      "user_id": "uuid",
+      "title": "Bug Fix Template",
+      "description": "Standard bug fixing workflow",
+      "category": "Development",
+      "subtasks": [
+        { "text": "Reproduce issue", "completed": false },
+        { "text": "Identify root cause", "completed": false },
+        { "text": "Write test", "completed": false },
+        { "text": "Implement fix", "completed": false },
+        { "text": "Verify fix", "completed": false }
+      ],
+      "usage_count": 5,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-15T00:00:00Z"
+    }
+  ]
+}
+```
+
+**Status Codes**:
+- `200` - Templates fetched successfully
+- `401` - Unauthorized
+
+**Notes**:
+- Returns only the current user's templates (filtered by `user_id`)
+- Excludes soft-deleted templates (`deletedAt IS NULL`)
+- Ordered by `created_at` descending (newest first)
+
+### `POST /api/taskbook`
+**Create new taskbook template**
+
+**Request**:
+```json
+{
+  "title": "Code Review Template",
+  "description": "Steps for thorough code review",
+  "category": "Quality",
+  "subtasks": [
+    { "text": "Check code style", "completed": false },
+    { "text": "Review logic", "completed": false },
+    { "text": "Test edge cases", "completed": false }
+  ]
+}
+```
+
+**Response**:
+```json
+{
+  "entry": {
+    "id": "uuid",
+    "user_id": "uuid",
+    "title": "Code Review Template",
+    "description": "Steps for thorough code review",
+    "category": "Quality",
+    "subtasks": [
+      { "text": "Check code style", "completed": false },
+      { "text": "Review logic", "completed": false },
+      { "text": "Test edge cases", "completed": false }
+    ],
+    "usage_count": 0,
+    "created_at": "2025-01-20T00:00:00Z",
+    "updated_at": "2025-01-20T00:00:00Z"
+  }
+}
+```
+
+**Status Codes**:
+- `201` - Template created successfully
+- `400` - Invalid data (missing title or subtasks)
+- `401` - Unauthorized
+
+**Required Fields**:
+- `title` - Template name (string)
+- `subtasks` - Array of subtask objects with `text` and `completed` (minimum 1)
+
+**Optional Fields**:
+- `description` - Template description (string)
+- `category` - Template category (string)
+
+**Notes**:
+- `user_id` automatically set from authenticated user
+- `usage_count` starts at 0
+- Returns the complete created template
+
+### `PATCH /api/taskbook/[id]`
+**Update taskbook template**
+
+**Request**:
+```json
+{
+  "title": "Updated Template Name",
+  "description": "Updated description",
+  "category": "New Category",
+  "subtasks": [
+    { "text": "Updated subtask 1", "completed": false },
+    { "text": "New subtask 2", "completed": false }
+  ],
+  "usage_count": 10
+}
+```
+
+**Response**:
+```json
+{
+  "entry": {
+    "id": "uuid",
+    "user_id": "uuid",
+    "title": "Updated Template Name",
+    "description": "Updated description",
+    "category": "New Category",
+    "subtasks": [
+      { "text": "Updated subtask 1", "completed": false },
+      { "text": "New subtask 2", "completed": false }
+    ],
+    "usage_count": 10,
+    "created_at": "2025-01-01T00:00:00Z",
+    "updated_at": "2025-01-20T12:00:00Z"
+  }
+}
+```
+
+**Status Codes**:
+- `200` - Template updated successfully
+- `401` - Unauthorized
+- `403` - Forbidden (not template owner)
+- `404` - Template not found
+
+**Notes**:
+- All fields are optional - only include fields to update
+- Ownership verified - can only update your own templates
+- `updated_at` automatically set to current timestamp
+- Returns the complete updated template
+
+### `DELETE /api/taskbook/[id]`
+**Soft delete taskbook template**
+
+**Response**:
+```json
+{
+  "success": true
+}
+```
+
+**Status Codes**:
+- `200` - Template soft-deleted successfully
+- `401` - Unauthorized
+- `403` - Forbidden (not template owner)
+- `404` - Template not found
+
+**Notes**:
+- Only the template owner can delete (verified by `user_id`)
+- This is a **soft delete** - sets `deletedAt` timestamp
+- Deleted templates hidden from GET endpoint
+- Soft-deleted templates can be recovered via database if needed
 
 ---
 

@@ -142,6 +142,10 @@
 
   }
 
+  /* Dark mode is currently disabled. If you want to re-enable dark mode, you will need to:
+     1. Set defaultTheme="dark" or enableSystem={true} in app/layout.tsx ThemeProvider
+     2. Uncomment the theme toggle components in the header and sidebar
+     3. Review and adjust the CSS variables below as needed */
   .dark {
     --background: 240 100% 2%;
     --foreground: 0 0% 90%;

@@ -1,28 +1,17 @@
 import useStore from '@/stores/flow-store';
-import { Task, TaskComment } from '@/stores/types';
+import { Task } from '@/stores/types';
 import { User, Send } from 'lucide-react';
 import { useState } from 'react';
 
 
 export default function TaskCardOptionsCommentsNew({ task }: { task: Task }) {
-    const updateTask = useStore((state) => state.updateTask);
+    const addComment = useStore((state) => state.addComment);
     const [newComment, setNewComment] = useState('');
 
     const handleAddComment = () => {
         if (!newComment.trim()) return;
 
-        const comment: TaskComment = {
-            id: Date.now().toString(),
-            task_id: task.id,
-            user_id: 'nicholas-tickle', // Should come from current user context
-            user_name: 'Nicholas Tickle', // Should come from current user context
-            content: newComment.trim(),
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-        };
-
-        const updatedComments = [...(task.comments || []), comment];
-        updateTask(task.id, { comments: updatedComments });
+        addComment(task.id, newComment.trim());
         setNewComment('');
     };
 

@@ -1,8 +1,16 @@
+"use client"
+
 import React from "react"
 import { AnimatedSectionWhileInView } from "@/components/ui/animated-section"
 import { TypewriterSubheadline } from "@/components/landing/typewriter-subheadline"
-import { AuthRedirectButton } from "@/components/auth/auth-redirect-button"
+import { Button } from "@/components/ui/button"
+import { useAuth } from "@/components/auth/auth-provider"
+import { useRouter } from "next/navigation"
+
 export default function HeroSection() {
+  const { user, openAuthModal } = useAuth()
+  const router = useRouter()
+  
   return (
     <div className="flex flex-row justify-center border-x border-border-dark ">
       <div className=" w-[60px] diagonal-lines border-x border-border-dark">
@@ -447,11 +455,13 @@ export default function HeroSection() {
                 className="flex flex-row justify-start gap-4 mb-8 h-10"
               >
 
-                 <AuthRedirectButton
-                  text="Get started"
+                <Button
+                  onClick={() => user ? router.push('/canvas') : openAuthModal()}
                   variant="outline"
                   className="p-6 justify-center"
-                />
+                >
+                  {user ? 'Go to Canvas' : 'Get started'}
+                </Button>
 
               
               </div>

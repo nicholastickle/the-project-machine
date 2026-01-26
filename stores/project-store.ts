@@ -1,299 +1,247 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { v4 as uuidv4 } from 'uuid';
-import type { ProjectStoreData, ProjectData } from './types';
-import { initialNodes } from '@/components/canvas/initial-nodes';
-import { initialEdges } from '@/components/canvas/initial-edges';
-import { initialTasks } from '@/components/canvas/initial-tasks';
+import { devtools } from 'zustand/middleware';
+import type { Project, ProjectMember, PendingInvitation } from './types';
 
 interface ProjectStoreState {
     // Core State
-    projects: ProjectStoreData[];
+    projects: Project[];
     activeProjectId: string | null;
+    isLoading: boolean;
 
-    // Project Management Methods
-    addProject: (name: string, description?: string) => string;
-    deleteProject: (projectId: string) => void;
-    duplicateProject: (projectId: string, newName?: string) => string;
-    renameProject: (projectId: string, newName: string) => void;
+    // Members State
+    projectMembers: Record<string, ProjectMember[]>; // projectId -> members
+    pendingInvitations: Record<string, PendingInvitation[]>; // projectId -> invitations
+
+    // Backend Integration
+    fetchProjects: () => Promise<void>;
+    createProject: (name: string, description?: string) => Promise<string | null>;
+    deleteProject: (projectId: string) => Promise<void>;
+    renameProject: (projectId: string, newName: string) => Promise<void>;
+
+    // Members Integration
+    fetchProjectMembers: (projectId: string) => Promise<void>;
+    inviteCollaborator: (projectId: string, email: string, role: 'editor' | 'viewer') => Promise<boolean>;
+    removeCollaborator: (projectId: string, userId: string) => Promise<boolean>;
+    getProjectMembers: (projectId: string) => ProjectMember[];
+    getPendingInvitations: (projectId: string) => PendingInvitation[];
 
     // Project Selection
     setActiveProject: (projectId: string) => void;
-    getActiveProject: () => ProjectStoreData | null;
-
-    // Project Data Management
-    updateProjectData: (projectId: string, data: Partial<ProjectStoreData>) => void;
-    updateProjectViewport: (projectId: string, viewport: { x: number; y: number; zoom: number }) => void;
+    getActiveProject: () => Project | null;
 }
 
-// Helper function to deep clone nodes/edges/tasks with new IDs
-const cloneWithNewIds = <T extends { id: string }>(items: T[], taskIdMap?: Map<string, string>): T[] => {
-    const idMap = new Map<string, string>();
-
-    // Use provided task ID map or create new one
-    const finalTaskIdMap = taskIdMap || new Map<string, string>();
-
-    // First pass: generate new IDs for all items
-    items.forEach(item => {
-        const newId = uuidv4();
-        idMap.set(item.id, newId);
-
-        // If this is a task (has node_id and project_id properties), add to task ID map
-        if ('node_id' in item && 'project_id' in item && 'status' in item) {
-            finalTaskIdMap.set(item.id, newId);
-        }
-    });
-
-    // Second pass: clone items with new IDs and update references
-    return items.map(item => {
-        const cloned = JSON.parse(JSON.stringify(item)) as T;
-        cloned.id = idMap.get(item.id) || uuidv4();
-
-        // Update task references in nodes using task ID map
-        if ('data' in cloned && typeof cloned.data === 'object' && cloned.data && 'taskId' in cloned.data) {
-            const taskData = cloned.data as { taskId: string };
-            if (finalTaskIdMap.has(taskData.taskId)) {
-                taskData.taskId = finalTaskIdMap.get(taskData.taskId)!;
-            }
-        }
-
-        // Update node_id in tasks if this is a task
-        if ('node_id' in cloned) {
-            const task = cloned as any;
-            // node_id should reference the new node ID, not get a new ID
-            if (idMap.has(task.node_id)) {
-                task.node_id = idMap.get(task.node_id)!;
-            }
-        }
-
-        // Update edge references
-        if ('source' in cloned && 'target' in cloned) {
-            const edge = cloned as any;
-            if (idMap.has(edge.source)) edge.source = idMap.get(edge.source);
-            if (idMap.has(edge.target)) edge.target = idMap.get(edge.target);
-        }
-
-        return cloned;
-    });
-};
-
-const createDefaultProject = (name: string = 'Default Project', description?: string): ProjectStoreData => ({
-    project: {
-        id: uuidv4(),
-        name,
-        description,
-        created_by: 'local-user',
-        viewport: { x: 0, y: 0, zoom: 1 },
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-    },
-    tasks: initialTasks,
-    subtasks: [],
-    comments: [],
-    nodes: initialNodes,
-    edges: initialEdges,
-    members: [],
-    history: [{ nodes: initialNodes, edges: initialEdges, tasks: initialTasks }],
-    historyIndex: 0,
-    cursorMode: 'select'
-});
-
 const useProjectStore = create<ProjectStoreState>()(
-    persist(
+    devtools(
         (set, get) => ({
-            projects: [createDefaultProject()],
+            projects: [],
             activeProjectId: null,
+            isLoading: false,
+            projectMembers: {},
+            pendingInvitations: {},
 
-            addProject: (name: string, description?: string) => {
-                const newProject = createDefaultProject(name, description);
-                set({
-                    projects: [...get().projects, newProject]
-                    // Remove activeProjectId update - don't auto-select new project
-                });
-                return newProject.project.id;
-            },
-
-            deleteProject: (projectId: string) => {
-                const { projects, activeProjectId } = get();
-                const updatedProjects = projects.filter(p => p.project.id !== projectId);
-
-                // If we're deleting the last project, create a new default one
-                if (updatedProjects.length === 0) {
-                    const defaultProject = createDefaultProject();
-                    set({
-                        projects: [defaultProject],
-                        activeProjectId: defaultProject.project.id
-                    });
-                    return;
+            fetchProjects: async () => {
+                set({ isLoading: true });
+                try {
+                    const response = await fetch('/api/projects');
+                    if (response.ok) {
+                        const data = await response.json();
+                        const projects = data.projects || [];
+                        set({ 
+                            projects,
+                            isLoading: false,
+                            // Set first project as active if none selected
+                            activeProjectId: get().activeProjectId || (projects[0]?.id ?? null)
+                        });
+                    } else {
+                        console.error('[Project Store] Failed to fetch projects:', response.statusText);
+                        set({ isLoading: false });
+                    }
+                } catch (error) {
+                    console.error('[Project Store] Error fetching projects:', error);
+                    set({ isLoading: false });
                 }
-
-                // If we're deleting the active project, set the first remaining project as active
-                const newActiveProjectId = activeProjectId === projectId
-                    ? updatedProjects[0].project.id
-                    : activeProjectId;
-
-                set({
-                    projects: updatedProjects,
-                    activeProjectId: newActiveProjectId
-                });
             },
 
-            duplicateProject: (projectId: string, newName?: string) => {
-                const originalProject = get().projects.find(p => p.project.id === projectId);
-                if (!originalProject) return '';
+            createProject: async (name: string, description?: string) => {
+                try {
+                    const response = await fetch('/api/projects', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, description })
+                    });
 
-                // Create separate ID maps for nodes and tasks
-                const nodeIdMap = new Map<string, string>();
-                const taskIdMap = new Map<string, string>();
-
-                // Generate new IDs for nodes first
-                originalProject.nodes.forEach(node => {
-                    nodeIdMap.set(node.id, uuidv4());
-                });
-
-                // Generate new IDs for tasks and map them to their corresponding new node IDs
-                originalProject.tasks.forEach(task => {
-                    const newTaskId = uuidv4();
-                    taskIdMap.set(task.id, newTaskId);
-                });
-
-                // Clone tasks with new IDs and updated node_id references
-                const clonedTasks = originalProject.tasks.map(task => {
-                    const clonedTask = JSON.parse(JSON.stringify(task));
-                    clonedTask.id = taskIdMap.get(task.id)!;
-                    clonedTask.node_id = nodeIdMap.get(task.node_id) || task.node_id;
-                    return clonedTask;
-                });
-
-                // Clone nodes with new IDs and updated taskId references
-                const clonedNodes = originalProject.nodes.map(node => {
-                    const clonedNode = JSON.parse(JSON.stringify(node));
-                    clonedNode.id = nodeIdMap.get(node.id)!;
-                    // Update content_id to reference the new task ID
-                    if (node.content_id && taskIdMap.has(node.content_id)) {
-                        clonedNode.content_id = taskIdMap.get(node.content_id)!;
+                    if (response.ok) {
+                        const data = await response.json();
+                        const newProject = data.project;
+                        set({ 
+                            projects: [...get().projects, newProject]
+                        });
+                        return newProject.id;
+                    } else {
+                        console.error('[Project Store] Failed to create project:', response.statusText);
+                        return null;
                     }
-                    // Update taskId in node data if it exists (for compatibility)
-                    if (clonedNode.data && clonedNode.data.taskId) {
-                        clonedNode.data.taskId = taskIdMap.get(clonedNode.data.taskId) || clonedNode.data.taskId;
-                    }
-                    return clonedNode;
-                });
-
-                // Clone edges with updated source/target references
-                const clonedEdges = originalProject.edges.map(edge => {
-                    const clonedEdge = JSON.parse(JSON.stringify(edge));
-                    clonedEdge.id = uuidv4();
-                    clonedEdge.source = nodeIdMap.get(edge.source) || edge.source;
-                    clonedEdge.target = nodeIdMap.get(edge.target) || edge.target;
-                    return clonedEdge;
-                });
-
-                const duplicatedProject: ProjectStoreData = {
-                    ...originalProject,
-                    project: {
-                        ...originalProject.project,
-                        id: uuidv4(),
-                        name: newName || `${originalProject.project.name} (copy)`,
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
-                    },
-                    tasks: clonedTasks,
-                    nodes: clonedNodes,
-                    edges: clonedEdges,
-                    subtasks: cloneWithNewIds(originalProject.subtasks || []),
-                    comments: cloneWithNewIds(originalProject.comments || []),
-                    history: [{
-                        nodes: clonedNodes,
-                        edges: clonedEdges,
-                        tasks: clonedTasks
-                    }]
-                };
-
-                set({
-                    projects: [...get().projects, duplicatedProject]
-                    // Remove auto-selection as requested by user
-                });
-
-                return duplicatedProject.project.id;
+                } catch (error) {
+                    console.error('[Project Store] Error creating project:', error);
+                    return null;
+                }
             },
 
-            renameProject: (projectId: string, newName: string) => {
+            deleteProject: async (projectId: string) => {
+                try {
+                    const response = await fetch(`/api/projects/${projectId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        const { projects, activeProjectId } = get();
+                    const updatedProjects = projects.filter(p => p.id !== projectId);
+
+                    // If deleting active project, select first remaining project
+                    const newActiveProjectId = activeProjectId === projectId
+                        ? (updatedProjects[0]?.id ?? null)                        : activeProjectId;
+                    set({
+                            projects: updatedProjects,
+                            activeProjectId: newActiveProjectId
+                        });
+                    } else {
+                        console.error('[Project Store] Failed to delete project:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('[Project Store] Error deleting project:', error);
+                }
+            },
+
+            renameProject: async (projectId: string, newName: string) => {
+                // Optimistic update
+                const oldProjects = get().projects;
                 set({
-                    projects: get().projects.map(project =>
-                        project.project.id === projectId
-                            ? {
-                                ...project,
-                                project: {
-                                    ...project.project,
-                                    name: newName,
-                                    updated_at: new Date().toISOString()
-                                }
-                            }
-                            : project
+                    projects: oldProjects.map(p =>
+                        p.id === projectId
+                            ? { ...p, name: newName, updated_at: new Date().toISOString() }
+                            : p
                     )
                 });
+
+                try {
+                    const response = await fetch(`/api/projects/${projectId}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: newName })
+                    });
+
+                    if (!response.ok) {
+                        // Revert on failure
+                        set({ projects: oldProjects });
+                        console.error('[Project Store] Failed to rename project:', response.statusText);
+                    }
+                } catch (error) {
+                    // Revert on error
+                    set({ projects: oldProjects });
+                    console.error('[Project Store] Error renaming project:', error);
+                }
             },
 
             setActiveProject: (projectId: string) => {
-                const projectExists = get().projects.some(p => p.project.id === projectId);
-                if (projectExists) {
-                    set({ activeProjectId: projectId });
-                }
+                set({ activeProjectId: projectId });
             },
 
             getActiveProject: () => {
                 const { projects, activeProjectId } = get();
                 if (!activeProjectId) {
-                    // Auto-select first project if none is active
+                    // Auto-select first project if none selected
                     const firstProject = projects[0];
                     if (firstProject) {
-                        set({ activeProjectId: firstProject.project.id });
+                        set({ activeProjectId: firstProject.id });
                         return firstProject;
                     }
                     return null;
                 }
-                return projects.find(p => p.project.id === activeProjectId) || null;
+                return projects.find(p => p.id === activeProjectId) || null;
             },
 
-            updateProjectData: (projectId: string, data: Partial<ProjectStoreData>) => {
-                set({
-                    projects: get().projects.map(project =>
-                        project.project.id === projectId
-                            ? {
-                                ...project,
-                                ...data,
-                                project: {
-                                    ...project.project,
-                                    ...data.project,
-                                    updated_at: new Date().toISOString()
-                                }
+            fetchProjectMembers: async (projectId: string) => {
+                try {
+                    const response = await fetch(`/api/projects/${projectId}/collaborators`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        const { projectMembers, pendingInvitations: currentInvitations } = get();
+                        
+                        set({
+                            projectMembers: {
+                                ...projectMembers,
+                                [projectId]: data.collaborators || []
+                            },
+                            pendingInvitations: {
+                                ...currentInvitations,
+                                [projectId]: data.pending_invitations || []
                             }
-                            : project
-                    )
-                });
+                        });
+                    } else {
+                        console.error('[Project Store] Failed to fetch members:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('[Project Store] Error fetching members:', error);
+                }
             },
 
-            updateProjectViewport: (projectId: string, viewport: { x: number; y: number; zoom: number }) => {
-                set({
-                    projects: get().projects.map(project =>
-                        project.project.id === projectId
-                            ? {
-                                ...project,
-                                project: {
-                                    ...project.project,
-                                    viewport,
-                                    updated_at: new Date().toISOString()
-                                }
+            inviteCollaborator: async (projectId: string, email: string, role: 'editor' | 'viewer') => {
+                try {
+                    const response = await fetch(`/api/projects/${projectId}/collaborators`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, role })
+                    });
+
+                    if (response.ok) {
+                        // Refresh members list
+                        await get().fetchProjectMembers(projectId);
+                        return true;
+                    } else {
+                        console.error('[Project Store] Failed to invite collaborator:', response.statusText);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('[Project Store] Error inviting collaborator:', error);
+                    return false;
+                }
+            },
+
+            removeCollaborator: async (projectId: string, userId: string) => {
+                try {
+                    const response = await fetch(`/api/projects/${projectId}/collaborators/${userId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        // Update local state
+                        const { projectMembers } = get();
+                        set({
+                            projectMembers: {
+                                ...projectMembers,
+                                [projectId]: (projectMembers[projectId] || []).filter(m => m.user_id !== userId)
                             }
-                            : project
-                    )
-                });
+                        });
+                        return true;
+                    } else {
+                        console.error('[Project Store] Failed to remove collaborator:', response.statusText);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('[Project Store] Error removing collaborator:', error);
+                    return false;
+                }
+            },
+
+            getProjectMembers: (projectId: string) => {
+                return get().projectMembers[projectId] || [];
+            },
+
+            getPendingInvitations: (projectId: string) => {
+                return get().pendingInvitations[projectId] || [];
             }
         }),
-        {
-            name: 'project-store'
-        }
+        { name: 'project-store' }
     )
 );
 

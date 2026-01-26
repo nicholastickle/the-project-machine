@@ -3,6 +3,8 @@ import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider/theme-provider'
+import AuthProvider from '@/components/auth/auth-provider'
+import { Toaster } from 'sonner'
 
 export const metadata: Metadata = {
   title: 'Project Machine',
@@ -35,12 +37,15 @@ html {
       <body>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
-          enableSystem
+          defaultTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
         >
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </ThemeProvider>
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   )

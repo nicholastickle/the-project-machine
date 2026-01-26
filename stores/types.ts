@@ -72,7 +72,7 @@ export interface AIChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
   metadata?: any; // JSONB
-  created_by: string; // Null if assistant/system
+  created_by: string | null;
 }
 export interface Node extends ReactFlowNode {
   project_id: string;
@@ -169,6 +169,7 @@ export type AppState = {
   // Node management methods
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
+  setTasks: (tasks: Task[]) => void;
   setProjectId: (projectId: string | null) => void;
   markDirty: () => void;
   markClean: () => void;
@@ -176,15 +177,18 @@ export type AppState = {
   addTaskNode: (taskData?: Partial<Task>, nodeOptions?: {
     position?: { x: number; y: number };
     id?: string;
-  }) => string;
+  }) => Promise<string>;
   deleteTaskNode: (nodeId: string) => void;
   connectTasks: (sourceId: string, targetId: string, handles?: { sourceHandle: string; targetHandle: string }) => void;
 
   // Task management methods
-  updateTask: (taskId: string, data: Partial<Task>, saveToHistory?: boolean) => void;
+  updateTask: (taskId: string, data: Partial<Task>, saveToHistory?: boolean) => Promise<void>;
   addSubtask: (taskId: string) => void;
   updateSubtask: (taskId: string, subtaskId: string, data: Partial<Subtask>) => void;
   deleteSubtask: (taskId: string, subtaskId: string) => void;
+  addComment: (taskId: string, content: string) => Promise<void>;
+  updateComment: (taskId: string, commentId: string, content: string) => Promise<void>;
+  deleteComment: (taskId: string, commentId: string) => Promise<void>;
 
   // Helper methods
   getTaskByNodeId: (nodeId: string) => Task | undefined;
@@ -206,9 +210,6 @@ export type AppState = {
   saveToActiveProject: () => void;
 
 };
-
-
-
 
 // Canvas component props
 export interface CanvasProps {
