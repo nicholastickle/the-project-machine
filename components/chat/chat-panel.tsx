@@ -38,9 +38,14 @@ export default function ChatPanel({ onVisibilityChange }: ChatPanelProps) {
   }, [isVisible, onVisibilityChange])
 
   const [isUserScrolling, setIsUserScrolling] = useState(false)
+  const [fileRefreshTrigger, setFileRefreshTrigger] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const chatInputRef = useRef<ChatInputRef>(null)
+
+  const handleFileUploaded = () => {
+    setFileRefreshTrigger(prev => prev + 1)
+  }
 
   const handleSendMessage = () => {
     if (inputValue.trim()) {
@@ -111,6 +116,7 @@ export default function ChatPanel({ onVisibilityChange }: ChatPanelProps) {
           onBack={startNewChatSession}
           showBackButton={!isNewChat}
           currentChatTitle={currentChatTitle}
+          fileRefreshTrigger={fileRefreshTrigger}
         />
 
 
@@ -182,6 +188,7 @@ export default function ChatPanel({ onVisibilityChange }: ChatPanelProps) {
           onInputChange={setInputValue}
           onSendMessage={handleSendMessage}
           onKeyPress={handleKeyPress}
+          onFileUploaded={handleFileUploaded}
         />
       </SheetContent>
     </Sheet>

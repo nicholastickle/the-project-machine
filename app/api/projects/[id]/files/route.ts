@@ -5,6 +5,9 @@ import { fileSummaries } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
 import OpenAI from 'openai'
 
+// Force Node.js runtime for pdf-parse/mammoth compatibility
+export const runtime = 'nodejs'
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 })
@@ -97,6 +100,32 @@ export async function POST(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 })
     }
 
+    // Extract text content from file
+    let extractedText = ''
+    try {
+      const buffer = await file.arrayBuffer()
+      
+      if (file.type === 'application/pdf') {
+        const pdfParse = (await import('pdf-parse')).default
+        const data = await pdfParse(Buffer.from(buffer))
+        extractedText = data.text
+      } else if (file.type.includes('wordprocessingml') || file.type === 'application/msword') {
+        const mammoth = await import('mammoth')
+        const result = await mammoth.extractRawText({ buffer: Buffer.from(buffer) })
+        extractedText = result.value
+      } else if (file.type === 'text/csv') {
+        extractedText = new TextDecoder().decode(buffer)
+      }
+      
+      // Truncate to first 10,000 characters for AI processing
+      if (extractedText.length > 10000) {
+        extractedText = extractedText.substring(0, 10000) + '\n\n[Document continues...]'
+      }
+    } catch (extractError) {
+      console.error('Text extraction error:', extractError)
+      // Continue without text if extraction fails
+    }
+
     // Extract basic structure
     let extractedStructure = null
     if (extractStructure) {
@@ -146,36 +175,36 @@ export async function POST(request: NextRequest, context: RouteContext) {
     }
 
     // Generate AI summary (mandatory for confirmation)
-    let aiSummary = 'File uploaded. Please confirm what you want to extract from this file.'
+    let aiSummary = 'File uploaded. Please provide a detailed summary of the document contents and how it informs project planning.'
     
     try {
-      const structurePrompt = extractedStructure 
-        ? `\n\nExtracted Metadata:\n${JSON.stringify(extractedStructure, null, 2)}`
+      const hasText = extractedText.trim().length > 0
+      const textPrompt = hasText 
+        ? `\n\nExtracted Text Content (first 10,000 characters):\n${extractedText}`
         : ''
 
       const completion = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [{
           role: 'user',
-          content: `You are analyzing a file upload for project context.
+          content: `You are analyzing a document upload for civil engineering project planning.
 
 File: ${file.name}
 Type: ${file.type}
-Size: ${Math.round(file.size / 1024)}KB${structurePrompt}
+Size: ${Math.round(file.size / 1024)}KB${textPrompt}
 
-Generate a brief summary (2-3 sentences) of what this file likely contains and how it might be useful for project planning.
+Generate a comprehensive summary for project managers and engineers.
 
-Guidelines:
-- For CSV files with headers: Mention the column names and what data might be in the file
-- For Excel files: Note it's a spreadsheet that may contain structured data (we can't see inside yet)
-- For PDF files: Note it's a document that will need manual review
-- DO NOT make authoritative claims about specific contents you haven't seen
-- Suggest what the user should confirm or look for when reviewing
+Include:
+1. Document type and purpose
+2. Key data, findings, or specifications
+3. Critical numbers, measurements, or recommendations
+4. How this informs project decisions (design, scheduling, risk, costs, etc.)
 
-Format: "This appears to be a [type] that likely contains [general description]. The user should confirm [what to check]."`
+Format: Write 3-5 paragraphs. Be specific with numbers and technical details. Focus on actionable insights for planning.`
         }],
         temperature: 0.3,
-        max_tokens: 200
+        max_tokens: 800
       })
 
       aiSummary = completion.choices[0].message.content || aiSummary

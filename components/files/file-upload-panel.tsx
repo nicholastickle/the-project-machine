@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Upload, FileSpreadsheet, FileText, X, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -26,6 +26,13 @@ export default function FileUploadPanel() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [confirmingFile, setConfirmingFile] = useState<UploadedFile | null>(null)
   const [editedSummary, setEditedSummary] = useState('')
+
+  // Load files when component mounts or projectId changes
+  useEffect(() => {
+    if (projectId) {
+      loadFiles()
+    }
+  }, [projectId])
 
   const loadFiles = async () => {
     if (!projectId) return
@@ -218,17 +225,20 @@ export default function FileUploadPanel() {
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    File Summary
+                    Summary for AI Context
                   </label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Describe what this document contains and how it's useful for planning decisions. Minimum 200 characters.
+                  </p>
                   <Textarea
                     value={editedSummary}
                     onChange={(e) => setEditedSummary(e.target.value)}
-                    rows={6}
-                    placeholder="Describe what this file contains and how it's useful..."
+                    rows={8}
+                    placeholder="Example: Hydrological assessment for River X catchment. Peak flows: 100yr = 450m³/s, 50yr = 320m³/s. Recommends 2x culvert upgrade at Station 15+200. Critical for drainage design and flood mitigation strategy."
                     className="text-sm"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    The AI will only see this summary, never the raw file.
+                    {editedSummary.length}/200 characters {editedSummary.length < 200 ? '(need more detail)' : '✓'}
                   </p>
                 </div>
 
@@ -241,7 +251,7 @@ export default function FileUploadPanel() {
                   </Button>
                   <Button
                     onClick={handleConfirmSummary}
-                    disabled={!editedSummary.trim()}
+                    disabled={editedSummary.length < 200}
                   >
                     Confirm & Save
                   </Button>
