@@ -3,6 +3,7 @@ import ExcelJS from 'exceljs';
 import useProjectStore from '@/stores/project-store';
 import useStore from '@/stores/flow-store';
 import { type Task, type Subtask, type ProjectMember } from '@/stores/types';
+import { toast } from 'sonner';
 
 // Format hours to 2 decimal places
 const formatDuration = (hours: number): string => {
@@ -33,7 +34,7 @@ export const useExcelExport = () => {
         const activeProject = getActiveProject();
 
         if (!activeProject) {
-            alert('No active project selected for export');
+            toast.error('No active project selected for export');
             return;
         }
 
@@ -239,9 +240,11 @@ export const useExcelExport = () => {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
 
+            toast.success('Excel file exported successfully');
+
         } catch (error) {
             console.error('Failed to export to Excel:', error);
-            alert('Failed to export project data. Please try again.');
+            toast.error('Failed to export project data. Please try again.');
         }
     }, [getActiveProject]);
 

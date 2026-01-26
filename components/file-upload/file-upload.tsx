@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import useStore from '@/stores/flow-store'
+import { toast } from 'sonner'
 
 interface UploadedFile {
   id: string
@@ -41,7 +42,7 @@ export default function FileUpload() {
 
   const handleFileUpload = async (file: File) => {
     if (!projectId) {
-      alert('Please select a project first')
+      toast.error('Please select a project first')
       return
     }
 
@@ -64,11 +65,11 @@ export default function FileUpload() {
         setConfirmingFile(data.file)
         setEditedSummary(data.file.ai_generated_summary)
       } else {
-        alert(`Upload failed: ${data.error}`)
+        toast.error(`Upload failed: ${data.error}`)
       }
     } catch (error) {
       console.error('Upload error:', error)
-      alert('Upload failed. Please try again.')
+      toast.error('Upload failed. Please try again.')
     } finally {
       setIsUploading(false)
     }
@@ -106,11 +107,11 @@ export default function FileUpload() {
         setConfirmingFile(null)
       } else {
         const data = await response.json()
-        alert(`Failed to confirm: ${data.error}`)
+        toast.error(`Failed to confirm: ${data.error}`)
       }
     } catch (error) {
       console.error('Confirmation error:', error)
-      alert('Failed to confirm file')
+      toast.error('Failed to confirm file')
     }
   }
 
@@ -125,11 +126,11 @@ export default function FileUpload() {
       if (response.ok) {
         await loadFiles()
       } else {
-        alert('Failed to delete file')
+        toast.error('Failed to delete file')
       }
     } catch (error) {
       console.error('Delete error:', error)
-      alert('Failed to delete file')
+      toast.error('Failed to delete file')
     }
   }
 

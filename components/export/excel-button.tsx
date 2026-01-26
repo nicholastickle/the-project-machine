@@ -2,6 +2,7 @@ import { FileSpreadsheet } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useExcelExport } from "@/hooks/use-excel-export"
 import useProjectStore from "@/stores/project-store"
+import { toast } from 'sonner'
 
 export default function ExcelButton() {
     const { exportProjectToExcel } = useExcelExport()
@@ -10,7 +11,7 @@ export default function ExcelButton() {
     const handleExport = () => {
         const activeProject = getActiveProject()
         if (!activeProject) {
-            alert('Please select a project before exporting to Excel.')
+            toast.error('Please select a project before exporting to Excel.')
             return
         }
         exportProjectToExcel()

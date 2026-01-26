@@ -8,6 +8,7 @@ import {
     ConnectionMode,
     useReactFlow,
 } from '@xyflow/react';
+import { MessageSquare, ListTodo } from 'lucide-react';
 
 import useStore from '@/stores/flow-store';
 import { type AppState, type CanvasProps } from '@/stores/types';
@@ -184,6 +185,20 @@ export default function Canvas({ onInit }: CanvasProps) {
                 <CanvasBackground />
                 <NavControlBar />
                 <DeleteKeyHandler />
+                {nodes.length === 0 && (
+                    <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                        <div className="text-center space-y-4 p-8 bg-background/80 backdrop-blur-sm rounded-lg border border-border shadow-lg max-w-md">
+                            <div className="flex gap-2 justify-center text-muted-foreground">
+                                <ListTodo className="h-12 w-12" />
+                                <MessageSquare className="h-12 w-12" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-foreground">No tasks yet</h3>
+                            <p className="text-sm text-muted-foreground">
+                                Get started by using the Task Book or AI chat to create your first task
+                            </p>
+                        </div>
+                    </div>
+                )}
             </ReactFlow>
         </div>
     );

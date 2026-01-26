@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Send, Paperclip, X, Upload } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import useStore from '@/stores/flow-store'
+import { toast } from 'sonner'
 
 interface ChatInputProps {
     inputValue: string
@@ -71,11 +72,11 @@ const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
                 setEditedSummary(data.file.ai_generated_summary)
                 setShowConfirmDialog(true)
             } else {
-                alert(`Upload failed: ${data.error}`)
+                toast.error(`Upload failed: ${data.error}`)
             }
         } catch (error) {
             console.error('Upload error:', error)
-            alert('Upload failed. Please try again.')
+            toast.error('Upload failed. Please try again.')
         } finally {
             setIsUploading(false)
             event.target.value = ''
@@ -84,7 +85,7 @@ const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
 
     const handleConfirmSummary = async () => {
         if (!confirmingFile || !projectId || editedSummary.trim().length < 200) {
-            alert('Summary must be at least 200 characters and explain how this file informs planning decisions.')
+            toast.error('Summary must be at least 200 characters and explain how this file informs planning decisions.')
             return
         }
 
@@ -97,10 +98,11 @@ const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
         if (response.ok) {
             setShowConfirmDialog(false)
             setConfirmingFile(null)
+            toast.success('File summary confirmed')
             onFileUploaded?.()
         } else {
             const data = await response.json()
-            alert(`Failed to confirm: ${data.error}`)
+            toast.error(`Failed to confirm: ${data.error}`)
         }
     }
 
