@@ -217,7 +217,7 @@ const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
                                         ✨ What makes a useful summary?
                                     </p>
                                     <div className="text-xs space-y-1 text-blue-800 dark:text-blue-200">
-                                        <p><strong>GOOD:</strong> "County Hydrology Report for Creek Basin. Peak flow: 2,400 cfs (100-yr storm). Channel capacity: 1,800 cfs → overflow risk. Soil type: Type C (slow infiltration). USE FOR: sizing culverts, detention ponds, erosion control decisions."</p>
+                                        <p><strong>GOOD:</strong> &ldquo;County Hydrology Report for Creek Basin. Peak flow: 2,400 cfs (100-yr storm). Channel capacity: 1,800 cfs → overflow risk. Soil type: Type C (slow infiltration). USE FOR: sizing culverts, detention ponds, erosion control decisions.&rdquo;</p>
                                     </div>
                                 </div>
 

@@ -19,11 +19,13 @@ import {
 import SidebarProjectsNew from "@/components/sidebar/sidebar-projects-new"
 import SidebarProjectsOptions from "@/components/sidebar/sidebar-projects-options"
 import useProjectStore from "@/stores/project-store"
+import useChatsStore from "@/stores/chats-store"
 
 export default function SidebarProjectsDropdown() {
     const router = useRouter()
     // Project store integration
     const { projects, activeProjectId, setActiveProject, renameProject, fetchProjects } = useProjectStore()
+    const { loadChatHistoryFromBackend } = useChatsStore()
 
     // Inline editing state
     const [editingProjectId, setEditingProjectId] = useState<string | null>(null)
@@ -39,6 +41,8 @@ export default function SidebarProjectsDropdown() {
         if (editingProjectId === projectId) return // Don't switch if editing
 
         setActiveProject(projectId)
+        // Load chat history for this project
+        loadChatHistoryFromBackend(projectId)
         router.push(`/canvas/${projectId}`)
     }
 

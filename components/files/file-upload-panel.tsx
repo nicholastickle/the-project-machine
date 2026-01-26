@@ -27,13 +27,6 @@ export default function FileUploadPanel() {
   const [confirmingFile, setConfirmingFile] = useState<UploadedFile | null>(null)
   const [editedSummary, setEditedSummary] = useState('')
 
-  // Load files when component mounts or projectId changes
-  useEffect(() => {
-    if (projectId) {
-      loadFiles()
-    }
-  }, [projectId])
-
   const loadFiles = async () => {
     if (!projectId) return
 
@@ -43,6 +36,13 @@ export default function FileUploadPanel() {
       setFiles(data.files || [])
     }
   }
+
+  // Load files when component mounts or projectId changes
+  useEffect(() => {
+    if (projectId) {
+      loadFiles()
+    }
+  }, [projectId])
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -228,7 +228,7 @@ export default function FileUploadPanel() {
                     Summary for AI Context
                   </label>
                   <p className="text-xs text-muted-foreground mb-2">
-                    Describe what this document contains and how it's useful for planning decisions. Minimum 200 characters.
+                    Describe what this document contains and how it&apos;s useful for planning decisions. Minimum 200 characters.
                   </p>
                   <Textarea
                     value={editedSummary}

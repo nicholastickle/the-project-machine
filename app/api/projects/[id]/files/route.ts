@@ -106,7 +106,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
       const buffer = await file.arrayBuffer()
       
       if (file.type === 'application/pdf') {
-        const pdfParse = (await import('pdf-parse')).default
+        // @ts-ignore - pdf-parse has complex module structure
+        const pdfParse = (await import('pdf-parse')).default || (await import('pdf-parse'))
         const data = await pdfParse(Buffer.from(buffer))
         extractedText = data.text
       } else if (file.type.includes('wordprocessingml') || file.type === 'application/msword') {

@@ -9,6 +9,9 @@ interface ChatsStoreState {
     messagesByThread: Record<string, AIChatMessage[]>;
     activeThreadId: string | null;
 
+    // Backend sync
+    loadChatHistoryFromBackend: (projectId: string) => Promise<void>;
+
     // Chat Management Methods
     startNewChat: (projectId: string, title?: string) => string;
     deleteChat: (threadId: string) => void;
@@ -45,6 +48,68 @@ const useChatsStore = create<ChatsStoreState>()(
             chatsByProject: {},
             messagesByThread: {},
             activeThreadId: null,
+
+            // Load chat history from backend
+            loadChatHistoryFromBackend: async (projectId: string) => {
+                try {
+                    const response = await fetch(`/api/projects/${projectId}/chat`);
+                    if (!response.ok) {
+                        console.error('[Chats Store] Failed to load chat history:', response.status);
+                        return;
+                    }
+
+                    const { messages } = await response.json();
+                    
+                    if (!messages || messages.length === 0) {
+                        console.log('[Chats Store] No chat history found for project');
+                        return;
+                    }
+
+                    // Create a single thread for all project messages (since DB doesn't use threads yet)
+                    const state = get();
+                    const existingChats = state.chatsByProject[projectId] || [];
+                    
+                    // Check if we already have a thread for this project
+                    if (existingChats.length === 0) {
+                        // Create new thread
+                        const threadId = uuidv4();
+                        const newThread: AIChatThread = {
+                            id: threadId,
+                            project_id: projectId,
+                            title: 'Chat History',
+                            created_by: messages[0]?.created_by || 'unknown',
+                            created_at: messages[0]?.created_at || new Date().toISOString(),
+                            updated_at: messages[messages.length - 1]?.created_at || new Date().toISOString()
+                        };
+
+                        // Map backend messages to frontend format
+                        const mappedMessages: AIChatMessage[] = messages.map((msg: any) => ({
+                            id: msg.id,
+                            thread_id: threadId,
+                            role: msg.role,
+                            content: msg.content,
+                            metadata: null,
+                            created_by: msg.created_by
+                        }));
+
+                        set({
+                            chatsByProject: {
+                                ...state.chatsByProject,
+                                [projectId]: [newThread]
+                            },
+                            messagesByThread: {
+                                ...state.messagesByThread,
+                                [threadId]: mappedMessages
+                            },
+                            activeThreadId: threadId
+                        });
+
+                        console.log(`[Chats Store] Loaded ${messages.length} messages from backend`);
+                    }
+                } catch (error) {
+                    console.error('[Chats Store] Error loading chat history:', error);
+                }
+            },
 
             startNewChat: (projectId: string, title?: string) => {
                 const state = get();

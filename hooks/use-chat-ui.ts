@@ -73,7 +73,7 @@ export function useChatUI(): UseChatUIReturn {
         setIsVisible(prev => !prev)
     }, [])
 
-    const sendMessage = useCallback((content: string) => {
+    const sendMessage = useCallback(async (content: string) => {
         if (!content.trim()) return
 
         const activeProjectId = getActiveProjectId()
@@ -92,15 +92,39 @@ export function useChatUI(): UseChatUIReturn {
                 setIsNewChat(false)
             }
 
+            // Add user message to local store immediately (optimistic)
             sendStoreMessage(threadId, content.trim(), 'user')
             setInputValue('')
-
             setIsTyping(true)
-            setTimeout(() => {
-                const aiResponse = `I understand you're asking about "${content.trim()}". This is a placeholder response while we build out the AI integration. Real responses coming soon!`
-                sendStoreMessage(threadId, aiResponse, 'assistant')
-                setIsTyping(false)
-            }, 1500)
+
+            try {
+                // Call real AI API
+                const response = await fetch('/api/ai/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        projectId: activeProjectId,
+                        message: content.trim(),
+                        currentSnapshot: null // TODO: Pass current canvas state if needed
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const aiResponse = data.response || 'Sorry, I couldn\'t generate a response.';
+                
+                // Add AI response to local store
+                sendStoreMessage(threadId, aiResponse, 'assistant');
+            } catch (error) {
+                console.error('[Chat] Error calling AI API:', error);
+                // Fallback error message
+                sendStoreMessage(threadId, 'Sorry, I encountered an error. Please try again.', 'assistant');
+            } finally {
+                setIsTyping(false);
+            }
         }
     }, [getActiveProjectId, isNewChat])
 

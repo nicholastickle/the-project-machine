@@ -10,6 +10,7 @@ import ExportButtons from "@/components/export/export-buttons"
 import TaskBook from "@/components/task-book/task-book"
 import useStore from "@/stores/flow-store"
 import useProjectStore from "@/stores/project-store"
+import useChatsStore from "@/stores/chats-store"
 import { loadProjectCanvas } from "@/lib/canvas-sync"
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
@@ -31,6 +32,7 @@ export default function CanvasProjectPage({ params }: { params: Promise<{ id: st
     const setTasks = useStore((state) => state.setTasks)
     const setProjectIdInStore = useStore((state) => state.setProjectId)
     const setActiveProject = useProjectStore((state) => state.setActiveProject)
+    const { loadChatHistoryFromBackend } = useChatsStore()
 
     // Redirect to landing if not authenticated
     useEffect(() => {
@@ -69,13 +71,16 @@ export default function CanvasProjectPage({ params }: { params: Promise<{ id: st
             setNodes(nodes as any)
             setEdges(edges as any)
             setTasks(tasks)
+
+            // Load chat history for this project
+            await loadChatHistoryFromBackend(projectId)
             
             setIsLoading(false)
             console.log('[Canvas Page] Project loaded successfully')
         }
 
         loadProject()
-    }, [projectId, setActiveProject, setProjectIdInStore, setNodes, setEdges, setTasks])
+    }, [projectId, setActiveProject, setProjectIdInStore, setNodes, setEdges, setTasks, loadChatHistoryFromBackend])
 
     // Handle chat visibility changes
     const handleChatVisibilityChange = (isVisible: boolean, isDocked: boolean) => {
