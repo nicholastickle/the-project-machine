@@ -52,6 +52,26 @@ export async function loadProjectCanvas(
 
     console.log(`[Canvas Sync] Loaded ${tasks.length} tasks, snapshot:`, snapshot ? 'YES' : 'NO')
 
+    // Fetch subtasks for all tasks in parallel
+    const subtasksPromises = tasks.map(async (task) => {
+      try {
+        const subtasksRes = await fetch(`/api/tasks/${task.id}/subtasks`)
+        if (subtasksRes.ok) {
+          const subtasksData = await subtasksRes.json()
+          return { taskId: task.id, subtasks: subtasksData.subtasks || [] }
+        }
+        return { taskId: task.id, subtasks: [] }
+      } catch (error) {
+        console.error(`[Canvas Sync] Failed to load subtasks for task ${task.id}:`, error)
+        return { taskId: task.id, subtasks: [] }
+      }
+    })
+
+    const subtasksByTask = await Promise.all(subtasksPromises)
+    const subtasksMap = new Map(subtasksByTask.map(({ taskId, subtasks }) => [taskId, subtasks]))
+
+    console.log(`[Canvas Sync] Loaded subtasks for ${subtasksByTask.length} tasks`)
+
     // Convert backend tasks to frontend Task format (node_id will be set after nodes are finalized)
     const frontendTasks: Task[] = tasks.map(backendTask => ({
       id: backendTask.id,
@@ -62,7 +82,17 @@ export async function loadProjectCanvas(
       status: mapStatusToFrontend(backendTask.status) as any,
       estimated_hours: backendTask.estimatedHours || 0,
       time_spent: backendTask.timeSpent || 0,
-      subtasks: [],
+      subtasks: (subtasksMap.get(backendTask.id) || []).map((st: any) => ({
+        id: st.id,
+        task_id: backendTask.id,
+        title: st.title,
+        is_completed: st.isCompleted,
+        estimated_duration: st.estimatedDuration || 0,
+        time_spent: st.timeSpent || 0,
+        sort_order: st.sortOrder || 0,
+        created_at: st.createdAt,
+        updated_at: st.updatedAt
+      })),
       sort_order: backendTask.sortOrder || 0,
       created_by: backendTask.createdBy,
       created_at: backendTask.createdAt,

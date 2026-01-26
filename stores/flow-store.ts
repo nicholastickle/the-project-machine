@@ -12,6 +12,7 @@ import { mapStatusToBackend } from '@/lib/canvas-sync';
 
 const MAX_HISTORY = 50;
 let updateTaskTimer: NodeJS.Timeout | null = null;
+let subtaskTimers: Record<string, NodeJS.Timeout> = {};
 
 const useStore = create<AppState>()(
     devtools(
@@ -437,19 +438,26 @@ const useStore = create<AppState>()(
 
 
 
-            addSubtask: (taskId: string) => {
+            addSubtask: async (taskId: string) => {
+                const task = get().tasks.find(t => t.id === taskId);
+                if (!task) {
+                    console.error('[Flow Store] Cannot add subtask: task not found', taskId);
+                    return;
+                }
+
                 const newSubtask = {
                     id: uuidv4(),
                     task_id: taskId,
-                    title: "",
+                    title: "New Subtask",
                     is_completed: false,
                     estimated_duration: 0,
                     time_spent: 0,
-                    sort_order: 0,
+                    sort_order: (task.subtasks || []).length,
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
                 };
 
+                // Update local state immediately (optimistic)
                 set({
                     tasks: get().tasks.map(task => {
                         if (task.id === taskId) {
@@ -469,9 +477,67 @@ const useStore = create<AppState>()(
                 });
 
                 get().saveHistory();
+
+                // Sync to backend
+                try {
+                    const response = await fetch(`/api/tasks/${taskId}/subtasks`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            title: newSubtask.title,
+                            estimatedDuration: newSubtask.estimated_duration,
+                            sortOrder: newSubtask.sort_order
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('[Flow Store] Failed to create subtask in backend:', errorText);
+                        // Rollback on failure
+                        set({
+                            tasks: get().tasks.map(task => {
+                                if (task.id === taskId) {
+                                    const updatedSubtasks = (task.subtasks || []).filter(st => st.id !== newSubtask.id);
+                                    const totalEstimated = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.estimated_duration || 0), 0);
+                                    const totalTimeSpent = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.time_spent || 0), 0);
+                                    return {
+                                        ...task,
+                                        subtasks: updatedSubtasks,
+                                        estimated_hours: totalEstimated,
+                                        time_spent: totalTimeSpent,
+                                    };
+                                }
+                                return task;
+                            })
+                        });
+                    } else {
+                        const data = await response.json();
+                        const backendSubtask = data.subtask;
+                        
+                        // Update local subtask with backend ID
+                        set({
+                            tasks: get().tasks.map(task => {
+                                if (task.id === taskId) {
+                                    return {
+                                        ...task,
+                                        subtasks: (task.subtasks || []).map(st => 
+                                            st.id === newSubtask.id ? { ...st, id: backendSubtask.id } : st
+                                        )
+                                    };
+                                }
+                                return task;
+                            })
+                        });
+                        
+                        console.log('[Flow Store] Subtask created in backend:', backendSubtask.id);
+                    }
+                } catch (error) {
+                    console.error('[Flow Store] Error creating subtask:', error);
+                }
             },
 
-            updateSubtask: (taskId: string, subtaskId: string, data: Partial<Subtask>) => {
+            updateSubtask: async (taskId: string, subtaskId: string, data: Partial<Subtask>) => {
+                // Update local state immediately (optimistic)
                 set({
                     tasks: get().tasks.map(task => {
                         if (task.id === taskId) {
@@ -480,7 +546,6 @@ const useStore = create<AppState>()(
                                     ? { ...subtask, ...data, updated_at: new Date().toISOString() }
                                     : subtask
                             );
-
 
                             const totalEstimated = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.estimated_duration || 0), 0);
                             const totalTimeSpent = updatedSubtasks.reduce((sum, subtask) => sum + (subtask.time_spent || 0), 0);
@@ -498,9 +563,67 @@ const useStore = create<AppState>()(
                 });
 
                 get().saveHistory();
+
+                // Checkbox changes sync immediately, title changes debounce
+                const isCheckbox = data.is_completed !== undefined;
+                const syncDelay = isCheckbox ? 0 : 500;
+
+                // Clear any existing timer for this subtask
+                const timerKey = `${taskId}-${subtaskId}`;
+                if (subtaskTimers[timerKey]) {
+                    clearTimeout(subtaskTimers[timerKey]);
+                }
+
+                subtaskTimers[timerKey] = setTimeout(async () => {
+                    try {
+                        // Map frontend fields to backend format
+                        const backendData: any = {};
+                        if (data.title !== undefined) backendData.title = data.title;
+                        if (data.is_completed !== undefined) backendData.isCompleted = data.is_completed;
+                        if (data.estimated_duration !== undefined) backendData.estimatedDuration = data.estimated_duration;
+                        if (data.time_spent !== undefined) backendData.timeSpent = data.time_spent;
+                        if (data.sort_order !== undefined) backendData.sortOrder = data.sort_order;
+
+                        const response = await fetch(`/api/tasks/${taskId}/subtasks/${subtaskId}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(backendData)
+                        });
+
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            console.error('[Flow Store] Failed to update subtask in backend:', errorText);
+                        } else {
+                            console.log(`[Flow Store] Subtask updated in backend: ${subtaskId}`);
+                        }
+                    } catch (error) {
+                        console.error('[Flow Store] Error updating subtask:', error);
+                    }
+
+                    delete subtaskTimers[timerKey];
+                }, syncDelay);
             },
 
-            deleteSubtask: (taskId: string, subtaskId: string) => {
+            deleteSubtask: async (taskId: string, subtaskId: string) => {
+                // Delete from backend first
+                try {
+                    const response = await fetch(`/api/tasks/${taskId}/subtasks/${subtaskId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('[Flow Store] Failed to delete subtask from backend:', errorText);
+                        return; // Don't proceed with local deletion if backend fails
+                    }
+
+                    console.log('[Flow Store] Subtask deleted from backend:', subtaskId);
+                } catch (error) {
+                    console.error('[Flow Store] Error deleting subtask:', error);
+                    return; // Don't proceed with local deletion if backend fails
+                }
+
+                // Local deletion - only if backend succeeded
                 set({
                     tasks: get().tasks.map(task => {
                         if (task.id === taskId) {
