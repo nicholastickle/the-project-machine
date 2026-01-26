@@ -116,7 +116,7 @@ export async function loadProjectCanvas(
         id: c.id,
         task_id: backendTask.id,
         user_id: c.userId,
-        user_name: c.userName || 'Unknown User',
+        user_name: c.userName || 'User',
         content: c.content,
         created_at: c.createdAt,
         updated_at: c.updatedAt

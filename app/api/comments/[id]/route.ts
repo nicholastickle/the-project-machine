@@ -48,7 +48,13 @@ export async function PATCH(
       return NextResponse.json({ error: 'Comment not found or no permission' }, { status: 404 });
     }
 
-    return NextResponse.json({ comment: updatedComment });
+    // Add userName to response
+    const commentWithUserName = {
+      ...updatedComment,
+      userName: user.email?.split('@')[0] || 'You'
+    };
+
+    return NextResponse.json({ comment: commentWithUserName });
   } catch (error) {
     console.error('[PATCH /api/comments/[id]] Error:', error);
     return NextResponse.json(

@@ -23,7 +23,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Fetch non-deleted comments
+    // Fetch non-deleted comments with user info
     const comments = await db
       .select()
       .from(taskComments)
@@ -35,7 +35,26 @@ export async function GET(
       )
       .orderBy(asc(taskComments.createdAt));
 
-    return NextResponse.json({ comments });
+    // Enrich comments with user names from Supabase auth
+    const enrichedComments = await Promise.all(
+      comments.map(async (comment) => {
+        try {
+          // Fetch user from Supabase auth
+          const { data: userData } = await supabase.auth.admin.getUserById(comment.userId);
+          return {
+            ...comment,
+            userName: userData?.user?.email?.split('@')[0] || 'User'
+          };
+        } catch (error) {
+          return {
+            ...comment,
+            userName: 'User'
+          };
+        }
+      })
+    );
+
+    return NextResponse.json({ comments: enrichedComments });
   } catch (error) {
     console.error('[GET /api/tasks/[id]/comments] Error:', error);
     return NextResponse.json(
@@ -76,7 +95,13 @@ export async function POST(
       })
       .returning();
 
-    return NextResponse.json({ comment: newComment }, { status: 201 });
+    // Add userName to response
+    const commentWithUserName = {
+      ...newComment,
+      userName: user.email?.split('@')[0] || 'You'
+    };
+
+    return NextResponse.json({ comment: commentWithUserName }, { status: 201 });
   } catch (error) {
     console.error('[POST /api/tasks/[id]/comments] Error:', error);
     return NextResponse.json(
