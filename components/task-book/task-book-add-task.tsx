@@ -6,7 +6,6 @@ export default function TaskBookAddTask() {
 
     const handleAddNewTask = () => {
         const newTask = {
-            user_id: 'u1', // TODO: Replace with actual current user ID
             title: "New task",
             description: undefined,
             category: undefined,

@@ -7,10 +7,10 @@ import Sidebar from "@/components/sidebar/sidebar"
 import CanvasToolbar from "@/components/toolbar/canvas-toolbar"
 import CanvasSidebarTrigger from "@/components/sidebar/sidebar-trigger"
 import ExportButtons from "@/components/export/export-buttons"
-import TaskBook from "@/components/task-book/task-book"
 import useStore from "@/stores/flow-store"
 import useProjectStore from "@/stores/project-store"
 import useChatsStore from "@/stores/chats-store"
+import useTaskbookStore from "@/stores/taskbook-store"
 import { loadProjectCanvas } from "@/lib/canvas-sync"
 import { useEffect, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -36,6 +36,7 @@ export default function CanvasProjectPage({ params }: { params: Promise<{ id: st
     const setActiveProject = useProjectStore((state) => state.setActiveProject)
     const fetchProjects = useProjectStore((state) => state.fetchProjects)
     const { loadChatHistoryFromBackend } = useChatsStore()
+    const fetchTaskbook = useTaskbookStore((state) => state.fetchTaskbook)
 
     // Handle invitation acceptance
     useEffect(() => {
@@ -109,12 +110,15 @@ export default function CanvasProjectPage({ params }: { params: Promise<{ id: st
             // Load chat history for this project
             await loadChatHistoryFromBackend(projectId)
             
+            // Load taskbook templates
+            await fetchTaskbook()
+            
             setIsLoading(false)
             console.log('[Canvas Page] Project loaded successfully')
         }
 
         loadProject()
-    }, [projectId, setActiveProject, setProjectIdInStore, setNodes, setEdges, setTasks, loadChatHistoryFromBackend])
+    }, [projectId, setActiveProject, setProjectIdInStore, setNodes, setEdges, setTasks, loadChatHistoryFromBackend, fetchTaskbook])
 
     // Handle chat visibility changes
     const handleChatVisibilityChange = (isVisible: boolean, isDocked: boolean) => {
@@ -138,7 +142,6 @@ export default function CanvasProjectPage({ params }: { params: Promise<{ id: st
                     onVisibilityChange={handleChatVisibilityChange}
                 />
                 <ExportButtons isChatVisible={isChatDocked} />
-                <TaskBook />
                 <Sidebar />
                 <CanvasToolbar />
                 <CanvasSidebarTrigger />

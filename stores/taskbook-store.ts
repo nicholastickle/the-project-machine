@@ -1,12 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
 import type { TaskbookEntry } from './types';
-
-// ⚠️ DEPRECATED: This store will be replaced with a derived view over PlanSnapshots
-// In v1.0, PlanSnapshots are the ONLY authoritative memory
-// Taskbook should show all tasks across all snapshots (history view)
-// DO NOT extend this store - it will be refactored to read from Supabase plan_snapshots table
 
 // Extract the subtask type for better type safety
 type SubtaskType = NonNullable<TaskbookEntry['subtasks']>[number];
@@ -14,61 +8,130 @@ type SubtaskType = NonNullable<TaskbookEntry['subtasks']>[number];
 interface TaskbookState {
     savedTasks: TaskbookEntry[];
     hasNewTask: boolean;
-    addSavedTask: (task: Omit<TaskbookEntry, 'id' | 'created_at' | 'updated_at'>) => void;
-    removeTask: (taskId: string) => void;
-    updateSavedTask: (taskId: string, updates: Partial<TaskbookEntry>) => void;
+    isLoading: boolean;
+    
+    // Backend integration
+    fetchTaskbook: () => Promise<void>;
+    addSavedTask: (task: Omit<TaskbookEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => Promise<void>;
+    removeTask: (taskId: string) => Promise<void>;
+    updateSavedTask: (taskId: string, updates: Partial<TaskbookEntry>) => Promise<void>;
+    
+    // Subtask operations (local + sync)
     addSubtask: (taskId: string) => void;
     updateSubtask: (taskId: string, subtaskId: string, updates: Partial<SubtaskType>) => void;
     deleteSubtask: (taskId: string, subtaskId: string) => void;
+    
     clearNewTaskIndicator: () => void;
 }
 
 // These match the tasks that get added to canvas after user confirms AI plan
 const seedTasks: TaskbookEntry[] = [];
 
-const useTaskbookStore = create<TaskbookState>()(
-    persist(
-        (set, get) => ({
-            savedTasks: seedTasks,
-            hasNewTask: false,
+const useTaskbookStore = create<TaskbookState>()((set, get) => ({
+    savedTasks: seedTasks,
+    hasNewTask: false,
+    isLoading: false,
 
-            addSavedTask: (task) => {
-                const now = new Date().toISOString();
-                const newTask: TaskbookEntry = {
-                    ...task,
-                    id: `saved-${uuidv4()}`,
-                    created_at: now,
-                    updated_at: now,
-                    usage_count: 0
-                };
+    fetchTaskbook: async () => {
+        set({ isLoading: true });
+        try {
+            const response = await fetch('/api/taskbook');
+            if (response.ok) {
+                const data = await response.json();
+                set({ savedTasks: data.taskbook || [], isLoading: false });
+            } else {
+                console.error('[Taskbook Store] Failed to fetch taskbook');
+                set({ isLoading: false });
+            }
+        } catch (error) {
+            console.error('[Taskbook Store] Error fetching taskbook:', error);
+            set({ isLoading: false });
+        }
+    },
+
+    addSavedTask: async (task) => {
+        try {
+            const response = await fetch('/api/taskbook', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: task.title,
+                    description: task.description,
+                    category: task.category,
+                    defaultSubtasks: task.subtasks,
+                    projectId: null,
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
                 set({
-                    savedTasks: [...get().savedTasks, newTask],
+                    savedTasks: [...get().savedTasks, data.entry],
                     hasNewTask: true,
                 });
-            },
+            } else {
+                console.error('[Taskbook Store] Failed to create task');
+            }
+        } catch (error) {
+            console.error('[Taskbook Store] Error creating task:', error);
+        }
+    },
 
-            removeTask: (taskId: string) => {
-                set({
-                    savedTasks: get().savedTasks.filter(task => task.id !== taskId)
-                });
-            },
+    removeTask: async (taskId: string) => {
+        // Optimistic update
+        const oldTasks = get().savedTasks;
+        set({
+            savedTasks: oldTasks.filter(task => task.id !== taskId)
+        });
 
-            updateSavedTask: (taskId: string, updates: Partial<TaskbookEntry>) => {
-                const now = new Date().toISOString();
-                const isOnlyUsedAtUpdate = Object.keys(updates).length === 1 && 'used_at' in updates;
+        try {
+            const response = await fetch(`/api/taskbook/${taskId}`, {
+                method: 'DELETE',
+            });
 
-                set({
-                    savedTasks: get().savedTasks.map(task =>
-                        task.id === taskId
-                            ? {
-                                ...task,
-                                ...updates,
-                                ...(isOnlyUsedAtUpdate ? {} : { updated_at: now })
-                            }
-                            : task
-                    )
-                });
-            },
+            if (!response.ok) {
+                // Revert on failure
+                set({ savedTasks: oldTasks });
+                console.error('[Taskbook Store] Failed to delete task');
+            }
+        } catch (error) {
+            // Revert on error
+            set({ savedTasks: oldTasks });
+            console.error('[Taskbook Store] Error deleting task:', error);
+        }
+    },
+
+    updateSavedTask: async (taskId: string, updates: Partial<TaskbookEntry>) => {
+        const isOnlyUsedAtUpdate = Object.keys(updates).length === 1 && 'used_at' in updates;
+
+        // Optimistic update
+        const oldTasks = get().savedTasks;
+        set({
+            savedTasks: oldTasks.map(task =>
+                task.id === taskId
+                    ? { ...task, ...updates }
+                    : task
+            )
+        });
+
+        try {
+            const response = await fetch(`/api/taskbook/${taskId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates),
+            });
+
+            if (!response.ok) {
+                // Revert on failure
+                set({ savedTasks: oldTasks });
+                console.error('[Taskbook Store] Failed to update task');
+            }
+        } catch (error) {
+            // Revert on error
+            set({ savedTasks: oldTasks });
+            console.error('[Taskbook Store] Error updating task:', error);
+        }
+    },
 
             addSubtask: (taskId: string) => {
                 const now = new Date().toISOString();
@@ -83,63 +146,66 @@ const useTaskbookStore = create<TaskbookState>()(
                     updated_at: now
                 };
 
+                const updatedTask = get().savedTasks.find(t => t.id === taskId);
+                if (!updatedTask) return;
+
+                const newSubtasks = [...(updatedTask.subtasks || []), newSubtask];
+                
                 set({
                     savedTasks: get().savedTasks.map(task =>
                         task.id === taskId
-                            ? {
-                                ...task,
-                                subtasks: [...(task.subtasks || []), newSubtask],
-                                updated_at: now
-                            }
+                            ? { ...task, subtasks: newSubtasks }
                             : task
                     )
                 });
+
+                // Sync to backend
+                get().updateSavedTask(taskId, { subtasks: newSubtasks as any });
             },
 
             updateSubtask: (taskId: string, subtaskId: string, updates: Partial<SubtaskType>) => {
-                const now = new Date().toISOString();
+                const updatedTask = get().savedTasks.find(t => t.id === taskId);
+                if (!updatedTask) return;
+
+                const newSubtasks = (updatedTask.subtasks || []).map(subtask =>
+                    subtask.id === subtaskId
+                        ? { ...subtask, ...updates }
+                        : subtask
+                );
 
                 set({
                     savedTasks: get().savedTasks.map(task =>
                         task.id === taskId
-                            ? {
-                                ...task,
-                                subtasks: (task.subtasks || []).map(subtask =>
-                                    subtask.id === subtaskId
-                                        ? { ...subtask, ...updates }
-                                        : subtask
-                                ),
-                                updated_at: now
-                            }
+                            ? { ...task, subtasks: newSubtasks }
                             : task
                     )
                 });
+
+                // Sync to backend
+                get().updateSavedTask(taskId, { subtasks: newSubtasks as any });
             },
 
             deleteSubtask: (taskId: string, subtaskId: string) => {
-                const now = new Date().toISOString();
+                const updatedTask = get().savedTasks.find(t => t.id === taskId);
+                if (!updatedTask) return;
+
+                const newSubtasks = (updatedTask.subtasks || []).filter(subtask => subtask.id !== subtaskId);
 
                 set({
                     savedTasks: get().savedTasks.map(task =>
                         task.id === taskId
-                            ? {
-                                ...task,
-                                subtasks: (task.subtasks || []).filter(subtask => subtask.id !== subtaskId),
-                                updated_at: now
-                            }
+                            ? { ...task, subtasks: newSubtasks }
                             : task
                     )
                 });
+
+                // Sync to backend
+                get().updateSavedTask(taskId, { subtasks: newSubtasks as any });
             },
 
             clearNewTaskIndicator: () => {
                 set({ hasNewTask: false });
             },
-        }),
-        {
-            name: 'taskbook-store'
-        }
-    )
-);
+        }));
 
 export default useTaskbookStore;
