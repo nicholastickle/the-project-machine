@@ -1,6 +1,8 @@
 import { Users, Check } from 'lucide-react';
 import { Task, ProjectMember } from '@/stores/types';
 import useStore from '@/stores/flow-store';
+import useProjectStore from '@/stores/project-store';
+import { useEffect } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,42 +13,52 @@ import {
 
 export default function TaskCardOptionsMembersAction({ task }: { task: Task }) {
     const updateTask = useStore((state) => state.updateTask);
-
-    // Dummy users
-    const availableMembers = [
-        {
-            memberId: 'nicholas-tickle',
-            memberName: 'Nicholas Tickle',
-        },
-        {
-            memberId: 'brighton-tandabantu',
-            memberName: 'Brighton Tandabantu',
-        }
-    ];
+    const { getProjectMembers, fetchProjectMembers } = useProjectStore();
+    
+    const availableMembers = getProjectMembers(task.project_id);
+    
+    // Fetch members when component mounts
+    useEffect(() => {
+        fetchProjectMembers(task.project_id);
+    }, [task.project_id, fetchProjectMembers]);
 
     const currentMembers = task.members || [];
 
-    const isMemberSelected = (memberId: string) => {
+    const isMemberSelected = (userId: string) => {
         return currentMembers.some(member =>
-            member.user_id === memberId
+            member.user_id === userId
         );
     };
 
-    const handleMemberToggle = (member: typeof availableMembers[0]) => {
+    const handleMemberToggle = async (member: ProjectMember) => {
         let updatedMembers = [...currentMembers];
 
-        if (isMemberSelected(member.memberId)) {
+        if (isMemberSelected(member.user_id)) {
             // Remove member from the task
-            updatedMembers = updatedMembers.filter(m => m.user_id !== member.memberId);
+            updatedMembers = updatedMembers.filter(m => m.user_id !== member.user_id);
+            
+            // Call backend to remove assignment
+            try {
+                await fetch(`/api/tasks/${task.id}/assignments?userId=${member.user_id}`, {
+                    method: 'DELETE'
+                });
+            } catch (error) {
+                console.error('Failed to remove assignment:', error);
+            }
         } else {
             // Add member to the task
-            const newMember: ProjectMember = {
-                project_id: task.project_id,
-                user_id: member.memberId,
-                name: member.memberName,
-                role: 'editor'
-            };
-            updatedMembers.push(newMember);
+            updatedMembers.push(member);
+            
+            // Call backend to create assignment
+            try {
+                await fetch(`/api/tasks/${task.id}/assignments`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: member.user_id, role: 'assignee' })
+                });
+            } catch (error) {
+                console.error('Failed to create assignment:', error);
+            }
         }
 
         updateTask(task.id, { members: updatedMembers });
@@ -62,20 +74,26 @@ export default function TaskCardOptionsMembersAction({ task }: { task: Task }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 bg-white text-foreground">
                 <DropdownMenuGroup>
-                    {availableMembers.map((member) => (
-                        <DropdownMenuItem
-                            key={member.memberId}
-                            onClick={() => handleMemberToggle(member)}
-                            className="flex items-center space-x-2 cursor-pointer"
-                        >
-                            <div className="flex items-center justify-center w-4 h-4">
-                                {isMemberSelected(member.memberId) && (
-                                    <Check className="w-4 h-4" />
-                                )}
-                            </div>
-                            <span>{member.memberName}</span>
+                    {availableMembers.length === 0 ? (
+                        <DropdownMenuItem disabled className="text-muted-foreground">
+                            No project members yet
                         </DropdownMenuItem>
-                    ))}
+                    ) : (
+                        availableMembers.map((member) => (
+                            <DropdownMenuItem
+                                key={member.user_id}
+                                onClick={() => handleMemberToggle(member)}
+                                className="flex items-center space-x-2 cursor-pointer"
+                            >
+                                <div className="flex items-center justify-center w-4 h-4">
+                                    {isMemberSelected(member.user_id) && (
+                                        <Check className="w-4 h-4" />
+                                    )}
+                                </div>
+                                <span>{member.name || member.user_id}</span>
+                            </DropdownMenuItem>
+                        ))
+                    )}
                 </DropdownMenuGroup>
             </DropdownMenuContent>
         </DropdownMenu>

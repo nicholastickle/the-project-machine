@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { Project } from './types';
+import type { Project, ProjectMember, PendingInvitation } from './types';
 
 interface ProjectStoreState {
     // Core State
@@ -8,11 +8,22 @@ interface ProjectStoreState {
     activeProjectId: string | null;
     isLoading: boolean;
 
+    // Members State
+    projectMembers: Record<string, ProjectMember[]>; // projectId -> members
+    pendingInvitations: Record<string, PendingInvitation[]>; // projectId -> invitations
+
     // Backend Integration
     fetchProjects: () => Promise<void>;
     createProject: (name: string, description?: string) => Promise<string | null>;
     deleteProject: (projectId: string) => Promise<void>;
     renameProject: (projectId: string, newName: string) => Promise<void>;
+
+    // Members Integration
+    fetchProjectMembers: (projectId: string) => Promise<void>;
+    inviteCollaborator: (projectId: string, email: string, role: 'editor' | 'viewer') => Promise<boolean>;
+    removeCollaborator: (projectId: string, userId: string) => Promise<boolean>;
+    getProjectMembers: (projectId: string) => ProjectMember[];
+    getPendingInvitations: (projectId: string) => PendingInvitation[];
 
     // Project Selection
     setActiveProject: (projectId: string) => void;
@@ -25,6 +36,8 @@ const useProjectStore = create<ProjectStoreState>()(
             projects: [],
             activeProjectId: null,
             isLoading: false,
+            projectMembers: {},
+            pendingInvitations: {},
 
             fetchProjects: async () => {
                 set({ isLoading: true });
@@ -145,6 +158,87 @@ const useProjectStore = create<ProjectStoreState>()(
                     return null;
                 }
                 return projects.find(p => p.id === activeProjectId) || null;
+            },
+
+            fetchProjectMembers: async (projectId: string) => {
+                try {
+                    const response = await fetch(`/api/projects/${projectId}/collaborators`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        const { projectMembers, pendingInvitations: currentInvitations } = get();
+                        
+                        set({
+                            projectMembers: {
+                                ...projectMembers,
+                                [projectId]: data.collaborators || []
+                            },
+                            pendingInvitations: {
+                                ...currentInvitations,
+                                [projectId]: data.pending_invitations || []
+                            }
+                        });
+                    } else {
+                        console.error('[Project Store] Failed to fetch members:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('[Project Store] Error fetching members:', error);
+                }
+            },
+
+            inviteCollaborator: async (projectId: string, email: string, role: 'editor' | 'viewer') => {
+                try {
+                    const response = await fetch(`/api/projects/${projectId}/collaborators`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, role })
+                    });
+
+                    if (response.ok) {
+                        // Refresh members list
+                        await get().fetchProjectMembers(projectId);
+                        return true;
+                    } else {
+                        console.error('[Project Store] Failed to invite collaborator:', response.statusText);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('[Project Store] Error inviting collaborator:', error);
+                    return false;
+                }
+            },
+
+            removeCollaborator: async (projectId: string, userId: string) => {
+                try {
+                    const response = await fetch(`/api/projects/${projectId}/collaborators/${userId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        // Update local state
+                        const { projectMembers } = get();
+                        set({
+                            projectMembers: {
+                                ...projectMembers,
+                                [projectId]: (projectMembers[projectId] || []).filter(m => m.user_id !== userId)
+                            }
+                        });
+                        return true;
+                    } else {
+                        console.error('[Project Store] Failed to remove collaborator:', response.statusText);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('[Project Store] Error removing collaborator:', error);
+                    return false;
+                }
+            },
+
+            getProjectMembers: (projectId: string) => {
+                return get().projectMembers[projectId] || [];
+            },
+
+            getPendingInvitations: (projectId: string) => {
+                return get().pendingInvitations[projectId] || [];
             }
         }),
         { name: 'project-store' }

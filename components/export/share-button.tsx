@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Share2, HelpCircle, ChevronDown, Check, MoreHorizontal, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,37 +14,58 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
+import useProjectStore from "@/stores/project-store"
+import { toast } from "sonner"
 
-type Role = "Editor" | "Viewer"
-
-interface Member {
-    id: string
-    name: string
-    email: string
-    role: Role
-    isCurrentUser?: boolean
-    isPending?: boolean
-}
-
-const initialMembers: Member[] = [
-    { id: "1", name: "You", email: "you@example.com", role: "Editor", isCurrentUser: true },
-    { id: "2", name: "John Doe", email: "john@example.com", role: "Editor" },
-    { id: "3", name: "Jane Smith", email: "jane@example.com", role: "Viewer" },
-]
+type Role = "editor" | "viewer"
 
 export default function ShareButton() {
     const [email, setEmail] = useState("")
     const [emailError, setEmailError] = useState<string | null>(null)
-    const [selectedRole, setSelectedRole] = useState<Role>("Editor")
-    const [members, setMembers] = useState<Member[]>(initialMembers)
+    const [selectedRole, setSelectedRole] = useState<Role>("editor")
     const [hoveredMemberId, setHoveredMemberId] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState(false)
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+    
+    const { 
+        getActiveProject, 
+        getProjectMembers, 
+        getPendingInvitations,
+        fetchProjectMembers, 
+        inviteCollaborator, 
+        removeCollaborator 
+    } = useProjectStore();
+    
+    const activeProject = getActiveProject();
+    const projectId = activeProject?.id;
+    
+    const members = projectId ? getProjectMembers(projectId) : [];
+    const pendingInvitations = projectId ? getPendingInvitations(projectId) : [];
+
+    // Fetch current user and members when popover opens
+    useEffect(() => {
+        if (projectId) {
+            fetchProjectMembers(projectId);
+            
+            // Get current user ID from auth
+            fetch('/api/get-session-info')
+                .then(res => res.json())
+                .then(data => setCurrentUserId(data.user?.id || null))
+                .catch(() => setCurrentUserId(null));
+        }
+    }, [projectId, fetchProjectMembers]);
 
     const validateEmail = (email: string): boolean => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         return emailRegex.test(email)
     }
 
-    const handleSendInvite = () => {
+    const handleSendInvite = async () => {
+        if (!projectId) {
+            toast.error('No active project selected');
+            return;
+        }
+
         setEmailError(null)
 
         if (!email.trim()) {
@@ -58,28 +79,37 @@ export default function ShareButton() {
         }
 
         const existingMember = members.find(
-            (m) => m.email.toLowerCase() === email.trim().toLowerCase()
+            (m) => m.name?.toLowerCase() === email.trim().toLowerCase()
         )
         if (existingMember) {
             setEmailError("This email is already a project member")
             return
         }
 
-        const newMember: Member = {
-            id: Date.now().toString(),
-            name: email.split("@")[0],
-            email: email.trim(),
-            role: selectedRole,
-            isPending: true,
-        }
+        setIsLoading(true);
+        const success = await inviteCollaborator(projectId, email.trim(), selectedRole);
+        setIsLoading(false);
 
-        setMembers([...members, newMember])
-        setEmail("")
-        setEmailError(null)
+        if (success) {
+            toast.success(`Invitation sent to ${email.trim()}`);
+            setEmail("");
+        } else {
+            toast.error('Failed to send invitation. Please try again.');
+        }
     }
 
-    const handleDeleteMember = (memberId: string) => {
-        setMembers(members.filter((m) => m.id !== memberId))
+    const handleDeleteMember = async (userId: string) => {
+        if (!projectId) return;
+
+        setIsLoading(true);
+        const success = await removeCollaborator(projectId, userId);
+        setIsLoading(false);
+
+        if (success) {
+            toast.success('Member removed from project');
+        } else {
+            toast.error('Failed to remove member');
+        }
     }
 
     return (
@@ -138,9 +168,9 @@ export default function ShareButton() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="bg-sidebar-options-background border border-sidebar-border rounded-md text-foreground">
-                            <DropdownMenuItem onClick={() => setSelectedRole("Editor")}>
-                                {selectedRole === "Editor" && <Check className="size-4 mr-2" />}
-                                <span className={selectedRole !== "Editor" ? "ml-6" : ""}>
+                            <DropdownMenuItem onClick={() => setSelectedRole("editor")}>
+                                {selectedRole === "editor" && <Check className="size-4 mr-2" />}
+                                <span className={selectedRole !== "editor" ? "ml-6" : ""}>
                                     Editor
                                 </span>
                             </DropdownMenuItem>
@@ -156,62 +186,87 @@ export default function ShareButton() {
                 )}
 
                 {/* Send Invite Button */}
-                <Button onClick={handleSendInvite} className="w-full mb-4 text-foreground bg-sidebar-accent hover:bg-sidebar-accent">
-                    Send Invite
+                <Button 
+                    onClick={handleSendInvite} 
+                    disabled={isLoading || !projectId}
+                    className="w-full mb-4 text-foreground bg-sidebar-accent hover:bg-sidebar-accent"
+                >
+                    {isLoading ? 'Sending...' : 'Send Invite'}
                 </Button>
 
                 {/* Project Members Section */}
                 <div className="border-t border-sidebar-border">
                     <h4 className="text-sm font-medium my-2 text-foreground underline">Project members</h4>
                     <div className="space-y-1">
-                        {members.map((member) => (
+                        {members.map((member) => {
+                            const isCurrentUser = member.user_id === currentUserId;
+                            const displayName = member.name || member.user_id;
+                            
+                            return (
+                                <div
+                                    key={member.user_id}
+                                    className="flex items-center justify-between py-1 px-2 -mx-2 rounded-md text-foreground transition-colors"
+                                    onMouseEnter={() => setHoveredMemberId(member.user_id)}
+                                    onMouseLeave={() => setHoveredMemberId(null)}
+                                >
+                                    <div className="flex flex-row gap-1">
+                                        <span className="text-sm">
+                                            {displayName}
+                                            {isCurrentUser && (
+                                                <span className="text-muted-foreground"> (you)</span>
+                                            )}
+                                        </span>
+                                        <span className="text-xs text-muted-foreground justify-center items-center flex">
+                                            {member.role}
+                                        </span>
+                                    </div>
+                                    <div
+                                        className={cn(
+                                            "transition-opacity",
+                                            hoveredMemberId === member.user_id ? "opacity-100" : "opacity-0"
+                                        )}
+                                    >
+                                        {!isCurrentUser && (
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="size-8" disabled={isLoading}>
+                                                        <MoreHorizontal className="size-3" />
+                                                        <span className="sr-only">Member options</span>
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="bg-sidebar-options-background border border-sidebar-border rounded-md text-foreground">
+                                                    <DropdownMenuItem
+                                                        onClick={() => handleDeleteMember(member.user_id)}
+                                                        className="text-foreground focus:text-foreground bg-sidebar-options-background" 
+                                                        disabled={isLoading}
+                                                    >
+                                                        <Trash2 className="size-4 mr-2" />
+                                                        Remove from project
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        
+                        {/* Show pending invitations */}
+                        {pendingInvitations.map((invitation) => (
                             <div
-                                key={member.id}
-                                className="flex items-center justify-between py-1 px-2 -mx-2 rounded-md text-foreground transition-colors"
-                                onMouseEnter={() => setHoveredMemberId(member.id)}
-                                onMouseLeave={() => setHoveredMemberId(null)}
+                                key={invitation.id}
+                                className="flex items-center justify-between py-1 px-2 -mx-2 rounded-md text-foreground transition-colors opacity-60"
                             >
                                 <div className="flex flex-row gap-1">
                                     <span className="text-sm">
-                                        {member.name}
-                                        {member.isCurrentUser && (
-                                            <span className="text-muted-foreground"> (you)</span>
-                                        )}
-                                        {member.isPending && (
-                                            <span className="text-muted-foreground text-xs ml-2 items-center">
-                                                (pending)
-                                            </span>
-                                        )}
+                                        {invitation.invited_email}
+                                        <span className="text-muted-foreground text-xs ml-2">
+                                            (pending)
+                                        </span>
                                     </span>
                                     <span className="text-xs text-muted-foreground justify-center items-center flex">
-                                        {member.role}
+                                        {invitation.role}
                                     </span>
-                                </div>
-                                <div
-                                    className={cn(
-                                        "transition-opacity",
-                                        hoveredMemberId === member.id ? "opacity-100" : "opacity-0"
-                                    )}
-                                >
-                                    {!member.isCurrentUser && (
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="size-8">
-                                                    <MoreHorizontal className="size-3" />
-                                                    <span className="sr-only">Member options</span>
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end" className="bg-sidebar-options-background border border-sidebar-border rounded-md text-foreground">
-                                                <DropdownMenuItem
-                                                    onClick={() => handleDeleteMember(member.id)}
-                                                    className="text-foreground focus:text-foreground bg-sidebar-options-background" 
-                                                >
-                                                    <Trash2 className="size-4 mr-2" />
-                                                    Remove from project
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    )}
                                 </div>
                             </div>
                         ))}
