@@ -52,10 +52,10 @@ export async function loadProjectCanvas(
 
     console.log(`[Canvas Sync] Loaded ${tasks.length} tasks, snapshot:`, snapshot ? 'YES' : 'NO')
 
-    // Convert backend tasks to frontend Task format
+    // Convert backend tasks to frontend Task format (node_id will be set after nodes are finalized)
     const frontendTasks: Task[] = tasks.map(backendTask => ({
       id: backendTask.id,
-      node_id: '', // Will be set when creating nodes
+      node_id: '', // Will be populated below after nodes are finalized
       project_id: backendTask.projectId,
       title: backendTask.title,
       description: backendTask.description || '',
@@ -74,10 +74,21 @@ export async function loadProjectCanvas(
     // No snapshot? Start fresh with tasks only
     if (!snapshot || !snapshot.snapshotData) {
       console.log('[Canvas Sync] No snapshot found, creating nodes from tasks')
+      const nodes = tasks.map((task, index) => createNodeFromTask(task, index))
+      
+      // Populate node_id in tasks
+      const tasksWithNodeIds = frontendTasks.map(task => {
+        const node = nodes.find(n => n.content_id === task.id)
+        return {
+          ...task,
+          node_id: node?.id || ''
+        }
+      })
+      
       return {
-        nodes: tasks.map((task, index) => createNodeFromTask(task, index)),
+        nodes,
         edges: [],
-        tasks: frontendTasks
+        tasks: tasksWithNodeIds
       }
     }
 
@@ -85,27 +96,32 @@ export async function loadProjectCanvas(
     const snapshotNodes = snapshot.snapshotData.nodes || []
     const snapshotTaskIds = new Set<string>()
     
-    const mergedNodes = snapshotNodes.map((node: Node) => {
-      // Try multiple ways to find the task ID (for backwards compatibility)
-      const taskId = node.content_id || node.data?.taskId || node.data?.id
-      if (taskId && typeof taskId === 'string') snapshotTaskIds.add(taskId)
-      
-      const currentTask = tasks.find(t => t.id === taskId)
-      
-      if (currentTask) {
-        return {
-          ...node,
-          data: {
-            ...node.data,
-            ...mapTaskToNodeData(currentTask)
-          },
-          // CRITICAL: Ensure content_id is always set
-          content_id: currentTask.id,
-          project_id: currentTask.projectId
+    const mergedNodes = snapshotNodes
+      .map((node: Node) => {
+        // Try multiple ways to find the task ID (for backwards compatibility)
+        const taskId = node.content_id || node.data?.taskId || node.data?.id
+        if (taskId && typeof taskId === 'string') snapshotTaskIds.add(taskId)
+        
+        const currentTask = tasks.find(t => t.id === taskId)
+        
+        if (currentTask) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              ...mapTaskToNodeData(currentTask)
+            },
+            // CRITICAL: Ensure content_id is always set
+            content_id: currentTask.id,
+            project_id: currentTask.projectId
+          }
         }
-      }
-      return node
-    })
+        
+        // Task was deleted - don't include this node
+        console.log(`[Canvas Sync] Removing orphaned node (task deleted): ${taskId}`)
+        return null
+      })
+      .filter((node: Node | null): node is Node => node !== null) // Filter out deleted task nodes
     
     // Add any tasks that exist in backend but NOT in snapshot
     const newTaskNodes = tasks
@@ -118,8 +134,20 @@ export async function loadProjectCanvas(
     const nodes = [...mergedNodes, ...newTaskNodes]
     const edges = snapshot.snapshotData.edges || []
     
-    console.log(`[Canvas Sync] ✅ Loaded: ${nodes.length} nodes (${newTaskNodes.length} new), ${edges.length} edges`)
-    return { nodes, edges, tasks: frontendTasks }
+    // CRITICAL: Populate node_id in all tasks based on final nodes
+    const tasksWithNodeIds = frontendTasks.map(task => {
+      const node = nodes.find(n => n.content_id === task.id)
+      if (!node) {
+        console.warn(`[Canvas Sync] No node found for task ${task.id}`)
+      }
+      return {
+        ...task,
+        node_id: node?.id || ''
+      }
+    })
+    
+    console.log(`[Canvas Sync] ✅ Loaded: ${nodes.length} nodes (${newTaskNodes.length} new), ${edges.length} edges, ${tasksWithNodeIds.filter(t => t.node_id).length} tasks with node_id`)
+    return { nodes, edges, tasks: tasksWithNodeIds }
 
   } catch (error) {
     console.error('[Canvas Sync] Load error:', error)
@@ -164,12 +192,20 @@ export async function saveCanvasSnapshot(
 
 /**
  * Map frontend status to backend status
+ * Frontend: 'backlog', 'planned', 'in_progress', etc.
+ * Backend: 'Backlog', 'Planned', 'In Progress', etc.
  */
-function mapStatusToBackend(frontendStatus: string): string {
+export function mapStatusToBackend(frontendStatus: string): string {
   const statusMap: Record<string, string> = {
+    'backlog': 'Backlog',
+    'planned': 'Planned',
+    'in_progress': 'In Progress',
+    'stuck': 'Stuck',
+    'completed': 'Completed',
+    'cancelled': 'Cancelled',
+    // Legacy values
     'Not started': 'Backlog',
     'On-going': 'In Progress',
-    'Stuck': 'Stuck',
     'Complete': 'Completed',
     // Backend values pass through
     'Backlog': 'Backlog',
@@ -178,13 +214,13 @@ function mapStatusToBackend(frontendStatus: string): string {
     'Completed': 'Completed',
     'Cancelled': 'Cancelled'
   }
-  return statusMap[frontendStatus] || frontendStatus
+  return statusMap[frontendStatus] || 'Backlog'
 }
 
 /**
  * Map backend status to frontend status
  */
-function mapStatusToFrontend(backendStatus: string): string {
+export function mapStatusToFrontend(backendStatus: string): string {
   const statusMap: Record<string, string> = {
     'Backlog': 'backlog',
     'Planned': 'planned',

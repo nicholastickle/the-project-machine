@@ -15,6 +15,7 @@ export default function TaskCardOptionsDeleteAction({ task }: { task: Task }) {
     const [isOpen, setIsOpen] = useState(false);
 
     const handleDeleteConfirm = () => {
+        console.log('[Delete Action] Deleting task:', task.id, 'node:', task.node_id);
         deleteTaskNode(task.node_id);
         setIsOpen(false);
     };
@@ -24,9 +25,11 @@ export default function TaskCardOptionsDeleteAction({ task }: { task: Task }) {
     };
 
     return (
-        <Popover open={isOpen} onOpenChange={setIsOpen} modal={false}>
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
-                <button className="flex items-center space-x-2 p-2 rounded-md text-sm transition-all duration-200 hover:bg-gray-100 border">
+                <button 
+                    className="flex items-center space-x-2 p-2 rounded-md text-sm transition-all duration-200 hover:bg-gray-100 border"
+                >
                     <Trash2 className="w-4 h-4 text-muted-foreground" />
                     <span className="flex-1 text-left">Delete</span>
                 </button>
@@ -38,18 +41,28 @@ export default function TaskCardOptionsDeleteAction({ task }: { task: Task }) {
                     </div>
                     <div className="flex gap-2">
                         <Button
-                            onClick={handleDeleteConfirm}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleDeleteConfirm();
+                            }}
                             variant="destructive"
                             size="sm"
                             className="flex-1 text-foreground"
+                            type="button"
                         >
                             Yes, delete
                         </Button>
                         <Button
-                            onClick={handleDeleteCancel}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleDeleteCancel();
+                            }}
                             variant="outline"
                             size="sm"
                             className="flex-1 text-foreground"
+                            type="button"
                         >
                             Cancel
                         </Button>
