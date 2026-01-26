@@ -4,7 +4,8 @@ import { User } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 export default function TaskCardOptionsCommentsExisting({ task }: { task: Task }) {
-    const updateTask = useStore((state) => state.updateTask);
+    const updateComment = useStore((state) => state.updateComment);
+    const deleteComment = useStore((state) => state.deleteComment);
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
     const [editValue, setEditValue] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
@@ -23,13 +24,7 @@ export default function TaskCardOptionsCommentsExisting({ task }: { task: Task }
     const handleSave = (commentId: string) => {
         if (!editValue.trim()) return;
 
-        const updatedComments = task.comments?.map(comment =>
-            comment.id === commentId
-                ? { ...comment, content: editValue.trim(), updated_at: new Date().toISOString() }
-                : comment
-        );
-
-        updateTask(task.id, { comments: updatedComments });
+        updateComment(task.id, commentId, editValue.trim());
         setEditingCommentId(null);
         setEditValue('');
     };
@@ -40,8 +35,7 @@ export default function TaskCardOptionsCommentsExisting({ task }: { task: Task }
     };
 
     const handleDelete = (commentId: string) => {
-        const updatedComments = task.comments?.filter(comment => comment.id !== commentId);
-        updateTask(task.id, { comments: updatedComments });
+        deleteComment(task.id, commentId);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, commentId: string) => {

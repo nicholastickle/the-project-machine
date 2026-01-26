@@ -186,6 +186,9 @@ export type AppState = {
   addSubtask: (taskId: string) => void;
   updateSubtask: (taskId: string, subtaskId: string, data: Partial<Subtask>) => void;
   deleteSubtask: (taskId: string, subtaskId: string) => void;
+  addComment: (taskId: string, content: string) => Promise<void>;
+  updateComment: (taskId: string, commentId: string, content: string) => Promise<void>;
+  deleteComment: (taskId: string, commentId: string) => Promise<void>;
 
   // Helper methods
   getTaskByNodeId: (nodeId: string) => Task | undefined;

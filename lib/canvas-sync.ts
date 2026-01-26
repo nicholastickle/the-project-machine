@@ -52,7 +52,7 @@ export async function loadProjectCanvas(
 
     console.log(`[Canvas Sync] Loaded ${tasks.length} tasks, snapshot:`, snapshot ? 'YES' : 'NO')
 
-    // Fetch subtasks for all tasks in parallel
+    // Fetch subtasks and comments for all tasks in parallel
     const subtasksPromises = tasks.map(async (task) => {
       try {
         const subtasksRes = await fetch(`/api/tasks/${task.id}/subtasks`)
@@ -67,10 +67,29 @@ export async function loadProjectCanvas(
       }
     })
 
-    const subtasksByTask = await Promise.all(subtasksPromises)
-    const subtasksMap = new Map(subtasksByTask.map(({ taskId, subtasks }) => [taskId, subtasks]))
+    const commentsPromises = tasks.map(async (task) => {
+      try {
+        const commentsRes = await fetch(`/api/tasks/${task.id}/comments`)
+        if (commentsRes.ok) {
+          const commentsData = await commentsRes.json()
+          return { taskId: task.id, comments: commentsData.comments || [] }
+        }
+        return { taskId: task.id, comments: [] }
+      } catch (error) {
+        console.error(`[Canvas Sync] Failed to load comments for task ${task.id}:`, error)
+        return { taskId: task.id, comments: [] }
+      }
+    })
 
-    console.log(`[Canvas Sync] Loaded subtasks for ${subtasksByTask.length} tasks`)
+    const [subtasksByTaskResults, commentsByTaskResults] = await Promise.all([
+      Promise.all(subtasksPromises),
+      Promise.all(commentsPromises)
+    ])
+
+    const subtasksMap = new Map(subtasksByTaskResults.map(({ taskId, subtasks }) => [taskId, subtasks]))
+    const commentsMap = new Map(commentsByTaskResults.map(({ taskId, comments }) => [taskId, comments]))
+
+    console.log(`[Canvas Sync] Loaded subtasks for ${subtasksByTaskResults.length} tasks, comments for ${commentsByTaskResults.length} tasks`)
 
     // Convert backend tasks to frontend Task format (node_id will be set after nodes are finalized)
     const frontendTasks: Task[] = tasks.map(backendTask => ({
@@ -92,6 +111,15 @@ export async function loadProjectCanvas(
         sort_order: st.sortOrder || 0,
         created_at: st.createdAt,
         updated_at: st.updatedAt
+      })),
+      comments: (commentsMap.get(backendTask.id) || []).map((c: any) => ({
+        id: c.id,
+        task_id: backendTask.id,
+        user_id: c.userId,
+        user_name: c.userName || 'Unknown User',
+        content: c.content,
+        created_at: c.createdAt,
+        updated_at: c.updatedAt
       })),
       sort_order: backendTask.sortOrder || 0,
       created_by: backendTask.createdBy,

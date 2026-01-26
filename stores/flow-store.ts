@@ -648,6 +648,178 @@ const useStore = create<AppState>()(
                 get().saveHistory();
             },
 
+            addComment: async (taskId: string, content: string) => {
+                if (!content.trim()) {
+                    console.error('[Flow Store] Cannot add comment: content is empty');
+                    return;
+                }
+
+                const tempComment = {
+                    id: `temp-${Date.now()}`,
+                    task_id: taskId,
+                    user_id: 'current-user',
+                    user_name: 'You',
+                    content: content.trim(),
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                };
+
+                // Update local state immediately (optimistic)
+                set({
+                    tasks: get().tasks.map(task => {
+                        if (task.id === taskId) {
+                            return {
+                                ...task,
+                                comments: [...(task.comments || []), tempComment],
+                                updated_at: new Date().toISOString(),
+                            };
+                        }
+                        return task;
+                    })
+                });
+
+                get().saveHistory();
+
+                // Sync to backend
+                try {
+                    const response = await fetch(`/api/tasks/${taskId}/comments`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content: content.trim() })
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('[Flow Store] Failed to create comment in backend:', errorText);
+                        // Rollback on failure
+                        set({
+                            tasks: get().tasks.map(task => {
+                                if (task.id === taskId) {
+                                    return {
+                                        ...task,
+                                        comments: (task.comments || []).filter(c => c.id !== tempComment.id),
+                                    };
+                                }
+                                return task;
+                            })
+                        });
+                    } else {
+                        const data = await response.json();
+                        const backendComment = data.comment;
+
+                        // Update local comment with backend data
+                        set({
+                            tasks: get().tasks.map(task => {
+                                if (task.id === taskId) {
+                                    return {
+                                        ...task,
+                                        comments: (task.comments || []).map(c =>
+                                            c.id === tempComment.id
+                                                ? {
+                                                    id: backendComment.id,
+                                                    task_id: taskId,
+                                                    user_id: backendComment.userId,
+                                                    user_name: backendComment.userName || 'You',
+                                                    content: backendComment.content,
+                                                    created_at: backendComment.createdAt,
+                                                    updated_at: backendComment.updatedAt
+                                                }
+                                                : c
+                                        )
+                                    };
+                                }
+                                return task;
+                            })
+                        });
+
+                        console.log('[Flow Store] Comment created in backend:', backendComment.id);
+                    }
+                } catch (error) {
+                    console.error('[Flow Store] Error creating comment:', error);
+                }
+            },
+
+            updateComment: async (taskId: string, commentId: string, content: string) => {
+                if (!content.trim()) {
+                    console.error('[Flow Store] Cannot update comment: content is empty');
+                    return;
+                }
+
+                // Update local state immediately (optimistic)
+                set({
+                    tasks: get().tasks.map(task => {
+                        if (task.id === taskId) {
+                            return {
+                                ...task,
+                                comments: (task.comments || []).map(c =>
+                                    c.id === commentId
+                                        ? { ...c, content: content.trim(), updated_at: new Date().toISOString() }
+                                        : c
+                                ),
+                                updated_at: new Date().toISOString(),
+                            };
+                        }
+                        return task;
+                    })
+                });
+
+                get().saveHistory();
+
+                // Sync to backend
+                try {
+                    const response = await fetch(`/api/comments/${commentId}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content: content.trim() })
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('[Flow Store] Failed to update comment in backend:', errorText);
+                    } else {
+                        console.log('[Flow Store] Comment updated in backend:', commentId);
+                    }
+                } catch (error) {
+                    console.error('[Flow Store] Error updating comment:', error);
+                }
+            },
+
+            deleteComment: async (taskId: string, commentId: string) => {
+                // Delete from backend first
+                try {
+                    const response = await fetch(`/api/comments/${commentId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('[Flow Store] Failed to delete comment from backend:', errorText);
+                        return; // Don't proceed with local deletion if backend fails
+                    }
+
+                    console.log('[Flow Store] Comment deleted from backend:', commentId);
+                } catch (error) {
+                    console.error('[Flow Store] Error deleting comment:', error);
+                    return; // Don't proceed with local deletion if backend fails
+                }
+
+                // Local deletion - only if backend succeeded
+                set({
+                    tasks: get().tasks.map(task => {
+                        if (task.id === taskId) {
+                            return {
+                                ...task,
+                                comments: (task.comments || []).filter(c => c.id !== commentId),
+                                updated_at: new Date().toISOString(),
+                            };
+                        }
+                        return task;
+                    })
+                });
+
+                get().saveHistory();
+            },
+
         })
     )
 );
